@@ -1,0 +1,38 @@
+{
+  "name": "c-way-admin-backend",
+  "version": "1.0.0",
+  "description": "Backend API for C-way Global Admin Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "seed": "node scripts/seedUsers.js",
+    "list-users": "node scripts/listUsers.js",
+    "update-role": "node scripts/updateUserRole.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:pagination": "node scripts/testPagination.js"
+  },
+  "keywords": [
+    "admin",
+    "api",
+    "backend"
+  ],
+  "author": "C-way Global",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.41.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.3",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^7.0.12"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
