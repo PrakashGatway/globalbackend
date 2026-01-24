@@ -139,15 +139,22 @@ exports.sendOTP = async (req, res) => {
   try {
     const { name, phone, email } = req.body
 
-    if (!email || !phone) {
-      return res.status(400).json({ success: false, message: 'Please provide email and phone' })
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Please provide email' })
     }
 
-    const user = await User.findOne({ email })
-    if (user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User exist please check email'
+    let user = await User.findOne({ email })
+    
+    // If user does not exist, require phone to create new user
+    if (!user) {
+      if (!phone) {
+        return res.status(400).json({ success: false, message: 'Please provide email and phone for registration' })
+      }
+      
+      user = await User.create({
+        name: name || email.split('@')[0],
+        email,
+        phone
       })
     }
 
@@ -159,11 +166,6 @@ exports.sendOTP = async (req, res) => {
     // Delete any existing OTPs for this email and role
     await OTP.deleteMany({ email, isUsed: false })
 
-    const createdUser = await User.create({
-      name,
-      email,
-      phone
-    })
     // Create new OTP
     const otp = await OTP.create({
       email,

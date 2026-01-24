@@ -198,6 +198,7 @@ exports.createPageInformation = async (req, res) => {
       pageType,
       title,
       subTitle,
+      navbarTitle,
       slug,
       metaTitle,
       metaDescription,
@@ -269,6 +270,7 @@ exports.createPageInformation = async (req, res) => {
       pageType,
       title,
       subTitle,
+      navbarTitle,
       slug,
       metaTitle,
       metaDescription,
@@ -435,7 +437,7 @@ exports.updatePageInformation = async (req, res) => {
 
     // Ensure all string fields are trimmed and empty strings are preserved (for clearing fields)
     const fieldsToTrim = [
-      'title', 'subTitle', 'slug', 'metaTitle', 'metaDescription',
+      'title', 'subTitle', 'navbarTitle', 'slug', 'metaTitle', 'metaDescription',
       'heroImage', 'heroImagePublicId',
       'roadmapImage', 'roadmapImagePublicId',
       'mobileRoadmapImage', 'mobileRoadmapImagePublicId',

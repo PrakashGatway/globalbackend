@@ -9,6 +9,11 @@ const pageInformationSchema = new mongoose.Schema(
         'home_page',
         'about_page',
         'contact_page',
+        'services_page',
+        'destination_page',
+        'blogs_page',
+        'events_page',
+        'career_page',
         'city_page',
         'ivy_league',
         'usa_universities',
@@ -26,6 +31,10 @@ const pageInformationSchema = new mongoose.Schema(
       trim: true,
     },
     subTitle: {
+      type: String,
+      trim: true,
+    },
+    navbarTitle: {
       type: String,
       trim: true,
     },
