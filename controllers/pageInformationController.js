@@ -1,6 +1,85 @@
 const PageInformation = require('../models/PageInformation')
 const { paginate } = require('../utils/pagination')
 
+// Standard page types (non-destination pages)
+// destination_page is used for destination pages, so it's not in standard list
+const STANDARD_PAGE_TYPES = [
+  'home_page',
+  'about_page',
+  'contact_page',
+  'services_page',
+  'blogs_page',
+  'events_page',
+  'career_page',
+  'city_page'
+]
+
+// Helper function to get all destination page types dynamically from database
+const getDestinationTypes = async () => {
+  try {
+    // Get all unique pageTypes from the database
+    const allPageTypes = await PageInformation.distinct('pageType')
+    
+    // Include 'destination_page' and filter out standard page types - remaining are destination types
+    const destinationTypes = allPageTypes.filter(
+      type => type === 'destination_page' || !STANDARD_PAGE_TYPES.includes(type)
+    )
+    
+    return destinationTypes
+  } catch (error) {
+    console.error('Error fetching destination types:', error)
+    // Fallback to known destination types if query fails
+    return ['destination_page', 'ivy_league', 'usa_universities', 'uk_universities', 
+            'germany_public_universities', 'italy_france', 'canada_australia', 'other']
+  }
+}
+
+// Helper function to add route and hasDropdown fields to page object
+const addRouteAndDropdownFields = (page) => {
+  if (!page) return page
+  
+  // Convert to plain object if it's a Mongoose document
+  const pageObj = page.toObject ? page.toObject() : page
+  
+  // Use stored route if available, otherwise determine route based on pageType or slug
+  let route = pageObj.route
+  if (!route) {
+    route = '/'
+    if (pageObj.pageType === 'home_page') {
+      route = '/'
+    } else if (pageObj.pageType === 'about_page') {
+      route = '/about'
+    } else if (pageObj.pageType === 'contact_page') {
+      route = '/contact'
+    } else if (pageObj.pageType === 'services_page') {
+      route = '/service'
+    } else if (pageObj.pageType === 'destination_page') {
+      route = '/destination'
+    } else if (pageObj.pageType === 'blogs_page') {
+      route = '/blog'
+    } else if (pageObj.pageType === 'events_page') {
+      route = '/events'
+    } else if (pageObj.pageType === 'career_page') {
+      route = '/career'
+    } else if (pageObj.slug) {
+      // For other pages, use slug to create route
+      route = `/${pageObj.slug}`
+    }
+  }
+  
+  // Use stored hasDropdown if available, otherwise determine based on pageType
+  let hasDropdown = pageObj.hasDropdown
+  if (hasDropdown === undefined || hasDropdown === null) {
+    hasDropdown = pageObj.pageType === 'destination_page'
+  }
+  
+  return {
+    ...pageObj,
+    route,
+    hasDropdown
+  }
+}
+
 // @desc    Get all page information
 // @route   GET /api/page-information?page=1&limit=10
 // @access  Private
@@ -35,18 +114,83 @@ exports.deleteSection = async (req, res) => {
 
 exports.getPage = async (req, res) => {
   const page = await PageInformation.findOne({ slug: req.params.slug })
-  res.json(page)
+  res.json(page ? addRouteAndDropdownFields(page) : null)
 }
 
 exports.getPageInformations = async (req, res) => {
   try {
-    const { data, pagination } = await paginate(PageInformation, {}, req)
+    const filter = {}
+    
+    // Filter by isFeatured/featured - support both parameter names
+    // If featured=true or isFeatured=true, show only featured pages (isFeatured='Yes')
+    // If featured=false or isFeatured=false, show only non-featured pages (isFeatured='No')
+    const featuredParam = req.query.featured || req.query.isFeatured
+    if (featuredParam !== undefined) {
+      if (featuredParam === 'true' || featuredParam === true || featuredParam === 'True') {
+        filter.isFeatured = 'Yes'
+      } else if (featuredParam === 'false' || featuredParam === false || featuredParam === 'False') {
+        filter.isFeatured = 'No'
+      }
+    }
+
+    // Filter by pageType or type (support both parameter names)
+    // If pageType/type includes 'destination' or 'destination_page', expand to all destination types dynamically
+    const pageTypeParam = req.query.pageType || req.query.type
+    if (pageTypeParam) {
+      let types = pageTypeParam.split(',').map(t => t.trim()).filter(t => t)
+      
+      // Check if 'destination' or 'destination_page' is in the types
+      const hasDestination = types.some(t => 
+        t.toLowerCase() === 'destination' || 
+        t.toLowerCase() === 'destination_page'
+      )
+      
+      if (hasDestination) {
+        // Remove 'destination' or 'destination_page' from types
+        types = types.filter(t => 
+          t.toLowerCase() !== 'destination' && 
+          t.toLowerCase() !== 'destination_page'
+        )
+        // Dynamically fetch all destination types from database
+        const destinationTypes = await getDestinationTypes()
+        // Add all destination types
+        types = [...types, ...destinationTypes]
+        // Remove duplicates
+        types = [...new Set(types)]
+      }
+      
+      if (types.length > 0) {
+        filter.pageType = types.length === 1 ? types[0] : { $in: types }
+      }
+    }
+
+    // Filter by status
+    if (req.query.status) {
+      filter.status = req.query.status
+    }
+
+    // Search functionality (title, subtitle, slug)
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search, 'i')
+      filter.$or = [
+        { title: searchRegex },
+        { subTitle: searchRegex },
+        { slug: searchRegex }
+      ]
+    }
+
+    const { data, pagination } = await paginate(PageInformation, filter, req)
+    
+    // Add route and hasDropdown fields to all pages
+    const dataWithFields = Array.isArray(data) 
+      ? data.map(page => addRouteAndDropdownFields(page))
+      : data
     
     res.json({
       success: true,
       count: pagination.totalItems,
       pagination,
-      data,
+      data: dataWithFields,
     })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
@@ -107,11 +251,72 @@ exports.getPageInformationBySlug = async (req, res) => {
     console.log(`✅ Page found: "${slug}", Status: "${page.status}"`)
     res.json({ 
       success: true, 
-      data: page,
+      data: addRouteAndDropdownFields(page),
       ...(page.status === 'Draft' && isDevelopment ? { warning: 'Page is in Draft status' } : {})
     })
   } catch (error) {
     console.error('Error in getPageInformationBySlug:', error);
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+// @desc    Get destination dropdown items (public)
+// @route   GET /api/page-information/public/destinations/dropdown
+// @access  Public
+exports.getDestinationDropdownItems = async (req, res) => {
+  try {
+    const isDevelopment = process.env.NODE_ENV !== 'production'
+    
+    // Dynamically get all destination types
+    const destinationTypes = await getDestinationTypes()
+    
+    // Filter out 'destination_page' - we don't want the main destination page in dropdown
+    const dropdownTypes = destinationTypes.filter(type => type !== 'destination_page')
+    
+    // Build query filter - explicitly exclude destination_page
+    // Use $and to combine $in and $ne conditions
+    const filter = {
+      $and: [
+        { pageType: { $in: dropdownTypes } },
+        { pageType: { $ne: 'destination_page' } }
+      ]
+    }
+    
+    // In production, only get Published pages
+    if (!isDevelopment) {
+      filter.status = 'Published'
+    }
+    
+    // Fetch destination pages (excluding destination_page)
+    const pages = await PageInformation.find(filter)
+      .sort({ title: 1 })
+      .select('title slug pageType route navbarTitle')
+      .lean()
+    
+    // Additional filter: Remove any pages that might have slipped through
+    // Exclude pages with pageType 'destination_page' or exact slug matches
+    const excludedSlugs = ['destination', 'destination-page', 'destinations']
+    const filteredPages = pages.filter(page => {
+      const slugLower = page.slug?.toLowerCase() || ''
+      return page.pageType !== 'destination_page' && 
+             !excludedSlugs.includes(slugLower)
+    })
+    
+    // Format as dropdown items - use filteredPages
+    const dropdownItems = filteredPages.map(page => ({
+      name: page.navbarTitle || page.title || '',
+      slug: page.slug || '',
+      description: page.title || '',
+      route: page.route || `/${page.slug}`,
+      pageType: page.pageType
+    }))
+    
+    res.json({
+      success: true,
+      data: dropdownItems
+    })
+  } catch (error) {
+    console.error('Error in getDestinationDropdownItems:', error)
     res.status(500).json({ success: false, message: error.message })
   }
 }
@@ -165,7 +370,7 @@ exports.getPageInformationByType = async (req, res) => {
     console.log(`✅ Page found: "${pageType}", Status: "${page.status}"`)
     res.json({ 
       success: true, 
-      data: page,
+      data: addRouteAndDropdownFields(page),
       ...(page.status === 'Draft' && isDevelopment ? { warning: 'Page is in Draft status' } : {})
     })
   } catch (error) {
@@ -183,7 +388,7 @@ exports.getPageInformation = async (req, res) => {
     if (!page) {
       return res.status(404).json({ success: false, message: 'Page information not found' })
     }
-    res.json({ success: true, data: page })
+    res.json({ success: true, data: addRouteAndDropdownFields(page) })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }
@@ -199,6 +404,8 @@ exports.createPageInformation = async (req, res) => {
       title,
       subTitle,
       navbarTitle,
+      route,
+      hasDropdown,
       slug,
       metaTitle,
       metaDescription,
@@ -216,6 +423,11 @@ exports.createPageInformation = async (req, res) => {
       universitySliderBgPublicId,
       immigrationServicesBg,
       immigrationServicesBgPublicId,
+      immigrationServices1Bg,
+immigrationServices1BgPublicId,
+immigrationServices2Bg,
+immigrationServices2BgPublicId,
+
       sections,
       keywords,
       tags,
@@ -223,10 +435,22 @@ exports.createPageInformation = async (req, res) => {
     } = req.body
 
     // Validate required fields
-    if (!title || !slug || !pageType) {
+    // Title is not required for destination pages
+    const isDestinationPage = pageType === 'destination_page' || 
+                              (pageType && !STANDARD_PAGE_TYPES.includes(pageType))
+    
+    if (!slug || !pageType) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide title, slug, and page type',
+        message: 'Please provide slug and page type',
+      })
+    }
+    
+    // Title is required for non-destination pages
+    if (!isDestinationPage && (!title || !title.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide title (required for non-destination pages)',
       })
     }
 
@@ -271,6 +495,8 @@ exports.createPageInformation = async (req, res) => {
       title,
       subTitle,
       navbarTitle,
+      route,
+      hasDropdown: hasDropdown !== undefined ? hasDropdown : false,
       slug,
       metaTitle,
       metaDescription,
@@ -286,8 +512,11 @@ exports.createPageInformation = async (req, res) => {
       universityCapBgPublicId: universityCapBgPublicId || '',
       universitySliderBg: universitySliderBg || '',
       universitySliderBgPublicId: universitySliderBgPublicId || '',
-      immigrationServicesBg: immigrationServicesBg || '',
-      immigrationServicesBgPublicId: immigrationServicesBgPublicId || '',
+  
+      immigrationServices1Bg: immigrationServices1Bg || '',
+      immigrationServices1BgPublicId: immigrationServices1BgPublicId || '',
+      immigrationServices2Bg: immigrationServices2Bg || '',
+      immigrationServices2BgPublicId: immigrationServices2BgPublicId || '',
       sections: sections || [],
       keywords: keywordsArray,
       tags: tagsArray,
@@ -297,7 +526,7 @@ exports.createPageInformation = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Page information created successfully',
-      data: pageInformation,
+      data: addRouteAndDropdownFields(pageInformation),
     })
   } catch (error) {
     if (error.name === 'ValidationError') {
@@ -435,15 +664,28 @@ exports.updatePageInformation = async (req, res) => {
       })
     }
 
+    // Handle hasDropdown - convert string to boolean if needed
+    if (updateData.hasDropdown !== undefined) {
+      if (typeof updateData.hasDropdown === 'string') {
+        updateData.hasDropdown = updateData.hasDropdown === 'true' || updateData.hasDropdown === 'True'
+      } else if (typeof updateData.hasDropdown === 'boolean') {
+        // Already boolean, keep as is
+      } else {
+        updateData.hasDropdown = Boolean(updateData.hasDropdown)
+      }
+    }
+
     // Ensure all string fields are trimmed and empty strings are preserved (for clearing fields)
     const fieldsToTrim = [
-      'title', 'subTitle', 'navbarTitle', 'slug', 'metaTitle', 'metaDescription',
+      'title', 'subTitle', 'navbarTitle', 'route', 'slug', 'metaTitle', 'metaDescription',
       'heroImage', 'heroImagePublicId',
       'roadmapImage', 'roadmapImagePublicId',
       'mobileRoadmapImage', 'mobileRoadmapImagePublicId',
       'universityCapBg', 'universityCapBgPublicId',
       'universitySliderBg', 'universitySliderBgPublicId',
-      'immigrationServicesBg', 'immigrationServicesBgPublicId',
+     
+      'immigrationServices1Bg', 'immigrationServices1BgPublicId',
+      'immigrationServices2Bg', 'immigrationServices2BgPublicId',
       'canonicalUrl'
     ]
     
@@ -483,7 +725,7 @@ exports.updatePageInformation = async (req, res) => {
     res.json({
       success: true,
       message: 'Page information updated successfully',
-      data: pageInformation,
+      data: addRouteAndDropdownFields(pageInformation),
     })
   } catch (error) {
     console.error('❌ Update page error:', error)

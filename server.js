@@ -27,6 +27,7 @@ app.use('/api/coupons', require('./routes/coupons'))
 app.use('/api/applications', require('./routes/applications'))
 app.use('/api/upload', require('./routes/upload'))
 app.use('/api/page-information', require('./routes/pageInformation'))
+app.use('/api/destinations', require('./routes/destinations'))
 
 // Health check
 app.get('/api/health', (req, res) => {

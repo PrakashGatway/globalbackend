@@ -27,7 +27,7 @@ const pageInformationSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      required: [true, 'Please provide title'],
+      required: false,
       trim: true,
     },
     subTitle: {
@@ -37,6 +37,14 @@ const pageInformationSchema = new mongoose.Schema(
     navbarTitle: {
       type: String,
       trim: true,
+    },
+    route: {
+      type: String,
+      trim: true,
+    },
+    hasDropdown: {
+      type: Boolean,
+      default: false,
     },
     slug: {
       type: String,
@@ -66,54 +74,63 @@ const pageInformationSchema = new mongoose.Schema(
     // Home page specific fields
     heroImage: {
       type: String,
-      default: '',
+      default: null,
     },
     heroImagePublicId: {
       type: String,
-      default: '',
+      default: null,
     },
     roadmapImage: {
       type: String,
-      default: '',
+      default: null,
     },
     roadmapImagePublicId: {
       type: String,
-      default: '',
+      default: null,
     },
     mobileRoadmapImage: {
       type: String,
-      default: '',
+      default: null,
     },
     mobileRoadmapImagePublicId: {
       type: String,
-      default: '',
+      default: null,
     },
     // Additional background images for different sections
     universityCapBg: {
       type: String,
-      default: '',
+      default: null,
     },
     universityCapBgPublicId: {
       type: String,
-      default: '',
+      default: null,
     },
     universitySliderBg: {
       type: String,
-      default: '',
+      default: null,
     },
     universitySliderBgPublicId: {
       type: String,
-      default: '',
+      default: null,
     },
-    immigrationServicesBg: {
-      type: String,
-      default: '',
-    },
-    immigrationServicesBgPublicId: {
-      type: String,
-      default: '',
-    },
+
   
+    immigrationServices1Bg: {
+      type: String,
+      default: null,
+    },
+    immigrationServices1BgPublicId: {
+      type: String,
+      default: null,
+    },
+    immigrationServices2Bg: {
+      type: String,
+      default: null,
+    },
+    immigrationServices2BgPublicId: {
+      type: String,
+      default: null,
+    },
     sections: [
       {
         type: {
