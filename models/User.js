@@ -28,11 +28,11 @@ const userSchema = new mongoose.Schema(
       enum: ['Active', 'Inactive', 'Suspended'],
       default: 'Active',
     },
-    // role: {
-    //   type: String,
-    //   enum: ['admin', 'manager', 'counsellor', 'user'],
-    //   default: 'user',
-    // },
+    role: {
+      type: String,
+      enum: ['admin', 'manager', 'counsellor', 'user'],
+      default: 'user',
+    },
     metadata: {
       type: mongoose.Schema.Types.Mixed,
     },

@@ -28,6 +28,7 @@ app.use('/api/applications', require('./routes/applications'))
 app.use('/api/upload', require('./routes/upload'))
 app.use('/api/page-information', require('./routes/pageInformation'))
 app.use('/api/destinations', require('./routes/destinations'))
+app.use('/api/blogs', require('./routes/blogRoutes'))
 
 // Health check
 app.get('/api/health', (req, res) => {

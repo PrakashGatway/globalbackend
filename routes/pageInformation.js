@@ -33,7 +33,6 @@ router.post('/', protect, createPageInformation)
 router.put('/:id', protect, updatePageInformation)
 router.post('/:id/section', ctrl.addSection)
 router.delete('/:pageId/section/:index', ctrl.deleteSection)
-
 router.delete('/:id', protect, deletePageInformation)
 
 module.exports = router
