@@ -300,13 +300,13 @@ exports.getAllBlogs = async (req, res) => {
                                     _id: 1,
                                     name: 1,
                                     slug: 1,
-                                }
+                                },
+                                extraMetadata: 1
                             },
                         }
                     ]
                 }
             },
-            // Unwind metadata for easier access
             { $unwind: "$metadata" }
         ]
 

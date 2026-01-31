@@ -1,6 +1,5 @@
 const Purchase = require('../models/Purchase')
 const Course = require('../models/Course')
-const Program = require('../models/Program')
 const Reward = require('../models/Reward')
 const User = require('../models/User')
 const Coupon = require('../models/Coupon')

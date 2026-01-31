@@ -31,8 +31,6 @@ const blogCategorySchema = new mongoose.Schema(
     { timestamps: true }
 )
 
-
-
 const blogSchema = new mongoose.Schema(
     {
         title: {
@@ -91,7 +89,7 @@ const blogSchema = new mongoose.Schema(
             og: {
                 type: mongoose.Schema.Types.Mixed,
             },
-            keywords: [String],
+            keywords: String,
         },
         extraMetadata: {
             type: mongoose.Schema.Types.Mixed,

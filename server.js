@@ -18,7 +18,6 @@ app.use('/api/users', require('./routes/users'))
 app.use('/api/wallets', require('./routes/wallets'))
 app.use('/api/universities', require('./routes/universities'))
 app.use('/api/courses', require('./routes/courses'))
-app.use('/api/programs', require('./routes/programs'))
 app.use('/api/countries', require('./routes/countries'))
 app.use('/api/support', require('./routes/support'))
 app.use('/api/purchases', require('./routes/purchases'))
@@ -29,8 +28,8 @@ app.use('/api/upload', require('./routes/upload'))
 app.use('/api/page-information', require('./routes/pageInformation'))
 app.use('/api/destinations', require('./routes/destinations'))
 app.use('/api/blogs', require('./routes/blogRoutes'))
+app.use('/api/subjects', require('./routes/subjectRoutes'))
 
-// Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' })
 })

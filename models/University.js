@@ -7,6 +7,36 @@ const universitySchema = new mongoose.Schema(
       required: [true, 'Please provide university name'],
       trim: true,
     },
+    slug: {
+      type: String,
+      required: [true, 'Please provide university slug'],
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    slogan: {
+      type: String,
+      trim: true,
+    },
+    uni_intake:{
+      type: mongoose.Schema.Types.Mixed,
+      default: '',
+    },
+    short_description: {
+      type: String,
+      trim: true,
+    },
+    code: {
+      type: String,
+      required: [true, 'Please provide university code'],
+      unique: true,
+      trim: true,
+    },
+    address: {
+      type: String,
+      required: [true, 'Please provide address'],
+      trim: true,
+    },
     country: {
       type: String,
       required: [true, 'Please provide country'],
@@ -17,27 +47,61 @@ const universitySchema = new mongoose.Schema(
       required: [true, 'Please provide city'],
       trim: true,
     },
+    socialLinks: {
+      facebook: { type: String, default: '' },
+      twitter: { type: String, default: '' },
+      instagram: { type: String, default: '' },
+      linkedin: { type: String, default: '' },
+    },
+    uni_logo: {
+      type: String,
+      default: '',
+    },
+    uni_web: {
+      type: String,
+      default: '',
+    },
+    uni_rank: {
+      type:mongoose.Schema.Types.Mixed,
+      default: '',
+    },
+    uni_gallery: {
+      type: [String],
+      default: [],
+    },
+    google_location: {
+      type: mongoose.Schema.Types.Mixed,
+      default: '',
+    },
+    uni_contact: {
+      type: String,
+      default: '',
+    },
+    established_year: {
+      type: Number,
+      default: null,
+    },
+    on_compus_accommodation: {
+      type: Boolean,
+      default: false,
+    },
     status: {
       type: String,
       enum: ['Active', 'Inactive'],
       default: 'Active',
     },
-    students: {
-      type: Number,
-      default: 0,
+    metadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
     },
-    
-    description: {
-      type: String,
-    },
-    image: {
+    location_alias: {
       type: String,
       default: '',
     },
-    imagePublicId: {
-      type: String,
-      default: '',
-    },
+    seo_metadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    }
   },
   {
     timestamps: true,
