@@ -1,15 +1,7 @@
 const mongoose = require('mongoose')
 
-const universityContentSchema = new mongoose.Schema(
+const extraContent = new mongoose.Schema(
   {
-    university: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'University',
-      required: true,
-      unique: true, // one content doc per university
-    },
-    
-
     sections: [
       {
         section_key: {
@@ -30,15 +22,23 @@ const universityContentSchema = new mongoose.Schema(
         },
       },
     ],
-
+    extra: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
     isPublished: {
       type: Boolean,
       default: true,
     },
+    status: {
+      type: String,
+      enum: ['Active', 'Inactive'],
+      default: 'Active',
+    }
   },
   {
     timestamps: true,
   }
 )
 
-module.exports = mongoose.model('UniversityContent', universityContentSchema)
+module.exports = mongoose.model('extraContent', extraContent)

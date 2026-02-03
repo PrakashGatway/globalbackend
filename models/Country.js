@@ -10,14 +10,11 @@ const countrySchema = new mongoose.Schema(
     },
     code: {
       type: String,
-      required: [true, 'Please provide country code'],
-      unique: true,
       uppercase: true,
       trim: true,
     },
     currency: {
       type: String,
-      required: true,
       trim: true,
     },
     status: {
@@ -37,7 +34,7 @@ const countrySchema = new mongoose.Schema(
       type: String,
       default: '',
     },
-    imagePublicId: {
+    flg: {
       type: String,
       default: '',
     },

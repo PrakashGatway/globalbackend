@@ -39,8 +39,6 @@ const rewardSchema = new mongoose.Schema(
         default: 0,
       },
     },
-    // Conversion rate: 500 points = 10-100rs (variable)
-    // We'll store the conversion rate per point in rupees
     pointToRupeeRate: {
       type: Number,
       default: 0.02, // Default: 1 point = 0.02rs, so 500 points = 10rs

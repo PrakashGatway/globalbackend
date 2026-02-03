@@ -15,7 +15,6 @@ app.use(morgan('dev'))
 // Routes
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api/users', require('./routes/users'))
-app.use('/api/wallets', require('./routes/wallets'))
 app.use('/api/universities', require('./routes/universities'))
 app.use('/api/courses', require('./routes/courses'))
 app.use('/api/countries', require('./routes/countries'))
@@ -26,13 +25,39 @@ app.use('/api/coupons', require('./routes/coupons'))
 app.use('/api/applications', require('./routes/applications'))
 app.use('/api/upload', require('./routes/upload'))
 app.use('/api/page-information', require('./routes/pageInformation'))
-app.use('/api/destinations', require('./routes/destinations'))
 app.use('/api/blogs', require('./routes/blogRoutes'))
 app.use('/api/subjects', require('./routes/subjectRoutes'))
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' })
 })
+
+const seedCountries = async () => {
+  try {
+    await Country.deleteMany(); // optional: clear old data
+
+    const formattedData = countriesData.map(item => ({
+      name: item.country,
+      code: item.code.toUpperCase(),
+      flg: item.flag,
+      status: 'Active',
+      universities: 0,
+      students: 0,
+      currency: '',
+      image: ''
+    }));
+
+    await Country.insertMany(formattedData);
+
+    console.log('✅ Countries seeded successfully');
+    process.exit();
+  } catch (error) {
+    console.error('❌ Seeding failed:', error);
+    process.exit(1);
+  }
+};
+
+// seedCountries();
 
 // Database connection
 const connectDB = async () => {
@@ -51,9 +76,9 @@ connectDB()
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack)
-  res.status(500).json({ 
-    success: false, 
-    message: 'Something went wrong!', 
+  res.status(500).json({
+    success: false,
+    message: 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err.message : {}
   })
 })
@@ -63,8 +88,8 @@ app.use((req, res) => {
   console.error(`[404] Route not found: ${req.method} ${req.path}`)
   console.error(`Request headers:`, req.headers)
   console.error(`Request body:`, req.body)
-  res.status(404).json({ 
-    success: false, 
+  res.status(404).json({
+    success: false,
     message: 'Route not found',
     path: req.path,
     method: req.method

@@ -18,7 +18,12 @@ const universitySchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    uni_intake:{
+    uni_type:{
+      type: String,
+      required: [true, 'Please provide university type'],
+      trim: true,
+    },
+    intakes:{
       type: mongoose.Schema.Types.Mixed,
       default: '',
     },
@@ -29,7 +34,6 @@ const universitySchema = new mongoose.Schema(
     code: {
       type: String,
       required: [true, 'Please provide university code'],
-      unique: true,
       trim: true,
     },
     address: {
@@ -47,7 +51,7 @@ const universitySchema = new mongoose.Schema(
       required: [true, 'Please provide city'],
       trim: true,
     },
-    socialLinks: {
+    social_links: {
       facebook: { type: String, default: '' },
       twitter: { type: String, default: '' },
       instagram: { type: String, default: '' },
@@ -66,8 +70,8 @@ const universitySchema = new mongoose.Schema(
       default: '',
     },
     uni_gallery: {
-      type: [String],
-      default: [],
+      type:mongoose.Schema.Types.Mixed,
+      default: "",
     },
     google_location: {
       type: mongoose.Schema.Types.Mixed,
@@ -85,10 +89,18 @@ const universitySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    off_campus_accommodation: {
+      type: Boolean,
+      default: false,
+    },
     status: {
       type: String,
       enum: ['Active', 'Inactive'],
       default: 'Active',
+    },
+    financials: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
     },
     metadata: {
       type: mongoose.Schema.Types.Mixed,
@@ -97,6 +109,12 @@ const universitySchema = new mongoose.Schema(
     location_alias: {
       type: String,
       default: '',
+    },
+    extra_content: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'extraContent',
+      required: true,
+      unique: true,
     },
     seo_metadata: {
       type: mongoose.Schema.Types.Mixed,

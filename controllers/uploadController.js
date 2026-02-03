@@ -1,8 +1,5 @@
 const cloudinary = require('../config/cloudinary')
 
-// @desc    Upload image to Cloudinary
-// @route   POST /api/upload/image
-// @access  Private
 exports.uploadImage = async (req, res) => {
   try {
     if (!req.file) {
@@ -11,11 +8,8 @@ exports.uploadImage = async (req, res) => {
         message: 'Please upload an image file',
       })
     }
-
-    // Convert buffer to base64
     const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`
 
-    // Upload to Cloudinary
     const uploadResult = await cloudinary.uploader.upload(base64Image, {
       folder: 'cway-admin', // Optional: organize images in a folder
       resource_type: 'auto',

@@ -1,19 +1,23 @@
-const express = require('express')
-const router = express.Router()
-const { protect } = require('../middleware/auth')
+const express = require('express');
+const router = express.Router();
+
+// Import controllers
 const {
-  getUniversities,
-  getUniversity,
   createUniversity,
+  getAllUniversities,
+  getUniversityById,
   updateUniversity,
-  deleteUniversity,
-} = require('../controllers/universityController')
+  deleteUniversity
+} = require('../controllers/universityController'); // Adjust path as needed
 
-// Routes
-router.get('/', protect, getUniversities)
-router.get('universities/:id', protect, getUniversity)
-router.post('/', protect, createUniversity)
-router.put('/:id', protect, updateUniversity)
-router.delete('/:id', protect, deleteUniversity)
+// 🔓 Public routes
+router.route('/')
+  .get(getAllUniversities)
+  .post(createUniversity); // Typically protected in production
 
-module.exports = router
+router.route('/:id')
+  .get(getUniversityById)
+  .put(updateUniversity)    // Typically protected
+  .delete(deleteUniversity); // Typically protected
+
+module.exports = router;
