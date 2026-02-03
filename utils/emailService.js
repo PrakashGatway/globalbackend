@@ -59,10 +59,8 @@ const sendOTPEmail = async (email, otp, role) => {
   
   // If email is not configured, skip sending in development mode
   if (!transporter) {
-    const isDevelopment = process.env.NODE_ENV !== 'production'
+    const isDevelopment = true
     if (isDevelopment) {
-      console.log(`\n⚠️  Email not configured. OTP for ${email} (${role}): ${otp}\n`)
-      // Don't throw error in development - let the controller handle it
       throw new Error('EMAIL_NOT_CONFIGURED')
     } else {
       throw new Error('Email service is not configured. Please contact administrator.')

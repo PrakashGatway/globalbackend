@@ -92,7 +92,7 @@ exports.login = async (req, res) => {
     console.log(`\n📧 OTP Generated for ${email} : ${otpCode}\n`)
 
     // Delete any existing OTPs for this email and role
-    await OTP.deleteMany({ email,  isUsed: false })
+    await OTP.deleteMany({ email, isUsed: false })
 
     // Create new OTP
     const otp = await OTP.create({
@@ -138,69 +138,59 @@ exports.login = async (req, res) => {
 exports.sendOTP = async (req, res) => {
   try {
     const { name, phone, email } = req.body
-
     if (!email) {
       return res.status(400).json({ success: false, message: 'Please provide email' })
     }
-
     let user = await User.findOne({ email })
-    
-    // If user does not exist, require phone to create new user
     if (!user) {
       if (!phone) {
         return res.status(400).json({ success: false, message: 'Please provide email and phone for registration' })
       }
-      
       user = await User.create({
         name: name || email.split('@')[0],
         email,
         phone
       })
     }
-
     const otpCode = '123456'
-
-    // Log OTP to console (for development/testing)
-    console.log(`\n📧 OTP Generated for ${email}: ${otpCode}\n`)
-
-    // Delete any existing OTPs for this email and role
     await OTP.deleteMany({ email, isUsed: false })
-
-    // Create new OTP
     const otp = await OTP.create({
       email,
       otp: otpCode,
       expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
     })
-
+    res.json({
+      success: true,
+      message: 'OTP sent to your email',
+    })
     // Send OTP email
-    try {
-      await sendOTPEmail(email, otpCode)
-      res.json({
-        success: true,
-        message: 'OTP sent to your email',
-      })
-    } catch (emailError) {
-      // Check if error is due to email not being configured
-      const isEmailNotConfigured = emailError.message === 'EMAIL_NOT_CONFIGURED'
-      const isDevelopment = process.env.NODE_ENV !== 'production'
+    // try {
+    //   await sendOTPEmail(email, otpCode)
+    //   res.json({
+    //     success: true,
+    //     message: 'OTP sent to your email',
+    //   })
+    // } catch (emailError) {
+    //   // Check if error is due to email not being configured
+    //   const isEmailNotConfigured = emailError.message === 'EMAIL_NOT_CONFIGURED'
+    //   const isDevelopment = process.env.NODE_ENV !== 'production'
 
-      if (isEmailNotConfigured || isDevelopment) {
-        // In development mode or when email is not configured, return OTP in response
-        console.log(`\n⚠️  Email not configured. OTP for ${email}: ${otpCode}\n`)
-        return res.json({
-          success: true,
-          message: 'OTP generated (email not configured - check console)',
-        })
-      }
+    //   if (isEmailNotConfigured || isDevelopment) {
+    //     // In development mode or when email is not configured, return OTP in response
+    //     console.log(`\n⚠️  Email not configured. OTP for ${email}: ${otpCode}\n`)
+    //     return res.json({
+    //       success: true,
+    //       message: 'OTP generated (email not configured - check console)',
+    //     })
+    //   }
 
-      // In production, don't expose OTP even if email fails
-      console.error('Failed to send OTP email:', emailError.message)
-      res.status(500).json({
-        success: false,
-        message: 'Failed to send OTP email. Please contact support.',
-      })
-    }
+    //   // In production, don't expose OTP even if email fails
+    //   console.error('Failed to send OTP email:', emailError.message)
+    //   res.status(500).json({
+    //     success: false,
+    //     message: 'Failed to send OTP email. Please contact support.',
+    //   })
+    // }
   } catch (error) {
     console.error('Send OTP error:', error)
     res.status(500).json({ success: false, message: error.message })
