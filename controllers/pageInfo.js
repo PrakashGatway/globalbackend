@@ -79,6 +79,43 @@ exports.getAllPages = async (req, res) => {
     })
   }
 }
+exports.getNavTabs = async (req, res) => {
+  try {
+    const {
+      isFeatured,
+      isNavbar,
+      page = 1,
+      limit = 50,
+    } = req.query
+
+    const query = {}
+
+    if (isFeatured !== undefined)
+      query.isFeatured = isFeatured === 'true'
+
+    if (isNavbar !== undefined)
+      query.isNavbar = isNavbar === 'true'
+
+
+    const skip = (page - 1) * limit
+
+    const pages = await PageInformation.find(query).select('pageType slug navbarTitle subTitle')
+      .skip(skip)
+      .limit(Number(limit))
+
+    res.status(200).json({
+      success: true,
+      page: Number(page),
+      data: pages,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
+  }
+}
 
 exports.getPageById = async (req, res) => {
   try {

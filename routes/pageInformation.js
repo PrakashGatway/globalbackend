@@ -8,11 +8,13 @@ const {
   getPageBySlug,
   updatePage,
   deletePage,
+  getNavTabs,
 } = require('../controllers/pageInfo')
 const { protect, admin } = require('../middleware/auth')
 
 router.post('/', protect, createPage)
 router.get('/', getAllPages)
+router.get('/navbar', getNavTabs)
 router.get('/:id', getPageById)
 router.put('/:id', protect, updatePage)
 router.delete('/:id', protect, admin, deletePage)
