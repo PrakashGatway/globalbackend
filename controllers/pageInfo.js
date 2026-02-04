@@ -84,6 +84,7 @@ exports.getNavTabs = async (req, res) => {
     const {
       isFeatured,
       isNavbar,
+      type,
       page = 1,
       limit = 50,
     } = req.query
@@ -93,13 +94,14 @@ exports.getNavTabs = async (req, res) => {
     if (isFeatured !== undefined)
       query.isFeatured = isFeatured === 'true'
 
+    if (type) query.pageType = type
+
     if (isNavbar !== undefined)
       query.isNavbar = isNavbar === 'true'
 
-
     const skip = (page - 1) * limit
 
-    const pages = await PageInformation.find(query).select('pageType slug navbarTitle subTitle')
+    const pages = await PageInformation.find(query).select('pageType slug navbarTitle subTitle title subTitle cardImage navbarImage').sort('-createdAt')
       .skip(skip)
       .limit(Number(limit))
 

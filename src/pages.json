@@ -1,0 +1,1531 @@
+{
+  "home": {
+    "name": "Home Page",
+    "description": "Main landing page configuration",
+    "sections": [
+      {
+        "name": "hero",
+        "label": "Hero Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Hero Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome to Our Platform"
+          },
+          {
+            "name": "subtitle",
+            "label": "Hero Subtitle",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Your journey to success starts here"
+          },
+          {
+            "name": "heroImage",
+            "label": "Hero Image",
+            "type": "file",
+            "required": true,
+            "accept": "image/*"
+          },
+          {
+            "name": "ctaText1",
+            "label": "Call to Action Text 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink1",
+            "label": "Call to Action Link 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          },
+          {
+            "name": "ctaText2",
+            "label": "Call to Action Text 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink2",
+            "label": "Call to Action Link 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          }
+        ]
+      },
+      {
+        "name": "stats",
+        "label": "Statistics Section",
+        "fields": [
+          {
+            "name": "stats",
+            "label": "Statistics Items",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "icon",
+                "type": "file",
+                "accept": "image/*"
+              },
+              {
+                "name": "number",
+                "label": "Statistic Number",
+                "type": "text",
+                "required": true
+              },
+              {
+                "name": "title",
+                "label": "Statistic Title",
+                "type": "text",
+                "required": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "universities",
+        "label": "Featured Universities",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "required": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "whyUs",
+        "label": "Why Choose Us",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Why Choose Us"
+          },
+          {
+            "name": "subTitle",
+            "label": "Section subTitle",
+            "type": "textarea",
+            "default": ""
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "Icon Class",
+                "type": "text",
+                "placeholder": "cil-award"
+              },
+              {
+                "name": "title",
+                "label": "Feature Title",
+                "type": "text",
+                "required": true
+              },
+              {
+                "name": "description",
+                "label": "Feature Description",
+                "type": "textarea"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "trustedPartners",
+        "label": "trustedPartners",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Our Trusted Partners"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": "subtitle"
+          },
+          {
+            "name": "bgImage1",
+            "label": "Section bgImage1",
+            "type": "file",
+            "accept": "image/*"
+          },
+          {
+            "name": "bgImage2",
+            "label": "Section bgImage2",
+            "type": "file",
+            "accept": "image/*"
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "tab",
+                "label": "tab",
+                "type": "text"
+              },
+              {
+                "name": "videoLink",
+                "label": "videoLink",
+                "type": "text"
+              },
+              {
+                "name": "features",
+                "label": "Features",
+                "type": "text",
+                "placeholder": "features with comma separated"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "videoTestimonials",
+        "label": "Video Testimonials",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Video Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "imageTestimonials",
+        "label": "image Testimonials",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "topUniversities",
+        "label": "topUniversities",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "blogs",
+        "label": "blog-section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "blogs"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      }
+    ]
+  },
+  "contact": {
+    "name": "Contact Page",
+    "description": "Contact information and form",
+    "sections": [
+      {
+        "name": "hero",
+        "label": "Hero Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Hero Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome to Our Platform"
+          },
+          {
+            "name": "subtitle",
+            "label": "Hero Subtitle",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Your journey to success starts here"
+          },
+          {
+            "name": "heroImage",
+            "label": "Hero Image",
+            "type": "file",
+            "required": true,
+            "accept": "image/*"
+          },
+          {
+            "name": "ctaText1",
+            "label": "Call to Action Text 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink1",
+            "label": "Call to Action Link 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          },
+          {
+            "name": "ctaText2",
+            "label": "Call to Action Text 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink2",
+            "label": "Call to Action Link 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          }
+        ]
+      },
+      {
+        "name": "getInTouch",
+        "label": "getInTouch section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "getInTouch"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "sendMessage",
+        "label": "sendMessage-section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "sendMessage"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "points",
+            "label": "points Items",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "icon",
+                "type": "text"
+              },
+              {
+                "name": "title",
+                "label": "Section Title",
+                "type": "text",
+                "default": "sendMessage"
+              },
+              {
+                "name": "subtitle",
+                "label": "Section Subtitle",
+                "type": "text",
+                "default": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "about": {
+    "name": "about Page",
+    "description": "about information and form",
+    "sections": [
+      {
+        "name": "hero",
+        "label": "Hero Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Hero Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome to Our Platform"
+          },
+          {
+            "name": "subtitle",
+            "label": "Hero Subtitle",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Your journey to success starts here"
+          },
+          {
+            "name": "heroImage",
+            "label": "Hero Image",
+            "type": "file",
+            "required": true,
+            "accept": "image/*"
+          },
+          {
+            "name": "ctaText1",
+            "label": "Call to Action Text 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink1",
+            "label": "Call to Action Link 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          },
+          {
+            "name": "ctaText2",
+            "label": "Call to Action Text 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink2",
+            "label": "Call to Action Link 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          }
+        ]
+      },
+      {
+        "name": "heading",
+        "label": "heading section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "heading"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "aboutCompany",
+        "label": "aboutCompany section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "getInTouch"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "image",
+            "label": "Image",
+            "type": "file",
+            "accept": "image/*"
+          }
+        ]
+      },
+      {
+        "name": "content",
+        "label": "content section",
+        "fields": [
+          {
+            "name": "points",
+            "label": "points Items",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Section Title",
+                "type": "text",
+                "default": "sendMessage"
+              },
+              {
+                "name": "subtitle",
+                "label": "Section Subtitle",
+                "type": "text",
+                "default": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "whatWeDo",
+        "label": "whatWeDo section",
+        "fields": [
+          {
+            "name": "points",
+            "label": "points Items",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "icon",
+                "type": "text"
+              },
+              {
+                "name": "title",
+                "label": "Section Title",
+                "type": "text",
+                "default": "sendMessage"
+              },
+              {
+                "name": "subtitle",
+                "label": "Section Subtitle",
+                "type": "text",
+                "default": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "story",
+        "label": "story section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "sendMessage"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "impact",
+        "label": "impact section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "service",
+        "label": "services section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "sendMessage"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "points",
+            "label": "points Items",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "icon",
+                "type": "text"
+              },
+              {
+                "name": "title",
+                "label": "Section Title",
+                "type": "text",
+                "default": "sendMessage"
+              },
+              {
+                "name": "subtitle",
+                "label": "Section Subtitle",
+                "type": "text",
+                "default": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "career": {
+    "name": "Career Page",
+    "description": "Career page information and form",
+    "sections": [
+      {
+        "name": "hero",
+        "label": "Hero Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Hero Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome to Our Platform"
+          },
+          {
+            "name": "subtitle",
+            "label": "Hero Subtitle",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Your journey to success starts here"
+          }
+        ]
+      },
+      {
+        "name": "culture",
+        "label": "culture section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "workingWith",
+        "label": "workingWith section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "Vacancies",
+        "label": "Vacancies section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "sendMessage"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "Vacancies",
+            "label": "Vacancies Items",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Section Title",
+                "type": "text",
+                "default": "sendMessage"
+              },
+              {
+                "name": "description",
+                "label": "description",
+                "type": "editor",
+                "default": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "general": {
+    "name": "General Page",
+    "description": "Standard page with content",
+    "sections": [
+      {
+        "name": "content",
+        "label": "Page Content",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Page Title",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "content",
+            "label": "Main Content",
+            "type": "richtext",
+            "required": true
+          }
+        ]
+      }
+    ]
+  },
+  "destinations": {
+    "name": "Destinations Page",
+    "description": "Main landing page configuration",
+    "sections": [
+      {
+        "name": "hero",
+        "label": "Hero Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Hero Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome to Our Platform"
+          },
+          {
+            "name": "subtitle",
+            "label": "Hero Subtitle",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Your journey to success starts here"
+          },
+          {
+            "name": "heroImage",
+            "label": "Hero Image",
+            "type": "file",
+            "required": true,
+            "accept": "image/*"
+          },
+          {
+            "name": "ctaText1",
+            "label": "Call to Action Text 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink1",
+            "label": "Call to Action Link 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          },
+          {
+            "name": "ctaText2",
+            "label": "Call to Action Text 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink2",
+            "label": "Call to Action Link 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          }
+        ]
+      },
+      {
+        "name": "universities",
+        "label": "Featured Universities",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "required": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "content",
+        "label": "content",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "required": true
+              },
+              {
+                "name": "subTitle",
+                "label": "subTitle",
+                "type": "text",
+                "required": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "imageTestimonials",
+        "label": "ImageTestimonials",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Why Choose Us"
+          },
+          {
+            "name": "subTitle",
+            "label": "Section subTitle",
+            "type": "textarea",
+            "default": ""
+          },
+          {
+            "name": "totalOffers",
+            "label": "totalOffers",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "bottomText",
+            "label": "bottomText",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "blogs",
+        "label": "blog section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "blogs"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "whySpecial",
+        "label": "whySpecial",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Our Trusted Partners"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": "subtitle"
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "default": "Our Trusted Partners"
+              },
+              {
+                "name": "subtitle",
+                "label": "Subtitle",
+                "type": "text",
+                "default": "subtitle"
+              },
+              {
+                "name": "image",
+                "label": "image",
+                "type": "file",
+                "accept": "image/*"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "admissionRequirements",
+        "label": "admissionRequirements",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Our Trusted Partners"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": "subtitle"
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "default": "Our Trusted Partners"
+              },
+              {
+                "name": "subtitle",
+                "label": "Subtitle",
+                "type": "text",
+                "default": "subtitle"
+              },
+              {
+                "name": "icon",
+                "label": "icon",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "scholarships",
+        "label": "scholarships",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Our Trusted Partners"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": "subtitle"
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "default": "Our Trusted Partners"
+              },
+              {
+                "name": "subtitle",
+                "label": "Subtitle",
+                "type": "text",
+                "default": "subtitle"
+              },
+              {
+                "name": "icon",
+                "label": "icon",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "howWeHelp",
+        "label": "howWeHelp",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Our Trusted Partners"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": "subtitle"
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "default": "Our Trusted Partners"
+              },
+              {
+                "name": "subtitle",
+                "label": "Subtitle",
+                "type": "text",
+                "default": "subtitle"
+              },
+              {
+                "name": "content",
+                "label": "content",
+                "type": "text",
+                "default": ""
+              },
+              {
+                "name": "image",
+                "label": "image",
+                "type": "file",
+                "accept": "image/*"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "roadMap",
+        "label": "roadMap",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "bottomTestimonial",
+        "label": "bottomTestimonial-section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "blogs"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "caseStudies",
+        "label": "caseStudies",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Video Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "topUniversities",
+        "label": "topUniversities",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      }
+    ]
+  },
+  "service": {
+    "name": "Service Page",
+    "description": "Service information",
+    "sections": [
+      {
+        "name": "hero",
+        "label": "Hero Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Hero Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome to Our Platform"
+          },
+          {
+            "name": "subtitle",
+            "label": "Hero Subtitle",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Your journey to success starts here"
+          },
+          {
+            "name": "features",
+            "label": "features",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "common separated features"
+          },
+          {
+            "name": "heroImage",
+            "label": "Hero Image",
+            "type": "file",
+            "required": true,
+            "accept": "image/*"
+          },
+          {
+            "name": "ctaText1",
+            "label": "Call to Action Text 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink1",
+            "label": "Call to Action Link 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          },
+          {
+            "name": "ctaText2",
+            "label": "Call to Action Text 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink2",
+            "label": "Call to Action Link 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          },
+          {
+            "name": "slideBar",
+            "label": "slideBar Title",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "slideBarItems",
+            "label": "slideBarItems",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "default": ""
+              },
+              {
+                "name": "route",
+                "label": "route",
+                "type": "text",
+                "default": "/contact"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "content",
+        "label": "content",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "required": true
+              },
+              {
+                "name": "subTitle",
+                "label": "subTitle",
+                "type": "text",
+                "required": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "stepsSessions",
+        "label": "stepsSessions Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Hero Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome to Our Platform"
+          },
+          {
+            "name": "subtitle",
+            "label": "Hero Subtitle",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Your journey to success starts here"
+          },
+          {
+            "name": "features",
+            "label": "features",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "common separated features"
+          },
+          {
+            "name": "bgImage1",
+            "label": "bgImage1",
+            "type": "file",
+            "required": true,
+            "accept": "image/*"
+          },
+          {
+            "name": "bgImage2",
+            "label": "bgImage2",
+            "type": "file",
+            "required": true,
+            "accept": "image/*"
+          },
+          {
+            "name": "leftItems",
+            "label": "leftItems",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "default": ""
+              },
+              {
+                "name": "subTitle",
+                "label": "subTitle",
+                "type": "text",
+                "default": ""
+              },
+              {
+                "name": "order",
+                "label": "order",
+                "type": "text",
+                "default": ""
+              },
+              {
+                "name": "icon",
+                "label": "icon",
+                "type": "file",
+                "accept": "image/*"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "requestCallback",
+        "label": "requestCallback",
+        "fields": [
+          {
+            "name": "title",
+            "label": " Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome to Our Platform"
+          },
+          {
+            "name": "subtitle",
+            "label": "Subtitle",
+            "type": "text",
+            "required": false,
+            "placeholder": "Your journey "
+          },
+          {
+            "name": "videoUrl",
+            "label": "videoUrl",
+            "type": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "images",
+        "label": "Images",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "subTitle",
+            "label": "Section subTitle",
+            "type": "textarea",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "popularCourses",
+        "label": "popularCourses section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Title",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "subtitle",
+            "label": "Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "studeyDestinations",
+        "label": "studeyDestinations",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": "subtitle"
+          }
+        ]
+      },
+      {
+        "name": "stories",
+        "label": "Stories",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "features",
+            "label": "features",
+            "type": "text",
+            "default": "Common separated features"
+          }
+        ]
+      },
+      {
+        "name": "discountOffers",
+        "label": "discountOffers",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Our Trusted Partners"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": "subtitle"
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "images",
+                "label": "Images",
+                "type": "file",
+                "accept": "image/*"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "exams",
+        "label": "exams",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "default": "Our Trusted Partners"
+              },
+              {
+                "name": "subtitle",
+                "label": "Subtitle",
+                "type": "text",
+                "default": "subtitle"
+              },
+              {
+                "name": "route",
+                "label": "route",
+                "type": "text",
+                "default": ""
+              },
+              {
+                "name": "image",
+                "label": "image",
+                "type": "file",
+                "accept": "image/*"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

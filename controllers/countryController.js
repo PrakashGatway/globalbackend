@@ -1,27 +1,81 @@
 const Country = require('../models/Country')
-const { paginate } = require('../utils/pagination')
 
-// @desc    Get all countries
-// @route   GET /api/countries?page=1&limit=10&sortBy=createdAt&sortOrder=desc
-// @access  Private
 exports.getCountries = async (req, res) => {
   try {
-    const { data, pagination } = await paginate(Country, {}, req)
-    
-    res.json({
+    let {
+      search,
+      status,
+      page = 1,
+      limit = 10,
+      sort = '-createdAt',
+    } = req.query
+
+    page = Number(page)
+    limit = Number(limit)
+
+    const matchStage = {}
+
+    // 🔍 SEARCH (name or code)
+    if (search && search.trim()) {
+      matchStage.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { code: { $regex: search, $options: 'i' } },
+        { currency: { $regex: search, $options: 'i' } },
+      ]
+    }
+
+    if (status) {
+      matchStage.status = status
+    }
+
+    const sortStage = {}
+    if (sort) {
+      if (sort.startsWith('-')) {
+        sortStage[sort.slice(1)] = -1
+      } else {
+        sortStage[sort] = 1
+      }
+    } else {
+      sortStage.createdAt = -1
+    }
+
+    // 🧠 AGGREGATION PIPELINE
+    const pipeline = [
+      { $match: matchStage },
+
+      {
+        $facet: {
+          data: [
+            { $sort: sortStage },
+            { $skip: (page - 1) * limit },
+            { $limit: limit },
+          ],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ]
+
+    const result = await Country.aggregate(pipeline)
+
+    const data = result[0]?.data || []
+    const total = result[0]?.totalCount?.[0]?.count || 0
+
+    res.status(200).json({
       success: true,
-      count: pagination.totalItems,
-      pagination,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
       data,
     })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    console.error('Get Countries Error:', error)
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
   }
 }
 
-// @desc    Get single country
-// @route   GET /api/countries/:id
-// @access  Private
 exports.getCountry = async (req, res) => {
   try {
     const country = await Country.findById(req.params.id)
@@ -34,97 +88,46 @@ exports.getCountry = async (req, res) => {
   }
 }
 
-// @desc    Create country
-// @route   POST /api/countries
-// @access  Private
 exports.createCountry = async (req, res) => {
   try {
-    const { name, code, currency, status } = req.body
-
-    // Validate required fields
-    if (!name || !code || !currency) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide all required fields: name, code, and currency',
-      })
-    }
-
-    // Validate country code format (should be 2-3 characters)
-    if (code.length < 2 || code.length > 3) {
-      return res.status(400).json({
-        success: false,
-        message: 'Country code must be 2-3 characters long',
-      })
-    }
-
-    // Create country
-    const country = await Country.create({
-      name,
-      code: code.toUpperCase(),
-      currency,
-      status: status || 'Active',
-    })
-
+    const country = await Country.create(req.body)
     res.status(201).json({
       success: true,
       message: 'Country created successfully',
-      data: country,
     })
   } catch (error) {
     if (error.code === 11000) {
-      // Check which field caused the duplicate error
-      if (error.keyPattern?.name) {
-        return res.status(400).json({
-          success: false,
-          message: 'Country name already exists. Please use a different name',
-        })
-      }
-      if (error.keyPattern?.code) {
-        return res.status(400).json({
-          success: false,
-          message: 'Country code already exists. Please use a different code',
-        })
-      }
       return res.status(400).json({
         success: false,
         message: 'Country name or code already exists',
       })
     }
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map((err) => err.message)
-      return res.status(400).json({
-        success: false,
-        message: 'Validation error',
-        errors: messages,
-      })
-    }
     res.status(500).json({ success: false, message: error.message })
   }
 }
 
-// @desc    Update country
-// @route   PUT /api/countries/:id
-// @access  Private
 exports.updateCountry = async (req, res) => {
   try {
-    const country = await Country.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    })
+    const country = await Country.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    )
 
     if (!country) {
       return res.status(404).json({ success: false, message: 'Country not found' })
     }
 
-    res.json({ success: true, data: country })
+    res.json({
+      success: true,
+      message: 'Country updated successfully',
+      data: country,
+    })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }
 }
 
-// @desc    Delete country
-// @route   DELETE /api/countries/:id
-// @access  Private
 exports.deleteCountry = async (req, res) => {
   try {
     const country = await Country.findByIdAndDelete(req.params.id)
@@ -136,3 +139,4 @@ exports.deleteCountry = async (req, res) => {
     res.status(500).json({ success: false, message: error.message })
   }
 }
+

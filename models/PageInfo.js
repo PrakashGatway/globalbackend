@@ -8,6 +8,14 @@ const pageInformationSchema = new mongoose.Schema(
     navbarTitle: { type: String, trim: true },
     description: { type: String, trim: true },
     pageType: { type: String, trim: true,required: true },
+    cardImage: {
+      type: String,
+      trim: true,
+    },
+    navbarImage: {
+      type: String,
+      trim: true,
+    },
     slug: {
       type: String,
       required: true,

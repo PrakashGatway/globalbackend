@@ -3,6 +3,10 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const morgan = require('morgan')
 require('dotenv').config()
+const path = require("path");
+const fs = require("fs");
+const Country = require('./models/Country')
+const Subject = require('./models/SubjectModel')
 
 const app = express()
 
@@ -18,6 +22,9 @@ app.use('/api/users', require('./routes/users'))
 app.use('/api/universities', require('./routes/universities'))
 app.use('/api/courses', require('./routes/courses'))
 app.use('/api/countries', require('./routes/countries'))
+app.use('/api/contactus', require('./routes/contactus'))
+app.use('/api/testimonials', require('./routes/testimonialsRoutes'))
+
 app.use('/api/support', require('./routes/support'))
 app.use('/api/purchases', require('./routes/purchases'))
 app.use('/api/rewards', require('./routes/rewards'))
@@ -28,36 +35,42 @@ app.use('/api/page-information', require('./routes/pageInformation'))
 app.use('/api/blogs', require('./routes/blogRoutes'))
 app.use('/api/subjects', require('./routes/subjectRoutes'))
 
+async function seedSubjects(subjectsData) {
+  for (const item of subjectsData) {
+    const exists = await Subject.findOne({ slug: item.url_slug });
+
+    if (!exists) {
+      await Subject.create({
+        name: item.key,
+        slug: item.url_slug,
+        description: item.value
+      });
+      console.log(`✅ Subject seeded: ${item.name}`);
+    } else {
+      console.log(`⏭️ Subject already exists: ${item.name}`);
+    }
+  }
+}
+
+
+// seedSubjects(subjectsData)
+
+
+app.get("/api/page-json", (req, res) => {
+  try {
+    const filePath = path.join(__dirname, "src/pages.json");
+    const jsonData = fs.readFileSync(filePath, "utf-8");
+
+    res.json(JSON.parse(jsonData));
+  } catch (error) {
+    res.status(500).json({ error: "Failed to read JSON file" });
+  }
+});
+
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' })
 })
-
-const seedCountries = async () => {
-  try {
-    await Country.deleteMany(); // optional: clear old data
-
-    const formattedData = countriesData.map(item => ({
-      name: item.country,
-      code: item.code.toUpperCase(),
-      flg: item.flag,
-      status: 'Active',
-      universities: 0,
-      students: 0,
-      currency: '',
-      image: ''
-    }));
-
-    await Country.insertMany(formattedData);
-
-    console.log('✅ Countries seeded successfully');
-    process.exit();
-  } catch (error) {
-    console.error('❌ Seeding failed:', error);
-    process.exit(1);
-  }
-};
-
-// seedCountries();
 
 // Database connection
 const connectDB = async () => {
@@ -86,8 +99,6 @@ app.use((err, req, res, next) => {
 // 404 handler
 app.use((req, res) => {
   console.error(`[404] Route not found: ${req.method} ${req.path}`)
-  console.error(`Request headers:`, req.headers)
-  console.error(`Request body:`, req.body)
   res.status(404).json({
     success: false,
     message: 'Route not found',
