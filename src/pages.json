@@ -1250,25 +1250,18 @@
         "name": "content",
         "label": "content",
         "fields": [
-          {
-            "name": "title",
-            "label": "Section Title",
-            "fields": [
               {
                 "name": "title",
                 "label": "Title",
-                "type": "text",
-                "required": true
+                "type": "text"
               },
+
               {
                 "name": "subTitle",
                 "label": "subTitle",
-                "type": "text",
-                "required": true
+                "type": "text"
               }
             ]
-          }
-        ]
       },
       {
         "name": "stepsSessions",

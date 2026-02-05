@@ -37,6 +37,10 @@ const testimonialSchema = new mongoose.Schema(
       max: 5,
       default: 5,
     },
+    target: {
+      type: String,
+      trim: true,
+    },
     image: {
       type: String, // image URL or path
       trim: true,

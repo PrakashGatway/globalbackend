@@ -1,3 +1,4 @@
+const { default: mongoose } = require('mongoose')
 const Testimonial = require('../models/Testimonials')
 
 exports.createTestimonial = async (req, res) => {
@@ -27,6 +28,7 @@ exports.getAllTestimonials = async (req, res) => {
       rating,
       page = 1,
       limit = 10,
+      isAdmin = false,
       sort = '-createdAt',
     } = req.query
 
@@ -66,6 +68,8 @@ exports.getAllTestimonials = async (req, res) => {
       sortStage.createdAt = -1
     }
 
+    const contentProject = isAdmin ? {} : { content: 0 }
+
     const pipeline = [
       { $match: matchStage },
 
@@ -75,6 +79,13 @@ exports.getAllTestimonials = async (req, res) => {
             { $sort: sortStage },
             { $skip: (page - 1) * limit },
             { $limit: limit },
+            {
+              $project: {
+                ...contentProject,
+                __v: 0,
+                updatedAt: 0
+              },
+            }
           ],
           totalCount: [
             { $count: 'count' },
@@ -106,7 +117,8 @@ exports.getAllTestimonials = async (req, res) => {
 
 exports.getTestimonialById = async (req, res) => {
   try {
-    const testimonial = await Testimonial.findById(req.params.id)
+    const isMongoseId = mongoose.Types.ObjectId.isValid(req.params.id)
+    const testimonial = await Testimonial.findOne(isMongoseId ? { _id: new mongoose.Types.ObjectId(req.params.id) } : { target: req.params.id })
 
     if (!testimonial) {
       return res.status(404).json({
@@ -120,6 +132,7 @@ exports.getTestimonialById = async (req, res) => {
       data: testimonial,
     })
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       success: false,
       message: error.message,

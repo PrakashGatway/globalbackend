@@ -7,10 +7,11 @@ const courseSchema = new mongoose.Schema(
       required: [true, 'Please provide course name'],
       trim: true,
     },
-    code: {
+    slug: {
       type: String,
-      required: [true, 'Please provide course code'],
+      required: [true, 'Please provide course slug'],
       unique: true,
+      lowercase: true,
       trim: true,
     },
     university: {
@@ -18,6 +19,29 @@ const courseSchema = new mongoose.Schema(
       ref: 'University',
       required: true,
     },
+    shortName: {
+      type: String,
+      trim: true,
+    },
+    tuitionFee: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    level: {
+      type: String,
+      required: true,
+    },
+    tags:{
+      type: [String],
+      required: true,
+    },
+    applicationFee: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
     duration: {
       type: String,
       required: true,

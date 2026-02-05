@@ -61,6 +61,10 @@ const universitySchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    cover_photo: {
+      type: String,
+      default: '',
+    },
     uni_web: {
       type: String,
       default: '',
@@ -85,7 +89,7 @@ const universitySchema = new mongoose.Schema(
       type: Number,
       default: null,
     },
-    on_compus_accommodation: {
+    on_campus_accommodation: {
       type: Boolean,
       default: false,
     },
@@ -119,6 +123,14 @@ const universitySchema = new mongoose.Schema(
     seo_metadata: {
       type: mongoose.Schema.Types.Mixed,
       default: {},
+    },
+    tags:{
+      type: String,
+      default: "",
+    },
+    acceptanceRate: {
+      type: Number,
+      default: 0,
     }
   },
   {

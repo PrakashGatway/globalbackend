@@ -15,7 +15,6 @@ exports.getCountries = async (req, res) => {
 
     const matchStage = {}
 
-    // 🔍 SEARCH (name or code)
     if (search && search.trim()) {
       matchStage.$or = [
         { name: { $regex: search, $options: 'i' } },
