@@ -1,146 +1,331 @@
 const Course = require('../models/Course')
-const { paginate } = require('../utils/pagination')
+const mongoose = require('mongoose');
+const ExtraContent = require('../models/ExtraContent');
 
-// @desc    Get all courses
-// @route   GET /api/courses?page=1&limit=10&sortBy=createdAt&sortOrder=desc
-// @access  Private
-exports.getCourses = async (req, res) => {
+exports.createCourse = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  const { extra_content, ...courseData } = req.body;
   try {
-    const { data, pagination } = await paginate(
-      Course,
-      {},
-      req,
-      { populate: { path: 'university', select: 'name' } }
-    )
-    
-    res.json({
+    let extraContentId;
+    if (mongoose.Types.ObjectId.isValid(extra_content)) {
+      extraContentId = new mongoose.Types.ObjectId(extra_content)
+    } else {
+      const extraContentDoc = await ExtraContent.create(
+        [extra_content || {}],
+        { session }
+      );
+      extraContentId = extraContentDoc[0]._id
+    }
+
+    courseData.extra_content = extraContentId
+
+    const course = await Course.create([courseData], { session })
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(201).json({
+      success: true
+    })
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    })
+  }
+}
+
+
+exports.getAllCourses = async (req, res) => {
+  try {
+    let {
+      search,
+      university,
+      subject,
+      level,
+      studyMode,
+      currency,
+      status,
+      minFee,
+      maxFee,
+      duration,
+      page = 1,
+      limit = 10,
+      sort = '-createdAt',
+    } = req.query
+
+    page = Number(page)
+    limit = Number(limit)
+
+    const matchStage = {}
+
+    // 🔍 SEARCH (name, shortName, tags)
+    if (search && search.trim()) {
+      matchStage.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { shortName: { $regex: search, $options: 'i' } },
+        { tags: { $regex: search, $options: 'i' } },
+      ]
+    }
+
+    // 🎓 FILTERS
+    if (university) matchStage.university = new mongoose.Types.ObjectId(university)
+    if (subject) matchStage.subject = new mongoose.Types.ObjectId(subject)
+    if (level) matchStage.level = level
+    if (studyMode) matchStage.studyMode = studyMode
+    if (currency) matchStage.currency = currency
+    if (status) matchStage.status = status
+    if (duration) matchStage.duration = duration
+
+    // 💰 FEE RANGE
+    if (minFee || maxFee) {
+      matchStage.tuitionFee = {}
+      if (minFee) matchStage.tuitionFee.$gte = Number(minFee)
+      if (maxFee) matchStage.tuitionFee.$lte = Number(maxFee)
+    }
+
+    const sortStage = {}
+    if (sort.startsWith('-')) {
+      sortStage[sort.slice(1)] = -1
+    } else {
+      sortStage[sort] = 1
+    }
+
+
+    const pipeline = [
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: 'universities',
+          localField: 'university',
+          foreignField: '_id',
+          as: 'university',
+          pipeline: [{ $project: { name: 1, slug: 1, uni_type: 1, intakes: 1, address: 1, country: 1, city: 1, uni_logo: 1, acceptanceRate: 1 } }],
+        },
+      },
+      { $unwind: '$university' },
+      {
+        $lookup: {
+          from: 'coursecategories',
+          localField: 'category',
+          foreignField: '_id',
+          as: 'category',
+          pipeline: [{ $project: { name: 1 } }],
+        },
+      },
+      { $unwind: '$category' },
+      {
+        $lookup: {
+          from: 'subjects',
+          localField: 'subject',
+          foreignField: '_id',
+          as: 'subject',
+          pipeline: [{ $project: { name: 1 } }],
+        },
+      },
+      { $unwind: '$subject' },
+      {
+        $lookup: {
+          from: 'extracontents',
+          localField: 'extra_content',
+          foreignField: '_id',
+          as: 'extra_content',
+        },
+      },
+      { $unwind: '$extra_content' },
+      // {
+      //   $lookup: {
+      //     from: 'scholarships',
+      //     localField: 'scholarShip',
+      //     foreignField: '_id',
+      //     as: 'scholarShip',
+      //   },
+      // },
+      // { $unwind: { path: '$scholarShip', preserveNullAndEmptyArrays: true } },
+
+      {
+        $facet: {
+          data: [
+            { $sort: sortStage },
+            { $skip: (page - 1) * limit },
+            { $limit: limit },
+          ],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ]
+
+    const result = await Course.aggregate(pipeline)
+
+    const data = result[0].data
+    const total = result[0].totalCount[0]?.count || 0
+
+    res.status(200).json({
       success: true,
-      count: pagination.totalItems,
-      pagination,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
       data,
     })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    console.error('Get Courses Error:', error)
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
   }
 }
 
-// @desc    Get single course
-// @route   GET /api/courses/:id
-// @access  Private
-exports.getCourse = async (req, res) => {
+exports.getCourseById = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id).populate('university')
+    const course = await Course.findById(req.params.id)
+      .populate('university')
+      .populate('subject')
+      .populate('scholarShip')
+      .populate('extra_content')
+
     if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' })
-    }
-    res.json({ success: true, data: course })
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
-
-// @desc    Create course
-// @route   POST /api/courses
-// @access  Private
-exports.createCourse = async (req, res) => {
-  try {
-    const { name, code, university, duration, price, description, status } = req.body
-
-    // Validate required fields
-    if (!name || !code || !university || !duration || price === undefined) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide all required fields: name, code, university, duration, and price',
-      })
-    }
-
-    // Validate price
-    if (price < 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Price cannot be negative',
-      })
-    }
-
-    // Check if university exists
-    const University = require('../models/University')
-    const universityExists = await University.findById(university)
-    if (!universityExists) {
       return res.status(404).json({
         success: false,
-        message: 'University not found. Please provide a valid university ID',
+        message: 'Course not found',
       })
     }
 
-    // Create course
-    const course = await Course.create({
-      name,
-      code,
-      university,
-      duration,
-      price,
-      description,
-      status: status || 'Active',
-    })
-
-    // Populate university name for response
-    await course.populate('university', 'name')
-
-    res.status(201).json({
+    res.status(200).json({
       success: true,
-      message: 'Course created successfully',
       data: course,
     })
   } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: 'Course code already exists. Please use a different code',
-      })
-    }
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map((err) => err.message)
-      return res.status(400).json({
-        success: false,
-        message: 'Validation error',
-        errors: messages,
-      })
-    }
-    res.status(500).json({ success: false, message: error.message })
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
   }
 }
 
-// @desc    Update course
-// @route   PUT /api/courses/:id
-// @access  Private
 exports.updateCourse = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  const { extra_content, ...courseData } = req.body;
+
   try {
-    const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    })
+    const course = await Course.findById(req.params.id).session(session);
 
     if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' })
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
     }
 
-    res.json({ success: true, data: course })
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
+    let extraContentId = course.extra_content;
 
-// @desc    Delete course
-// @route   DELETE /api/courses/:id
-// @access  Private
+    if (extra_content) {
+      if (mongoose.Types.ObjectId.isValid(extra_content)) {
+        extraContentId = new mongoose.Types.ObjectId(extra_content);
+      } else {
+        if (course.extra_content) {
+          await ExtraContent.findByIdAndUpdate(
+            course.extra_content,
+            extra_content,
+            { new: true, session }
+          );
+        } else {
+          const extraContentDoc = await ExtraContent.create(
+            [extra_content],
+            { session }
+          );
+          extraContentId = extraContentDoc[0]._id;
+        }
+      }
+    }
+
+    courseData.extra_content = extraContentId;
+
+    await Course.findByIdAndUpdate(
+      req.params.id,
+      courseData,
+      {
+        new: true,
+        runValidators: true,
+        session,
+      }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({
+      success: true,
+      message: "Course updated successfully",
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
 exports.deleteCourse = async (req, res) => {
   try {
     const course = await Course.findByIdAndDelete(req.params.id)
+
     if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' })
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found',
+      })
     }
-    res.json({ success: true, message: 'Course deleted successfully' })
+
+    res.status(200).json({
+      success: true,
+      message: 'Course deleted successfully',
+    })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
   }
 }
+
+
+exports.getExtraContentWithCourse = async (req, res) => {
+  try {
+    const courses = await Course.find({ extra_content: { $exists: true } })
+      .select('name extra_content')
+      .populate({
+        path: 'extra_content',
+        select: 'isPublished status',
+      });
+
+    const response = courses.map(course => ({
+      courseName: course.name,
+      extraContent: course.extra_content,
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: response.length,
+      data: response,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

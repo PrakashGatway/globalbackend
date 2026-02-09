@@ -19,6 +19,22 @@ const courseSchema = new mongoose.Schema(
       ref: 'University',
       required: true,
     },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CourseCategory',
+      required: true,
+    },
+    subject: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Subject',
+      required: true,
+      trim: true,
+    },
+    studyMode: {
+      type: String,
+      required: [true, 'Please provide study mode'],
+      trim: true,
+    },
     shortName: {
       type: String,
       trim: true,
@@ -28,11 +44,15 @@ const courseSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
+    currency: {
+      type: String,
+      required: true,
+    },
     level: {
       type: String,
       required: true,
     },
-    tags:{
+    tags: {
       type: [String],
       required: true,
     },
@@ -41,7 +61,6 @@ const courseSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
-
     duration: {
       type: String,
       required: true,
@@ -51,27 +70,32 @@ const courseSchema = new mongoose.Schema(
       enum: ['Active', 'Inactive'],
       default: 'Active',
     },
-    students: {
-      type: Number,
-      default: 0,
-    },
     description: {
       type: String,
+      trim: true,
     },
-    price: {
-      type: Number,
+    requirements: {
+      type: mongoose.Schema.Types.Mixed,
+      trim: true,
+    },
+    docsRequired: {
+      type: mongoose.Schema.Types.Mixed,
+      trim: true,
+    },
+    extra_content: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'extraContent',
       required: true,
-      default: 0,
-      min: 0,
     },
-    image: {
-      type: String,
-      default: '',
-    },
-    imagePublicId: {
-      type: String,
-      default: '',
-    },
+    // scholarShip: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: 'scholarship',
+    //   trim: true,
+    // },
+    seoData: {
+      type: mongoose.Schema.Types.Mixed,
+      trim: true,
+    }
   },
   {
     timestamps: true,

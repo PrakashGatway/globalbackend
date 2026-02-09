@@ -1,13 +1,14 @@
 const Subject = require("../models/SubjectModel");
 exports.createSubject = async (req, res) => {
     try {
-        const { name, description, slug, icon, isActive } = req.body;
+        const { name, description, slug, icon,category, isActive } = req.body;
 
         const subject = await Subject.create({
             name,
             slug: slug,
             description,
             icon,
+            category,
             isActive,
         });
 
@@ -30,18 +31,18 @@ exports.getAllSubjects = async (req, res) => {
     const {
       page = 1,
       limit = 10,
+      category,
       all
     } = req.query;
 
-    let query = Subject.find().sort({ order: 1 });
+    let query = Subject.find({category}).sort({ order: 1 });
 
-    // ❌ No pagination if all=true
     if (!all || all === "false") {
       const skip = (Number(page) - 1) * Number(limit);
       query = query.skip(skip).limit(Number(limit));
     }
 
-    const subjects = await query;
+    const subjects = await query.populate("category", "name");;
 
     const total = await Subject.countDocuments();
 

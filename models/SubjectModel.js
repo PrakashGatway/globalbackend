@@ -14,6 +14,11 @@ const subjectSchema = new mongoose.Schema(
         },
         description: String,
         icon: String,
+        category: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "CourseCategory",
+            required: true,
+        },
         order: {
             type: Number,
             unique: true,

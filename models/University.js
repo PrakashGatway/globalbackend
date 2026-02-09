@@ -18,12 +18,12 @@ const universitySchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    uni_type:{
+    uni_type: {
       type: String,
       required: [true, 'Please provide university type'],
       trim: true,
     },
-    intakes:{
+    intakes: {
       type: mongoose.Schema.Types.Mixed,
       default: '',
     },
@@ -70,11 +70,11 @@ const universitySchema = new mongoose.Schema(
       default: '',
     },
     uni_rank: {
-      type:mongoose.Schema.Types.Mixed,
+      type: mongoose.Schema.Types.Mixed,
       default: '',
     },
     uni_gallery: {
-      type:mongoose.Schema.Types.Mixed,
+      type: mongoose.Schema.Types.Mixed,
       default: "",
     },
     google_location: {
@@ -114,6 +114,10 @@ const universitySchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    offers: {
+      type: String,
+      default: "0"
+    },
     extra_content: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'extraContent',
@@ -124,7 +128,7 @@ const universitySchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       default: {},
     },
-    tags:{
+    tags: {
       type: String,
       default: "",
     },

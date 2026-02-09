@@ -1,5 +1,9 @@
-const { default: mongoose } = require('mongoose')
+const { default: mongoose, isObjectIdOrHexString } = require('mongoose')
+
 const Testimonial = require('../models/Testimonials')
+const Faqs = require('../models/Faqs')
+const Gallery = require('../models/Gallery')
+
 
 exports.createTestimonial = async (req, res) => {
   try {
@@ -221,3 +225,304 @@ exports.getTestimonialStats = async (req, res) => {
   }
 }
 
+/**
+ * CREATE FAQ
+ */
+exports.createFaq = async (req, res) => {
+  try {
+    const faq = await Faqs.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      data: faq,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * GET ALL FAQS (Admin)
+ */
+exports.getFaqs = async (req, res) => {
+  try {
+    const {
+      type,
+      status,
+      isPublished,
+      referenceModel,
+      referenceId,
+    } = req.query;
+
+    const filter = {};
+
+    if (type) filter.type = type;
+    if (status) filter.status = status;
+    if (isPublished && isPublished !== undefined && isPublished !== null) filter.isPublished = isPublished == 'true' ? true : "";
+    if (referenceModel) filter.referenceModel = referenceModel;
+    if (referenceId) filter.referenceId = referenceId;
+
+    const faqs = await Faqs.find(filter)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: faqs.length,
+      data: faqs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * GET PUBLIC FAQS
+ */
+exports.getPublicFaqs = async (req, res) => {
+  try {
+    const { type, referenceModel, referenceId } = req.query;
+
+    const filter = {
+      status: 'Active',
+      isPublished: true,
+    };
+
+    if (type) filter.type = type;
+    if (referenceModel) filter.referenceModel = referenceModel;
+    if (referenceId) filter.referenceId = referenceId;
+
+    const faqs = await Faqs.find(filter)
+      .sort({ order: 1 });
+
+    res.status(200).json({
+      success: true,
+      data: faqs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * UPDATE FAQ
+ */
+exports.updateFaq = async (req, res) => {
+  try {
+    const faq = await Faqs.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    if (!faq) {
+      return res.status(404).json({
+        success: false,
+        message: 'FAQ not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: faq,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * DELETE FAQ
+ */
+exports.deleteFaq = async (req, res) => {
+  try {
+    const faq = await Faqs.findByIdAndDelete(req.params.id);
+
+    if (!faq) {
+      return res.status(404).json({
+        success: false,
+        message: 'FAQ not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'FAQ deleted successfully',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.createGallery = async (req, res) => {
+  try {
+    const gallery = await Gallery.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      data: gallery,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * GET ALL GALLERY ITEMS (Admin)
+ */
+exports.getGalleries = async (req, res) => {
+  try {
+    const { type, status, isPublished, mediaType } = req.query;
+
+    const filter = {};
+
+    if (type) filter.type = type;
+    if (status) filter.status = status;
+    if (mediaType) filter.mediaType = mediaType;
+    if (isPublished && isPublished !== undefined && isPublished !== null) filter.isPublished = isPublished == 'true' ? true : "";
+
+    const galleries = await Gallery.find(filter)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: galleries.length,
+      data: galleries,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * GET SINGLE GALLERY ITEM
+ */
+exports.getGalleryById = async (req, res) => {
+  try {
+    const gallery = await Gallery.findById(req.params.id);
+
+    if (!gallery) {
+      return res.status(404).json({
+        success: false,
+        message: 'Gallery item not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: gallery,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * UPDATE GALLERY ITEM
+ */
+exports.updateGallery = async (req, res) => {
+  try {
+    const gallery = await Gallery.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    if (!gallery) {
+      return res.status(404).json({
+        success: false,
+        message: 'Gallery item not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: gallery,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * DELETE GALLERY ITEM
+ */
+exports.deleteGallery = async (req, res) => {
+  try {
+    const gallery = await Gallery.findByIdAndDelete(req.params.id);
+
+    if (!gallery) {
+      return res.status(404).json({
+        success: false,
+        message: 'Gallery item not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Gallery item deleted successfully',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * GET PUBLIC GALLERY (Frontend)
+ */
+exports.getPublicGallery = async (req, res) => {
+  try {
+    const { type, mediaType, isFeatured } = req.query;
+
+    const filter = {
+      status: 'Active',
+      isPublished: true,
+    };
+
+    if (type) filter.type = type;
+    if (mediaType) filter.mediaType = mediaType;
+    if (isFeatured !== undefined) filter.isFeatured = isFeatured;
+
+    const galleries = await Gallery.find(filter)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: galleries,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

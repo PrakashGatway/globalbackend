@@ -97,7 +97,6 @@ const getAllUniversities = async (req, res) => {
           preserveNullAndEmptyArrays: true
         }
       });
-
       const extraMatch = {};
       if (isPublished !== undefined) {
         extraMatch['extra_content.isPublished'] = isPublished === 'true';
@@ -155,7 +154,7 @@ const getUniversityById = async (req, res) => {
     const { id } = req.params;
 
     const pipeline = [
-      { $match: mongoose.Types.ObjectId.isValid(id)? { _id: new mongoose.Types.ObjectId(id) } : { slug: id } },
+      { $match: mongoose.Types.ObjectId.isValid(id) ? { _id: new mongoose.Types.ObjectId(id) } : { slug: id } },
 
       {
         $lookup: {
@@ -192,7 +191,7 @@ const getUniversityById = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      result: result[0] 
+      result: result[0]
     });
   } catch (error) {
     console.error('University fetch error:', error);
@@ -326,7 +325,8 @@ const deleteUniversity = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'University and associated content deleted successfully'    });
+      message: 'University and associated content deleted successfully'
+    });
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
