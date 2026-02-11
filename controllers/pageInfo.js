@@ -160,6 +160,7 @@ exports.getPageBySlug = async (req, res) => {
       data: page,
     })
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       success: false,
       message: error.message,

@@ -262,8 +262,8 @@ exports.getFaqs = async (req, res) => {
     if (type) filter.type = type;
     if (status) filter.status = status;
     if (isPublished && isPublished !== undefined && isPublished !== null) filter.isPublished = isPublished == 'true' ? true : "";
-    if (referenceModel) filter.referenceModel = referenceModel;
-    if (referenceId) filter.referenceId = referenceId;
+    // if (referenceModel) filter.referenceModel = referenceModel;
+    // if (referenceId) filter.referenceId = referenceId;
 
     const faqs = await Faqs.find(filter)
       .sort({ createdAt: -1 });
@@ -294,11 +294,11 @@ exports.getPublicFaqs = async (req, res) => {
     };
 
     if (type) filter.type = type;
-    if (referenceModel) filter.referenceModel = referenceModel;
-    if (referenceId) filter.referenceId = referenceId;
+    // if (referenceModel) filter.referenceModel = referenceModel;
+    // if (referenceId) filter.referenceId = referenceId;
 
     const faqs = await Faqs.find(filter)
-      .sort({ order: 1 });
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -501,7 +501,7 @@ exports.deleteGallery = async (req, res) => {
  */
 exports.getPublicGallery = async (req, res) => {
   try {
-    const { type, mediaType, isFeatured } = req.query;
+    const { type, mediaType, isFeatured,limit=10 } = req.query;
 
     const filter = {
       status: 'Active',
@@ -512,7 +512,7 @@ exports.getPublicGallery = async (req, res) => {
     if (mediaType) filter.mediaType = mediaType;
     if (isFeatured !== undefined) filter.isFeatured = isFeatured;
 
-    const galleries = await Gallery.find(filter)
+    const galleries = await Gallery.find(filter).limit(Number(limit))
       .sort({ createdAt: -1 });
 
     res.status(200).json({

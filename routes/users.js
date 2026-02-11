@@ -1,36 +1,25 @@
+// routes/userRoutes.js
 const express = require('express')
 const router = express.Router()
-const { body, validationResult } = require('express-validator')
-const { protect, admin } = require('../middleware/auth')
+
 const {
-  getUsers,
-  getUser,
   createUser,
+  getUsers,
+  getUserById,
   updateUser,
   deleteUser,
+  userStats,
+  monthlyRegistrations,
 } = require('../controllers/userController')
+const { authorize, protect } = require('../middleware/auth')
 
-// Validation middleware
-const validateUser = [
-  body('name').notEmpty().withMessage('Name is required'),
-  body('email').isEmail().withMessage('Valid email is required'),
-  body('phone').notEmpty().withMessage('Phone is required'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-]
+router.post('/', protect, authorize('admin', 'manager'), createUser)
+router.get('/',protect, authorize('admin'),  getUsers)
+router.get('/:id',protect, authorize('admin', 'manager'), getUserById)
+router.put('/:id',protect, authorize('admin', 'manager'), updateUser)
+router.delete('/:id',protect, authorize('admin', 'manager'),  deleteUser)
 
-const handleValidation = (req, res, next) => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() })
-  }
-  next()
-}
-
-// Routes
-router.get('/', protect, getUsers)
-router.get('/:id', protect, getUser)
-router.post('/', protect, admin, validateUser, handleValidation, createUser)
-router.put('/:id', protect, admin, updateUser)
-router.delete('/:id', protect, admin, deleteUser)
+router.get('/analytics/stats',protect, authorize('admin', 'manager'),  userStats)
+router.get('/analytics/monthly',protect, authorize('admin', 'manager'),  monthlyRegistrations)
 
 module.exports = router

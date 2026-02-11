@@ -23,6 +23,19 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
     },
+    dateOfBirth: {
+      type: Date,
+      default: Date.now,
+    },
+    nationality: String,
+    gender: {
+      type: String,
+      enum: ['male', 'female', 'other',""],
+    },
+    hasAcceptedTerms: {
+      type: Boolean,
+      default: false,
+    },
     status: {
       type: String,
       enum: ['Active', 'Inactive', 'Suspended'],
@@ -54,7 +67,8 @@ const userSchema = new mongoose.Schema(
   }
 )
 
-// Hash password before saving
+userSchema.index({ email: 1 })
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     next()
@@ -63,7 +77,6 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt)
 })
 
-// Compare password method
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password)
 }

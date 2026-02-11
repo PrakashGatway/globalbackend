@@ -12,10 +12,10 @@ const {
 
 // Routes
 router.get('/', protect, getApplications)
-router.get('/download/all', protect, downloadAllApplications)
-router.get('/:id', protect, getApplication)
-router.post('/', protect, createApplication)
-router.put('/:id', protect, updateApplication)
-router.delete('/:id', protect, admin, deleteApplication)
+// router.get('/download/all', protect, downloadAllApplications)
+// router.get('/:id', protect, getApplication)
+// router.post('/', protect, createApplication)
+// router.put('/:id', protect, updateApplication)
+// router.delete('/:id', protect, admin, deleteApplication)
 
 module.exports = router

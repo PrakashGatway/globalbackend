@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// Import controllers
 const {
   createUniversity,
   getAllUniversities,
@@ -9,15 +8,16 @@ const {
   updateUniversity,
   deleteUniversity
 } = require('../controllers/universityController'); // Adjust path as needed
+const { protect, authorize } = require('../middleware/auth');
 
 // 🔓 Public routes
 router.route('/')
-  .get(getAllUniversities)
-  .post(createUniversity); // Typically protected in production
+  .get( getAllUniversities)
+  .post(protect, authorize('admin', 'manager'), createUniversity); // Typically protected in production
 
 router.route('/:id')
   .get(getUniversityById)
-  .put(updateUniversity)    // Typically protected
-  .delete(deleteUniversity); // Typically protected
+  .put(protect, authorize('admin', 'manager'), updateUniversity)    // Typically protected
+  .delete(protect, authorize('admin', 'manager'), deleteUniversity); // Typically protected
 
 module.exports = router;

@@ -18,13 +18,14 @@ const {
   updateGallery,
   deleteGallery,
   getPublicGallery,
-} = require('../controllers/testimonialsController')
+} = require('../controllers/testimonialsController');
+const { authorize, protect } = require('../middleware/auth');
 
-router.post('/galleries', createGallery);
-router.get('/galleries', getGalleries);
-router.get('/galleries/:id', getGalleryById);
-router.put('/galleries/:id', updateGallery);
-router.delete('/galleries/:id', deleteGallery);
+router.post('/galleries', protect, authorize('admin', 'manager'), createGallery);
+router.get('/galleries', protect, authorize('admin', 'manager'), getGalleries);
+router.get('/galleries/:id', protect, authorize('admin', 'manager'), getGalleryById);
+router.put('/galleries/:id', protect, authorize('admin', 'manager'), updateGallery);
+router.delete('/galleries/:id', protect, authorize('admin', 'manager'), deleteGallery);
 router.get('/galleries/public/list', getPublicGallery);
 
 router.post('/faqs', createFaq);

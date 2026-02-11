@@ -3,69 +3,46 @@ const crypto = require('crypto')
 const User = require('../models/User')
 const OTP = require('../models/OTP')
 const { sendOTPEmail, sendVerificationEmail } = require('../utils/emailService')
+const UserProfile = require('../models/UserProfile')
 
-// Generate JWT Token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'your-secret-key', {
     expiresIn: process.env.JWT_EXPIRE || '7d',
   })
 }
 
-// Generate email verification token
-const generateVerificationToken = () => {
-  return crypto.randomBytes(32).toString('hex')
-}
-
-// @desc    Register user
-// @route   POST /api/auth/register
-// @access  Public
 exports.register = async (req, res) => {
   try {
-    const { name, email, phone } = req.body
+    const { name, email, phone ,password} = req.body
 
     const userExists = await User.findOne({ email })
     if (userExists) {
       return res.status(400).json({ success: false, message: 'User already exists' })
     }
 
-    // Generate verification token
-    const verificationToken = generateVerificationToken()
-    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
-
     const user = await User.create({
       name,
       email,
       phone,
-      password,
-      emailVerificationToken: verificationToken,
-      emailVerificationExpires: verificationExpires,
+      password
     })
 
-    // Send verification email
     try {
       await sendVerificationEmail(email, verificationToken, name)
     } catch (emailError) {
       console.error('Failed to send verification email:', emailError.message)
-      // Continue even if email fails - user can resend later
     }
 
     const token = generateToken(user._id)
 
     res.status(201).json({
       success: true,
-      token,
-      data: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone
-      },
+      token
     })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }
 }
-
 
 exports.login = async (req, res) => {
   try {
@@ -85,16 +62,10 @@ exports.login = async (req, res) => {
         message: 'User not found'
       })
     }
-    // Generate static 6-digit OTP
     const otpCode = '123456'
 
-    // Log OTP to console (for development/testing)
-    console.log(`\n📧 OTP Generated for ${email} : ${otpCode}\n`)
-
-    // Delete any existing OTPs for this email and role
     await OTP.deleteMany({ email, isUsed: false })
 
-    // Create new OTP
     const otp = await OTP.create({
       email,
       otp: otpCode,
@@ -109,21 +80,6 @@ exports.login = async (req, res) => {
         message: 'OTP sent to your email',
       })
     } catch (emailError) {
-      const isEmailNotConfigured = emailError.message === 'EMAIL_NOT_CONFIGURED'
-      const isDevelopment = process.env.NODE_ENV !== 'production'
-
-      if (isEmailNotConfigured || isDevelopment) {
-        console.log(`\n⚠️  Email not configured. OTP for ${email} : ${otpCode}\n`)
-        return res.json({
-          success: true,
-          message: 'OTP generated (email not configured - check console)',
-          isExist: true,
-          otp: otpCode, // Include OTP in development mode
-          isDevelopment: true,
-        })
-      }
-
-      console.error('Failed to send OTP email:', emailError.message)
       res.status(500).json({
         success: false,
         message: 'Failed to send OTP email. Please contact support.',
@@ -133,7 +89,6 @@ exports.login = async (req, res) => {
     res.status(500).json({ success: false, message: error.message })
   }
 }
-
 
 exports.sendOTP = async (req, res) => {
   try {
@@ -197,9 +152,6 @@ exports.sendOTP = async (req, res) => {
   }
 }
 
-// @desc    Verify OTP and login
-// @route   POST /api/auth/verify-otp
-// @access  Public
 exports.verifyOTP = async (req, res) => {
   try {
     const { email, otp } = req.body
@@ -219,7 +171,6 @@ exports.verifyOTP = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid or expired OTP' })
     }
 
-    // Mark OTP as used
     otpRecord.isUsed = true
     await otpRecord.save()
 
@@ -245,9 +196,6 @@ exports.verifyOTP = async (req, res) => {
   }
 }
 
-// @desc    Get current user
-// @route   GET /api/auth/me
-// @access  Private
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password')
@@ -257,22 +205,16 @@ exports.getMe = async (req, res) => {
   }
 }
 
-
-// @desc    Update user profile
-// @route   PUT /api/auth/profile
-// @access  Private
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, phone, profileImage, profileImagePublicId } = req.body
+    const { name, phone, profileImage } = req.body
 
     // Build update object
     const updateData = {}
     if (name) updateData.name = name
     if (phone) updateData.phone = phone
     if (profileImage !== undefined) updateData.profileImage = profileImage
-    if (profileImagePublicId !== undefined) updateData.profileImagePublicId = profileImagePublicId
 
-    // Update user
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { $set: updateData },
@@ -291,5 +233,67 @@ exports.updateProfile = async (req, res) => {
   } catch (error) {
     console.error('Update profile error:', error)
     res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+const calculateProfileCompletion = (profile) => {
+  let totalFields = 10
+  let completed = 0
+
+  if (profile.maritalStatus) completed++
+  if (profile.currentAddress?.city) completed++
+  if (profile.educationHistory?.length > 0) completed++
+  if (profile.preferredCountries?.length > 0) completed++
+  if (profile.preferredCourse) completed++
+  if (profile.preferredIntake) completed++
+  if (profile.budgetRange?.min) completed++
+  if (profile.passportNumber) completed++
+  if (profile.englishTest?.exam) completed++
+  if (profile.documents?.length > 0) completed++
+
+  return Math.round((completed / totalFields) * 100)
+}
+
+
+exports.createOrUpdateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID',
+      })
+    }
+
+    const profileData = {
+      ...req.body,
+      user: userId,
+    }
+
+    // 🔹 Calculate completion %
+    const completion = calculateProfileCompletion(profileData)
+    profileData.profileCompletion = completion
+
+    const profile = await UserProfile.findOneAndUpdate(
+      { user: userId },
+      { $set: profileData },
+      {
+        new: true,
+        upsert: true,
+        runValidators: true,
+      }
+    )
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile saved successfully',
+      data: profile,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
   }
 }

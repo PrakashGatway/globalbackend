@@ -8,11 +8,12 @@ const {
     updateSubject,
     deleteSubject,
 } = require("../controllers/subjectController");
+const { protect, authorize } = require("../middleware/auth");
 
-router.post("/", createSubject);
+router.post("/",protect, createSubject);
 router.get("/", getAllSubjects);
 router.get("/:id", getSubjectById);
-router.put("/:id", updateSubject);
-router.delete("/:id", deleteSubject);
+router.put("/:id",protect,authorize('admin', 'manager'), updateSubject);
+router.delete("/:id",protect, authorize('admin', 'manager'),  deleteSubject);
 
 module.exports = router;

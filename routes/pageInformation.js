@@ -10,14 +10,14 @@ const {
   deletePage,
   getNavTabs,
 } = require('../controllers/pageInfo')
-const { protect, admin } = require('../middleware/auth')
+const { protect, authorize } = require('../middleware/auth')
 
-router.post('/', protect, createPage)
+router.post('/', protect, authorize('admin', 'manager'), protect, createPage)
 router.get('/', getAllPages)
 router.get('/navbar', getNavTabs)
-router.get('/:id', getPageById)
-router.put('/:id', protect, updatePage)
-router.delete('/:id', protect, admin, deletePage)
+router.get('/:id', protect, authorize('admin', 'manager'), getPageById)
+router.put('/:id', protect, authorize('admin', 'manager'), updatePage)
+router.delete('/:id', protect, authorize('admin', 'manager'), deletePage)
 router.get('/slug/:slug', getPageBySlug)
 
 module.exports = router

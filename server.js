@@ -35,6 +35,34 @@ app.use('/api/page-information', require('./routes/pageInformation'))
 app.use('/api/blogs', require('./routes/blogRoutes'))
 app.use('/api/subjects', require('./routes/subjectRoutes'))
 
+const QRCode = require('qrcode')
+
+/**
+ * Generate UPI QR Code Image
+ * @param {Object} data
+ * @param {String} data.upiId
+ * @param {String} data.name
+ * @param {Number} data.amount
+ * @param {String} data.note
+ */
+async function generateUpiQr() {
+  try {
+    const upiUrl = "upi://pay?pa=kdas2024@nsdlpbma&pn=KDAS%20TECHNOLOGIES%20OPC%20PRIVATE%20LIMITED&mc=7372&tr=534265658937507868&tn=SchedulerTest&am=100&cu=INR&mode=05&orgid=181046&purpose=00&catagory=01&tid=NPT00000000000000534265658937507868&sign=MEUCIQC+T7nOy7OklymNF7o1XFyUGKPOT1ATg60db8hhkA690AIgDoi1/3HccZcEV8SgP/uH5cpmpSfd0xK3hdwEuuir/ZU="
+    const qrImage = await QRCode.toDataURL(upiUrl)
+
+    console.log({
+      success: true,
+      upiUrl,
+      qrImage // Base64 Image
+    })
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message
+    }
+  }
+}
+// generateUpiQr()
 async function seedSubjects(subjectsData) {
   for (const item of subjectsData) {
     const exists = await Subject.findOne({ slug: item.url_slug });
