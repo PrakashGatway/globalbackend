@@ -94,8 +94,6 @@ const userProfileSchema = new mongoose.Schema(
       examDate: Date,
     },
     documents: [documentSchema],
-    passportNumber: String,
-    passportExpiry: Date,
     visaStatus: {
       type: String,
       enum: ['not_applied', 'applied', 'approved', 'rejected'],

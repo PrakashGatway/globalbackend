@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
     nationality: String,
     gender: {
       type: String,
-      enum: ['male', 'female', 'other',""],
+      enum: ['male', 'female', 'other', ""],
     },
     hasAcceptedTerms: {
       type: Boolean,
@@ -46,6 +46,13 @@ const userSchema = new mongoose.Schema(
       enum: ['admin', 'manager', 'counsellor', 'user'],
       default: 'user',
     },
+    firstLanguage: {
+      type: String,
+    },
+    maritalStatus: {
+      type: String,
+      default: 'single',
+    },
     metadata: {
       type: mongoose.Schema.Types.Mixed,
     },
@@ -53,6 +60,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    passportNumber: String,
+    passportExpiry: Date,
     wallet: {
       type: Number,
       default: 0,

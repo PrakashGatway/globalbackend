@@ -48,6 +48,7 @@ const getAllUniversities = async (req, res) => {
       established_year,
       on_compus_accommodation,
       isPublished,
+      location_alias,
       extraStatus,
       populateExtra,
       page = 1,
@@ -64,6 +65,7 @@ const getAllUniversities = async (req, res) => {
     if (country) uniMatch.country = { $regex: country, $options: 'i' };
     if (city) uniMatch.city = { $regex: city, $options: 'i' };
     if (uniStatus) uniMatch.status = uniStatus;
+    if(location_alias) uniMatch.location_alias = { $regex: location_alias, $options: 'i' };
     if (code) uniMatch.code = { $regex: code, $options: 'i' };
     if (established_year !== undefined) {
       const year = Number(established_year);

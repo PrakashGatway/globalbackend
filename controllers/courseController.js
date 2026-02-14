@@ -182,11 +182,11 @@ exports.getAllCourses = async (req, res) => {
 }
 
 exports.getCourseById = async (req, res) => {
+  const { id } = req.params
   try {
-    const course = await Course.findById(req.params.id)
+    const course = await Course.findOne(mongoose.Types.ObjectId.isValid(id) ? { _id: new mongoose.Types.ObjectId(id) } : { slug: id } )
       .populate('university')
       .populate('subject')
-      .populate('scholarShip')
       .populate('extra_content')
 
     if (!course) {

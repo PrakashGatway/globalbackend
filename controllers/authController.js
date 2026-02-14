@@ -73,7 +73,7 @@ exports.login = async (req, res) => {
     })
 
     try {
-      await sendOTPEmail(email, otpCode)
+      // await sendOTPEmail(email, otpCode)
       res.json({
         success: true,
         isExist: true,
@@ -86,6 +86,7 @@ exports.login = async (req, res) => {
       })
     }
   } catch (error) {
+    console.log(error)
     res.status(500).json({ success: false, message: error.message })
   }
 }

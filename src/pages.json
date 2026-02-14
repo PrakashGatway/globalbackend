@@ -1250,18 +1250,17 @@
         "name": "content",
         "label": "content",
         "fields": [
-              {
-                "name": "title",
-                "label": "Title",
-                "type": "text"
-              },
-
-              {
-                "name": "subTitle",
-                "label": "subTitle",
-                "type": "text"
-              }
-            ]
+          {
+            "name": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "name": "subTitle",
+            "label": "subTitle",
+            "type": "text"
+          }
+        ]
       },
       {
         "name": "stepsSessions",
@@ -1516,6 +1515,383 @@
                 "accept": "image/*"
               }
             ]
+          }
+        ]
+      }
+    ]
+  },
+  "country": {
+    "name": "Country Page",
+    "description": "Main landing page configuration",
+    "sections": [
+      {
+        "name": "hero",
+        "label": "Hero Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Hero Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome"
+          },
+          {
+            "name": "subtitle",
+            "label": "Hero Subtitle",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Your journey to success starts here"
+          },
+          {
+            "name": "heroImage",
+            "label": "Hero Image",
+            "type": "file",
+            "required": true,
+            "accept": "image/*"
+          },
+          {
+            "name": "ctaText1",
+            "label": "Call to Action Text 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink1",
+            "label": "Call to Action Link 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          },
+          {
+            "name": "ctaText2",
+            "label": "Call to Action Text 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink2",
+            "label": "Call to Action Link 2",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          }
+        ]
+      },
+      {
+        "name": "formSection",
+        "label": "formSection Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome"
+          },
+          {
+            "name": "subtitle",
+            "label": "Subtitle",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Your journey to success starts here"
+          },
+          {
+            "name": "ctaText1",
+            "label": "Call to Action Text 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink1",
+            "label": "Call to Action Link 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          }
+        ]
+      },
+      {
+        "name": "whyChooseUs",
+        "label": "whyChooseUs Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome"
+          },
+          {
+            "name": "subtitle",
+            "label": "Subtitle",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Your journey to success starts here"
+          },
+          {
+            "name": "ctaText1",
+            "label": "Call to Action Text 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "Get Started"
+          },
+          {
+            "name": "ctaLink1",
+            "label": "Call to Action Link 1",
+            "type": "text",
+            "required": false,
+            "placeholder": "/contact"
+          }
+        ]
+      },
+      {
+        "name": "whyStudy",
+        "label": "whyStudy Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Why Choose Us"
+          },
+          {
+            "name": "subTitle",
+            "label": "Section subTitle",
+            "type": "textarea",
+            "default": ""
+          },
+          {
+            "name": "image",
+            "label": "Image",
+            "type": "file",
+            "required": true,
+            "accept": "image/*"
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "Icon Class",
+                "type": "text",
+                "placeholder": "cil-award"
+              },
+              {
+                "name": "title",
+                "label": "Feature Title",
+                "type": "text",
+                "required": true
+              },
+              {
+                "name": "description",
+                "label": "Feature Description",
+                "type": "textarea"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "lifeIn",
+        "label": "lifeIn Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Why Choose Us"
+          },
+          {
+            "name": "subTitle",
+            "label": "Section subTitle",
+            "type": "textarea",
+            "default": ""
+          },
+          {
+            "name": "image",
+            "label": "Image",
+            "type": "file",
+            "accept": "image/*"
+          },
+          {
+            "name": "buttomImage",
+            "label": "buttomImage",
+            "type": "file",
+            "accept": "image/*"
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Feature Title",
+                "type": "text",
+                "required": true
+              },
+              {
+                "name": "description",
+                "label": "Feature Description",
+                "type": "textarea"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "choosingUs",
+        "label": "choosingUs Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "placeholder": "Welcome"
+          },
+          {
+            "name": "subtitle",
+            "label": "Subtitle",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Your journey to success starts here"
+          },
+          {
+            "name": "image",
+            "label": "Image",
+            "type": "file",
+            "accept": "image/*"
+          }
+        ]
+      },
+      {
+        "name": "contentSection",
+        "label": "Content Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Why Choose Us"
+          },
+          {
+            "name": "subTitle",
+            "label": "Section subTitle",
+            "type": "textarea",
+            "default": ""
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "required": true
+              },
+              {
+                "name": "description",
+                "label": "Feature Description",
+                "type": "richtext"
+              }
+            ]
+          }
+        ]
+      },
+            {
+        "name": "scholarships",
+        "label": "scholarships Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Why Choose Us"
+          },
+          {
+            "name": "subTitle",
+            "label": "Section subTitle",
+            "type": "textarea",
+            "default": ""
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+               {
+                "name": "icon",
+                "label": "Icon",
+                "type": "text"
+              },
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "videoTestimonials",
+        "label": "Video Testimonials",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Video Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "imageTestimonials",
+        "label": "image Testimonials",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "cta",
+        "label": "cta Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "text",
+            "default": ""
           }
         ]
       }

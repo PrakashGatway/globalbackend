@@ -10,7 +10,6 @@ const {
 } = require('../controllers/universityController'); // Adjust path as needed
 const { protect, authorize } = require('../middleware/auth');
 
-// 🔓 Public routes
 router.route('/')
   .get( getAllUniversities)
   .post(protect, authorize('admin', 'manager'), createUniversity); // Typically protected in production
