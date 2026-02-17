@@ -7,6 +7,7 @@ const {
   createTicket,
   updateTicket,
   deleteTicket,
+  replyToTicket
 } = require('../controllers/supportController')
 
 // Routes
@@ -15,5 +16,6 @@ router.get('/:id', protect, getTicket)
 router.post('/', protect, createTicket)
 router.put('/:id', protect, updateTicket)
 router.delete('/:id', protect, deleteTicket)
+router.put('/reply/:id', protect, replyToTicket)
 
 module.exports = router

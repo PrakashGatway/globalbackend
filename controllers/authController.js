@@ -13,7 +13,7 @@ const generateToken = (id) => {
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, phone ,password} = req.body
+    const { name, email, phone, password } = req.body
 
     const userExists = await User.findOne({ email })
     if (userExists) {
@@ -208,13 +208,20 @@ exports.getMe = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, phone, profileImage } = req.body
+    const { name, phone, profileImage, dateOfBirth, nationality, gender, firstLanguage, maritalStatus, passportNumber, passportExpiry } = req.body
 
     // Build update object
     const updateData = {}
     if (name) updateData.name = name
     if (phone) updateData.phone = phone
     if (profileImage !== undefined) updateData.profileImage = profileImage
+    if (dateOfBirth) updateData.dateOfBirth = dateOfBirth
+    if (nationality) updateData.nationality = nationality
+    if (gender) updateData.gender = gender
+    if (firstLanguage) updateData.firstLanguage = firstLanguage
+    if (maritalStatus) updateData.maritalStatus = maritalStatus
+    if (passportNumber) updateData.passportNumber = passportNumber
+    if (passportExpiry) updateData.passportExpiry = passportExpiry
 
     const user = await User.findByIdAndUpdate(
       req.user._id,
@@ -254,8 +261,6 @@ const calculateProfileCompletion = (profile) => {
 
   return Math.round((completed / totalFields) * 100)
 }
-
-
 exports.createOrUpdateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id

@@ -12,28 +12,51 @@ const supportSchema = new mongoose.Schema(
       required: [true, 'Please provide subject'],
       trim: true,
     },
+    category: {
+      type: String,
+      required: [true, 'Please provide category'],
+      trim: true,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    email: {
+    description: {
       type: String,
-      required: true,
+    },
+    email: {
+      type: String
     },
     status: {
       type: String,
-      enum: ['Open', 'In Progress', 'Resolved', 'Closed'],
-      default: 'Open',
+      enum: ['open', 'pending', 'resolved', 'closed'],
+      default: 'open',
+    },
+    reply: {
+      type: [
+        {
+          user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+          },
+          description: {
+            type: String,
+          },
+          createdAt: {
+            type: Date,
+            default: Date.now,
+          },
+        }
+      ],
+      default: []
     },
     priority: {
       type: String,
-      enum: ['Low', 'Medium', 'High', 'Urgent'],
       default: 'Medium',
     },
-    description: {
+    relatedIssue: {
       type: String,
-      required: true,
     },
     resolution: {
       type: String,
@@ -44,13 +67,13 @@ const supportSchema = new mongoose.Schema(
   }
 )
 
-// Generate ticket number before saving
-supportSchema.pre('save', async function (next) {
+supportSchema.pre('validate', async function (next) {
   if (!this.ticketNumber) {
     const count = await mongoose.model('Support').countDocuments()
-    this.ticketNumber = `TKT-${String(count + 1).padStart(3, '0')}`
+    this.ticketNumber = `T-${String(count + 1).padStart(3, '0')}`
   }
   next()
 })
+
 
 module.exports = mongoose.model('Support', supportSchema)

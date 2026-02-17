@@ -1,32 +1,82 @@
 const Support = require('../models/Support')
-const { paginate } = require('../utils/pagination')
 
-// @desc    Get all support tickets
-// @route   GET /api/support?page=1&limit=10&sortBy=createdAt&sortOrder=desc
-// @access  Private
+
 exports.getTickets = async (req, res) => {
   try {
-    const { data, pagination } = await paginate(
-      Support,
-      {},
-      req,
-      { populate: { path: 'user', select: 'name email' } }
-    )
-    
-    res.json({
+    let {
+      page = 1,
+      limit = 10,
+      status,
+      category,
+      priority,
+      user,
+      search,
+      fromDate,
+      toDate,
+      sortBy = 'createdAt',
+      order = 'desc'
+    } = req.query
+
+    page = parseInt(page)
+    limit = parseInt(limit)
+
+    // Build filter object
+    let filter = {}
+
+    if (status) filter.status = status
+    if (category) filter.category = category
+    if (priority) filter.priority = priority
+    if (user) filter.user = user
+
+    // Date filter
+    if (fromDate || toDate) {
+      filter.createdAt = {}
+      if (fromDate) filter.createdAt.$gte = new Date(fromDate)
+      if (toDate) filter.createdAt.$lte = new Date(toDate)
+    }
+
+    // Search filter
+    if (search) {
+      filter.$or = [
+        { ticketNumber: { $regex: search, $options: 'i' } },
+        { subject: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ]
+    }
+
+    const sort = {
+      [sortBy]: order === 'asc' ? 1 : -1
+    }
+
+    const total = await Support.countDocuments(filter)
+
+    const tickets = await Support.find(filter)
+      .sort(sort)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean()
+
+    res.status(200).json({
       success: true,
-      count: pagination.totalItems,
-      pagination,
-      data,
+      data: tickets,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
     })
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    console.error(error)
+    res.status(500).json({
+      success: false,
+      message: 'Server Error'
+    })
   }
 }
 
-// @desc    Get single ticket
-// @route   GET /api/support/:id
-// @access  Private
+
 exports.getTicket = async (req, res) => {
   try {
     const ticket = await Support.findById(req.params.id).populate('user', 'name email')
@@ -39,21 +89,16 @@ exports.getTicket = async (req, res) => {
   }
 }
 
-// @desc    Create ticket
-// @route   POST /api/support
-// @access  Private
 exports.createTicket = async (req, res) => {
   try {
-    const ticket = await Support.create(req.body)
+    const user = req.user
+    const ticket = await Support.create({ ...req.body, user: user._id })
     res.status(201).json({ success: true, data: ticket })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }
 }
 
-// @desc    Update ticket
-// @route   PUT /api/support/:id
-// @access  Private
 exports.updateTicket = async (req, res) => {
   try {
     const ticket = await Support.findByIdAndUpdate(req.params.id, req.body, {
@@ -85,3 +130,53 @@ exports.deleteTicket = async (req, res) => {
     res.status(500).json({ success: false, message: error.message })
   }
 }
+
+exports.replyToTicket = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { description } = req.body
+
+    if (!description) {
+      return res.status(400).json({
+        success: false,
+        message: "Reply description is required"
+      })
+    }
+
+    const ticket = await Support.findById(id)
+
+    if (!ticket) {
+      return res.status(404).json({
+        success: false,
+        message: "Ticket not found"
+      })
+    }
+
+    // push reply
+    ticket.reply.push({
+      user: req.user._id, // from auth middleware
+      description
+    })
+
+    // change status to pending if admin replies
+    if (ticket.status === "open") {
+      ticket.status = "pending"
+    }
+
+    await ticket.save()
+
+    res.status(200).json({
+      success: true,
+      message: "Reply added successfully",
+      data: ticket
+    })
+
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({
+      success: false,
+      message: error.message
+    })
+  }
+}
+

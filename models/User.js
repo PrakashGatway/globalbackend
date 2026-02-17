@@ -60,6 +60,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    referalCode: {
+      type: String,
+      unique: true,
+      default: '',
+    },
+    referalBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
     passportNumber: String,
     passportExpiry: Date,
     wallet: {
