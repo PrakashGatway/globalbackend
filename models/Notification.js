@@ -2,19 +2,13 @@ const mongoose = require('mongoose')
 
 const notificationSchema = new mongoose.Schema(
     {
-        recipient: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            default: null,
-            index: true
-        },
         isGlobal: {
             type: Boolean,
             default: false,
             index: true
         },
         sender: {
-            type:String,
+            type: String,
             default: null
         },
         title: {
@@ -93,9 +87,51 @@ const notificationSchema = new mongoose.Schema(
     }
 )
 
+const notificationRecipientSchema = new mongoose.Schema(
+    {
+        notification: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Notification',
+            required: true,
+            index: true
+        },
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+            index: true
+        },
+        isRead: {
+            type: Boolean,
+            default: false,
+            index: true
+        },
+        readAt: {
+            type: Date,
+            default: null
+        },
+        expiresAt: {
+            type: Date,
+            index: true,
+            expires: 0
+        }
+    })
 
-// indexes for fast queries
-notificationSchema.index({ recipient: 1, isRead: 1 })
-notificationSchema.index({ recipient: 1, createdAt: -1 })
+notificationRecipientSchema.index(
+    { notification: 1, user: 1 },
+    { unique: true }
+)
 
-module.exports = mongoose.model('Notification', notificationSchema)
+notificationSchema.index({ recipient: 1 })
+
+const NotificationRecipient = mongoose.model(
+    'NotificationRecipient',
+    notificationRecipientSchema
+)
+
+const Notification = mongoose.model('Notification', notificationSchema)
+
+module.exports = {
+    Notification,
+    NotificationRecipient
+}

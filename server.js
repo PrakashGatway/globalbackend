@@ -5,8 +5,6 @@ const morgan = require('morgan')
 require('dotenv').config()
 const path = require("path");
 const fs = require("fs");
-const Country = require('./models/Country')
-const Subject = require('./models/SubjectModel')
 
 const app = express()
 
@@ -35,6 +33,8 @@ app.use('/api/page-information', require('./routes/pageInformation'))
 app.use('/api/blogs', require('./routes/blogRoutes'))
 app.use('/api/subjects', require('./routes/subjectRoutes'))
 
+app.use('/api/notifications', require('./routes/notication'))
+
 const QRCode = require('qrcode')
 
 async function generateUpiQr() {
@@ -55,23 +55,6 @@ async function generateUpiQr() {
   }
 }
 // generateUpiQr()
-async function seedSubjects(subjectsData) {
-  for (const item of subjectsData) {
-    const exists = await Subject.findOne({ slug: item.url_slug });
-
-    if (!exists) {
-      await Subject.create({
-        name: item.key,
-        slug: item.url_slug,
-        description: item.value
-      });
-      console.log(`✅ Subject seeded: ${item.name}`);
-    } else {
-      console.log(`⏭️ Subject already exists: ${item.name}`);
-    }
-  }
-}
-// seedSubjects(subjectsData)
 
 
 app.get("/api/page-json", (req, res) => {

@@ -1,5 +1,17 @@
 const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
+const crypto = require('crypto');
+
+function generateReferralCode(length = 6) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const bytes = crypto.randomBytes(length);
+  let result = '';
+
+  for (let i = 0; i < length; i++) {
+    result += chars[bytes[i] % chars.length];
+  }
+
+  return result;
+}
 
 const userSchema = new mongoose.Schema(
   {
@@ -63,11 +75,11 @@ const userSchema = new mongoose.Schema(
     referalCode: {
       type: String,
       unique: true,
-      default: '',
+      default: () => generateReferralCode(6)
     },
     referalBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
+      default: '',
     },
     passportNumber: String,
     passportExpiry: Date,

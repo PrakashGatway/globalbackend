@@ -1,8 +1,6 @@
 const Purchase = require('../models/Purchase')
 const Course = require('../models/Course')
-const Reward = require('../models/Reward')
 const User = require('../models/User')
-const Coupon = require('../models/Coupon')
 const { paginate } = require('../utils/pagination')
 
 // @desc    Purchase a course

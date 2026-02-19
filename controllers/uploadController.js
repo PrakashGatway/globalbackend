@@ -50,8 +50,6 @@ exports.deleteImage = async (req, res) => {
       })
     }
 
-    // Decode publicId to handle URL encoding (e.g., "cway-admin%2Ffolder%2Fimage" -> "cway-admin/folder/image")
-    // Express automatically decodes, but we'll decode explicitly to be safe
     publicId = decodeURIComponent(publicId)
 
     // Delete from Cloudinary
@@ -123,3 +121,45 @@ exports.profileImage = async (req, res) => {
     })
   }
 }
+
+exports.resumeUpload = async (req, res) => {
+  try {
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded"
+      });
+    }
+
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "resumes",
+          resource_type: "raw",
+          public_id: `resume_${Date.now()}`
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+
+    res.json({
+      success: true,
+      message: "Resume uploaded successfully",
+      url: result?.secure_url,
+      publicId: result?.public_id
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

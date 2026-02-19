@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken')
-const crypto = require('crypto')
 const User = require('../models/User')
 const OTP = require('../models/OTP')
 const { sendOTPEmail, sendVerificationEmail } = require('../utils/emailService')
@@ -9,39 +8,6 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'your-secret-key', {
     expiresIn: process.env.JWT_EXPIRE || '7d',
   })
-}
-
-exports.register = async (req, res) => {
-  try {
-    const { name, email, phone, password } = req.body
-
-    const userExists = await User.findOne({ email })
-    if (userExists) {
-      return res.status(400).json({ success: false, message: 'User already exists' })
-    }
-
-    const user = await User.create({
-      name,
-      email,
-      phone,
-      password
-    })
-
-    try {
-      await sendVerificationEmail(email, verificationToken, name)
-    } catch (emailError) {
-      console.error('Failed to send verification email:', emailError.message)
-    }
-
-    const token = generateToken(user._id)
-
-    res.status(201).json({
-      success: true,
-      token
-    })
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
-  }
 }
 
 exports.login = async (req, res) => {
@@ -93,7 +59,7 @@ exports.login = async (req, res) => {
 
 exports.sendOTP = async (req, res) => {
   try {
-    const { name, phone, email } = req.body
+    const { name, phone, email, referalby } = req.body
     if (!email) {
       return res.status(400).json({ success: false, message: 'Please provide email' })
     }
@@ -102,11 +68,21 @@ exports.sendOTP = async (req, res) => {
       if (!phone) {
         return res.status(400).json({ success: false, message: 'Please provide email and phone for registration' })
       }
+      let referralUser;
+      if (referalby) {
+        referralUser = await User.findOne({ referalCode: referalby });
+      }
       user = await User.create({
         name: name || email.split('@')[0],
         email,
-        phone
+        phone,
+        referalby: referralUser ? referralUser._id : null,
+        wallet: referralUser ? 50 : 0
       })
+      if(user){
+        referralUser.wallet += 50;
+        await referralUser.save();
+      }
     }
     const otpCode = '123456'
     await OTP.deleteMany({ email, isUsed: false })
@@ -303,3 +279,27 @@ exports.createOrUpdateUserProfile = async (req, res) => {
     })
   }
 }
+
+exports.getMyReferrals = async (req, res) => {
+  try {
+    const user = req.user;
+
+    const referrals = await User.find({ referalBy: user.referalCode })
+      .sort({ createdAt: -1 })
+      .limit(15)
+      .select('name email createdAt profileImage');
+
+    res.status(200).json({
+      success: true,
+      count: referrals.length,
+      data: referrals
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch referrals'
+    });
+  }
+};

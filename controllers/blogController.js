@@ -204,6 +204,7 @@ exports.getAllBlogs = async (req, res) => {
     try {
         const {
             search,
+            catslug,
             category,
             author,
             status,
@@ -228,8 +229,25 @@ exports.getAllBlogs = async (req, res) => {
         if (type) {
             matchStage.blogType = type
         }
+        if (catslug) {
+            const category = await BlogCategory.findOne({ slug: catslug })
+            if (category) {
+                matchStage.category = category._id
+            } else {
+                return res.status(200).json({
+                    success: true,
+                    total: 0,
+                    page: Number(page),
+                    limit: Number(limit),
+                    pages: 0,
+                    results: 0,
+                    data: [],
+                });
+            }
+        } else {
+            if (category) matchStage.category = new mongoose.Types.ObjectId(category)
+        }
 
-        if (category) matchStage.category = new mongoose.Types.ObjectId(category)
         if (author) matchStage.author = new mongoose.Types.ObjectId(author)
         if (status) matchStage.status = status
         if (isFeatured !== undefined)
@@ -263,6 +281,7 @@ exports.getAllBlogs = async (req, res) => {
                     as: 'category',
                 },
             },
+
             { $unwind: '$category' },
             // Sort after lookup/unwind for accurate pagination
             { $sort: sortObj },

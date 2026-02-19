@@ -1,288 +1,590 @@
-const Coupon = require('../models/Coupon')
-const { paginate } = require('../utils/pagination')
+const mongoose = require('mongoose');
+const { Coupon,ScratchCard } = require('../models/Coupon');
 
-// @desc    Get all coupons
-// @route   GET /api/coupons
-// @access  Private
-exports.getCoupons = async (req, res) => {
-  try {
-    const { data, pagination } = await paginate(Coupon, {}, req, {
-      sort: { createdAt: -1 },
-    })
-
-    res.json({
-      success: true,
-      count: pagination.totalItems,
-      pagination,
-      data,
-    })
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
-
-// @desc    Get single coupon
-// @route   GET /api/coupons/:id
-// @access  Private
-exports.getCoupon = async (req, res) => {
-  try {
-    const coupon = await Coupon.findById(req.params.id)
-
-    if (!coupon) {
-      return res.status(404).json({ success: false, message: 'Coupon not found' })
-    }
-
-    res.json({ success: true, data: coupon })
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
-
-// @desc    Validate coupon code
-// @route   POST /api/coupons/validate
-// @access  Private
-exports.validateCoupon = async (req, res) => {
-  try {
-    const { code, amount, itemId, itemType } = req.body
-
-    if (!code) {
-      return res.status(400).json({ success: false, message: 'Coupon code is required' })
-    }
-
-    const coupon = await Coupon.findOne({ code: code.toUpperCase() })
-
-    if (!coupon) {
-      return res.status(404).json({ success: false, message: 'Invalid coupon code' })
-    }
-
-    // Check if coupon is applicable to the item type
-    if (coupon.applicableTo === 'courses' && itemType !== 'course') {
-      return res.status(400).json({
-        success: false,
-        message: 'This coupon is only applicable to courses',
-      })
-    }
-
-    if (coupon.applicableTo === 'programs' && itemType !== 'program') {
-      return res.status(400).json({
-        success: false,
-        message: 'This coupon is only applicable to programs',
-      })
-    }
-
-    // Validate coupon
-    const validation = coupon.isValid(amount || 0, itemId)
-
-    if (!validation.valid) {
-      return res.status(400).json({
-        success: false,
-        message: validation.message,
-      })
-    }
-
-    // Calculate discount
-    const discount = coupon.calculateDiscount(amount || 0)
-    const finalAmount = amount - discount
-
-    res.json({
-      success: true,
-      data: {
-        coupon: {
-          id: coupon._id,
-          code: coupon.code,
-          description: coupon.description,
-          discountType: coupon.discountType,
-          discountValue: coupon.discountValue,
-        },
-        discount,
-        originalAmount: amount,
-        finalAmount: finalAmount,
-      },
-    })
-  } catch (error) {
-    console.error('Validate coupon error:', error)
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
-
-// @desc    Create coupon
-// @route   POST /api/coupons
-// @access  Private/Admin
 exports.createCoupon = async (req, res) => {
   try {
-    const {
-      code,
-      description,
-      discountType,
-      discountValue,
-      minPurchaseAmount,
-      maxDiscountAmount,
-      validFrom,
-      validTo,
-      usageLimit,
-      applicableTo,
-      applicableItems,
-    } = req.body
 
-    // Check if coupon code already exists
-    const existingCoupon = await Coupon.findOne({ code: code.toUpperCase() })
-    if (existingCoupon) {
+    const data = req.body;
+    // validation based on type
+    if (data.type === "coupon" && !data.couponData) {
       return res.status(400).json({
         success: false,
-        message: 'Coupon code already exists',
-      })
+        message: "couponData required for coupon type"
+      });
     }
-
-    // Validate dates
-    const fromDate = validFrom ? new Date(validFrom) : new Date()
-    const toDate = validTo ? new Date(validTo) : null
-
-    if (toDate && toDate <= fromDate) {
+    if (data.type === "reward" && !data.rewardData) {
       return res.status(400).json({
         success: false,
-        message: 'Valid to date must be after valid from date',
-      })
+        message: "rewardData required for reward type"
+      });
     }
-
-    // Determine applicableToModel based on applicableTo
-    let applicableToModel = null
-    if (applicableTo === 'courses') {
-      applicableToModel = 'Course'
-    } else if (applicableTo === 'programs') {
-      applicableToModel = 'Program'
-    }
-
-    const coupon = await Coupon.create({
-      code: code.toUpperCase(),
-      description,
-      discountType,
-      discountValue,
-      minPurchaseAmount: minPurchaseAmount || 0,
-      maxDiscountAmount: maxDiscountAmount || null,
-      validFrom: fromDate,
-      validTo: toDate,
-      usageLimit: usageLimit || null,
-      applicableTo: applicableTo || 'all',
-      applicableItems: applicableItems || [],
-      applicableToModel,
-      createdBy: req.user._id,
-    })
-
+    const coupon = await Coupon.create(data);
     res.status(201).json({
       success: true,
-      message: 'Coupon created successfully',
-      data: coupon,
-    })
+      message: `${data.type} created successfully`,
+      data: coupon
+    });
   } catch (error) {
-    console.error('Create coupon error:', error)
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: 'Coupon code already exists',
-      })
-    }
-    res.status(500).json({ success: false, message: error.message })
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
-}
+};
 
-// @desc    Update coupon
-// @route   PUT /api/coupons/:id
-// @access  Private/Admin
+exports.getCoupons = async (req, res) => {
+  try {
+
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      code,
+      type,
+      discountType,
+      applicableTo,
+      startDate,
+      endDate
+    } = req.query;
+
+    const match = {};
+
+    if (status) match.status = status;
+
+    if (type) match.type = type;
+
+    if (code) {
+      match.code = { $regex: code, $options: "i" };
+    }
+
+    if (discountType) {
+      match["couponData.discountType"] = discountType;
+    }
+
+    if (applicableTo) {
+      match["couponData.applicableTo"] = applicableTo;
+    }
+
+    if (startDate || endDate) {
+
+      match.validFrom = {};
+
+      if (startDate)
+        match.validFrom.$gte = new Date(startDate);
+
+      if (endDate)
+        match.validFrom.$lte = new Date(endDate);
+    }
+
+
+
+    const pipeline = [
+
+      { $match: match },
+
+      {
+        $addFields: {
+          isExpired: {
+            $lt: ["$validTo", new Date()]
+          }
+        }
+      },
+
+      { $sort: { createdAt: -1 } },
+
+      {
+        $facet: {
+
+          data: [
+            { $skip: (page - 1) * limit },
+            { $limit: Number(limit) }
+          ],
+
+          totalCount: [
+            { $count: "count" }
+          ]
+        }
+      }
+
+    ];
+
+
+
+    const result = await Coupon.aggregate(pipeline);
+
+    res.json({
+      success: true,
+      data: result[0].data,
+      total: result[0].totalCount[0]?.count || 0,
+      page: Number(page),
+      limit: Number(limit)
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+};
+
+exports.getCouponById = async (req, res) => {
+  try {
+
+    const coupon = await Coupon.findById(req.params.id);
+
+    if (!coupon)
+      return res.status(404).json({
+        success: false,
+        message: "Not found"
+      });
+
+    res.json({
+      success: true,
+      data: coupon
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+};
+
 exports.updateCoupon = async (req, res) => {
+
   try {
-    const coupon = await Coupon.findById(req.params.id)
 
-    if (!coupon) {
-      return res.status(404).json({ success: false, message: 'Coupon not found' })
-    }
-
-    // If code is being updated, check for duplicates
-    if (req.body.code && req.body.code.toUpperCase() !== coupon.code) {
-      const existingCoupon = await Coupon.findOne({
-        code: req.body.code.toUpperCase(),
-      })
-      if (existingCoupon) {
-        return res.status(400).json({
-          success: false,
-          message: 'Coupon code already exists',
-        })
-      }
-      req.body.code = req.body.code.toUpperCase()
-    }
-
-    // Update applicableToModel if applicableTo is changed
-    if (req.body.applicableTo) {
-      if (req.body.applicableTo === 'courses') {
-        req.body.applicableToModel = 'Course'
-      } else if (req.body.applicableTo === 'programs') {
-        req.body.applicableToModel = 'Program'
-      } else {
-        req.body.applicableToModel = null
-      }
-    }
-
-    const updatedCoupon = await Coupon.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    })
+    const coupon = await Coupon.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
 
     res.json({
       success: true,
-      message: 'Coupon updated successfully',
-      data: updatedCoupon,
-    })
+      message: "Updated successfully",
+      data: coupon
+    });
+
   } catch (error) {
-    console.error('Update coupon error:', error)
-    if (error.code === 11000) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+};
+
+exports.deleteCoupon = async (req, res) => {
+
+  try {
+
+    await Coupon.findByIdAndDelete(req.params.id);
+
+    res.json({
+      success: true,
+      message: "Deleted successfully"
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+};
+
+exports.getAvailableCoupons = async (req, res) => {
+
+  try {
+
+    const userId = req.user._id;
+    const { amount, itemId } = req.query;
+
+
+    const pipeline = [
+
+      {
+        $match: {
+
+          type: "coupon",
+
+          status: "Active",
+
+          validFrom: { $lte: new Date() },
+
+          validTo: { $gte: new Date() },
+
+          $expr: {
+            $or: [
+              { $eq: ["$usageLimit", null] },
+              { $gt: ["$usageLimit", "$usedCount"] }
+            ]
+          }
+        }
+      },
+
+
+      {
+        $addFields: {
+
+          isUserEligible: {
+
+            $cond: {
+
+              if: "$couponData.isUserSpecific",
+
+              then: {
+                $in: [
+                  new mongoose.Types.ObjectId(userId),
+                  "$couponData.users"
+                ]
+              },
+
+              else: true
+            }
+          }
+
+        }
+      },
+
+
+      { $match: { isUserEligible: true } },
+
+
+      ...(amount ? [{
+        $match: {
+          "couponData.minPurchaseAmount": {
+            $lte: Number(amount)
+          }
+        }
+      }] : []),
+
+
+      ...(itemId ? [{
+        $match: {
+          $or: [
+            { "couponData.applicableTo": "all" },
+            {
+              "couponData.applicableItems":
+                new mongoose.Types.ObjectId(itemId)
+            }
+          ]
+        }
+      }] : []),
+
+
+      {
+        $project: {
+          code: 1,
+          title: 1,
+          description: 1,
+          couponData: 1,
+          validTo: 1,
+        }
+      }
+
+    ];
+
+
+    const coupons = await Coupon.aggregate(pipeline);
+
+
+    res.json({
+      success: true,
+      count: coupons.length,
+      data: coupons
+    });
+
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+};
+
+exports.applyCoupon = async (req, res) => {
+
+  try {
+
+    const { code, amount } = req.body;
+
+    const coupon = await Coupon.findOne({
+      code,
+      type: "coupon"
+    });
+
+
+    if (!coupon)
+      return res.status(404).json({
+        success: false,
+        message: "Invalid coupon"
+      });
+
+
+    if (coupon.validTo < new Date())
       return res.status(400).json({
         success: false,
-        message: 'Coupon code already exists',
-      })
-    }
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
+        message: "Expired"
+      });
 
-// @desc    Delete coupon
-// @route   DELETE /api/coupons/:id
-// @access  Private/Admin
-exports.deleteCoupon = async (req, res) => {
-  try {
-    const coupon = await Coupon.findByIdAndDelete(req.params.id)
 
-    if (!coupon) {
-      return res.status(404).json({ success: false, message: 'Coupon not found' })
+    if (
+      coupon.usageLimit &&
+      coupon.usedCount >= coupon.usageLimit
+    )
+      return res.status(400).json({
+        success: false,
+        message: "Usage limit reached"
+      });
+
+
+    if (
+      amount <
+      coupon.couponData.minPurchaseAmount
+    )
+      return res.status(400).json({
+        success: false,
+        message: `Minimum ${coupon.couponData.minPurchaseAmount}`
+      });
+
+
+
+    let discount = 0;
+
+
+    if (
+      coupon.couponData.discountType === "percentage"
+    ) {
+
+      discount =
+        (amount * coupon.couponData.discountValue) / 100;
+
+      if (coupon.couponData.maxDiscountAmount)
+        discount = Math.min(
+          discount,
+          coupon.couponData.maxDiscountAmount
+        );
+
+    } else {
+
+      discount =
+        coupon.couponData.discountValue;
     }
+
+
 
     res.json({
       success: true,
-      message: 'Coupon deleted successfully',
-    })
+      discount,
+      finalAmount: amount - discount
+    });
+
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
   }
-}
 
-// @desc    Increment coupon usage
-// @route   PUT /api/coupons/:id/increment-usage
-// @access  Private
-exports.incrementUsage = async (req, res) => {
+};
+
+exports.createScratchCard = async (req, res) => {
   try {
-    const coupon = await Coupon.findById(req.params.id)
-
-    if (!coupon) {
-      return res.status(404).json({ success: false, message: 'Coupon not found' })
-    }
-
-    coupon.usedCount += 1
-    await coupon.save()
+    const userId = req.user._id;
+    const card = await ScratchCard.create({
+      userId,
+      // rewardId: req.body.rewardId,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    });
 
     res.json({
       success: true,
-      message: 'Coupon usage incremented',
-      data: coupon,
-    })
+      message: "Scratch card created",
+      data: card
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
   }
-}
+
+};
+
+exports.getMyScratchCards = async (req, res) => {
+
+  try {
+
+    const cards = await ScratchCard.find({
+      userId: req.user._id
+    })
+      .populate("rewardId")
+      .sort({ createdAt: -1 });
+
+
+    res.json({
+      success: true,
+      count: cards.length,
+      data: cards
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+};
+
+exports.scratchCard = async (req, res) => {
+
+  const session = await mongoose.startSession();
+
+  try {
+
+    session.startTransaction();
+
+    const { scratchCardId } = req.params;
+    const userId = req.user._id;
+
+
+    const card = await ScratchCard.findOne({
+      _id: scratchCardId,
+      userId
+    }).session(session);
+
+
+    if (!card)
+      throw new Error("Scratch card not found");
+
+
+    if (card.isScratched)
+      throw new Error("Already scratched");
+
+
+    if (card.expiresAt && card.expiresAt < new Date())
+      throw new Error("Scratch card expired");
+
+    const rewards = await Coupon.find({
+      type: "reward",
+      status: "Active",
+      validFrom: { $lte: new Date() },
+      validTo: { $gte: new Date() }
+    }).session(session);
+
+    if (!rewards.length)
+      throw new Error("No rewards available");
+    let totalProbability = 0;
+
+    rewards.forEach(r => {
+      totalProbability += r.rewardData.probability || 0;
+    });
+
+    let random = Math.random() * totalProbability;
+
+    let selectedReward = null;
+    for (let reward of rewards) {
+      random -= reward.rewardData.probability || 0;
+      if (random <= 0) {
+        selectedReward = reward;
+        break;
+      }
+    }
+    if (!selectedReward)
+      selectedReward = rewards[0];
+    /**
+     * UPDATE SCRATCH CARD
+     */
+    card.isScratched = true;
+    card.scratchedAt = new Date();
+    card.rewardId = selectedReward._id;
+
+     await card.save({ session });
+    const updatedCard = await ScratchCard.findOne({
+      _id: scratchCardId
+    }).populate("rewardId").session(session);
+
+    let rewardResponse = {
+      type: selectedReward.rewardData.rewardType,
+      title: selectedReward.title
+    };
+    // WALLET REWARD
+    if (selectedReward.rewardData.rewardType === "WALLET") {
+
+      const amount = selectedReward.rewardData.rewardValue;
+
+      await mongoose.model("User").updateOne(
+        { _id: userId },
+        { $inc: { wallet: amount } },
+        { session }
+      );
+
+      rewardResponse.amount = amount;
+    }
+    if (selectedReward.rewardData.rewardType === "COUPON") {
+
+      const coupon = await Coupon.findById(
+        selectedReward.rewardData.couponId
+      ).session(session);
+
+      rewardResponse.coupon = coupon;
+    }
+
+    // CASH REWARD
+    if (selectedReward.rewardData.rewardType === "CASH") {
+
+      rewardResponse.amount =
+        selectedReward.rewardData.rewardValue;
+    }
+    // NOTHING
+    if (selectedReward.rewardData.rewardType === "NOTHING") {
+      rewardResponse.message =
+        "Better luck next time";
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+    res.json({
+      success: true,
+      message: "Scratch successful",
+      reward: rewardResponse,
+      updatedCard
+    });
+
+  } catch (error) {
+
+    await session.abortTransaction();
+    session.endSession();
+
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

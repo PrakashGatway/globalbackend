@@ -1,4 +1,4 @@
-const Reward = require('../models/Reward')
+const { Reward } = require('../models/Coupon')
 const User = require('../models/User')
 const { paginate } = require('../utils/pagination')
 

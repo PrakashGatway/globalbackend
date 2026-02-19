@@ -1,7 +1,14 @@
 const mongoose = require('mongoose')
+const { Schema } = mongoose;
 
 const couponSchema = new mongoose.Schema(
   {
+    type: {
+      type: String,
+      enum: ['coupon', 'reward'],
+      required: true,
+      default: 'coupon',
+    },
     code: {
       type: String,
       required: [true, 'Please provide coupon code'],
@@ -13,26 +20,76 @@ const couponSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
-    discountType: {
+    title: {
       type: String,
-      enum: ['percentage', 'fixed'],
-      required: true,
-      default: 'percentage',
+      default: '',
     },
-    discountValue: {
-      type: Number,
-      required: true,
-      min: 0,
+    couponData: {
+      discountType: {
+        type: String,
+        enum: ['percentage', 'fixed'],
+        default: 'percentage',
+      },
+      discountValue: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      isUserSpecific: {
+        type: Boolean,
+        default: false,
+      },
+      users: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        }
+      ],
+      minPurchaseAmount: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      maxDiscountAmount: {
+        type: Number,
+        default: null, // null means no limit
+        min: 0,
+      },
+      applicableTo: {
+        type: String,
+        enum: ['all', 'courses', 'programs'],
+        default: 'all',
+      },
+      applicableItems: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          refPath: 'applicableToModel',
+        },
+      ],
+      applicableToModel: {
+        type: String,
+        enum: ["course", "program"],
+      }
     },
-    minPurchaseAmount: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-    maxDiscountAmount: {
-      type: Number,
-      default: null, // null means no limit
-      min: 0,
+    rewardData: {
+      rewardType: {
+        type: String,
+        enum: ["COUPON", "WALLET", "CASH", "NOTHING"],
+      },
+      rewardValue: {
+        type: Number,
+        default: 0
+      },
+      couponId: {
+        type: Schema.Types.ObjectId,
+        ref: "Coupon",
+        default: null
+      },
+      probability: {
+        type: Number,
+        min: 0,
+        max: 100
+      }
     },
     validFrom: {
       type: Date,
@@ -53,104 +110,55 @@ const couponSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
-    applicableTo: {
-      type: String,
-      enum: ['all', 'courses', 'programs'],
-      default: 'all',
-    },
-    applicableItems: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        refPath: 'applicableToModel',
-      },
-    ],
-    applicableToModel: {
-      type: String,
-      enum: ['Course', 'Program'],
-    },
     status: {
       type: String,
       enum: ['Active', 'Inactive', 'Expired'],
       default: 'Active',
-    },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    },
+    }
   },
   {
     timestamps: true,
   }
 )
 
-// Index for faster queries
 couponSchema.index({ code: 1 })
 couponSchema.index({ status: 1, validFrom: 1, validTo: 1 })
 
-// Method to check if coupon is valid
-couponSchema.methods.isValid = function (amount = 0, itemId = null) {
-  const now = new Date()
+const scratchCardSchema = new Schema({
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    index: true
+  },
+  rewardId: {
+    type: Schema.Types.ObjectId,
+    ref: "Coupon",
+    default: null
+  },
 
-  // Check status
-  if (this.status !== 'Active') {
-    return { valid: false, message: 'Coupon is not active' }
+  isScratched: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  scratchedAt: {
+    type: Date
+  },
+  expiresAt: {
+    type: Date,
+    index: true,
+    expires: 0
   }
+}, {
+  timestamps: true
+});
 
-  // Check validity dates
-  if (now < this.validFrom) {
-    return { valid: false, message: 'Coupon is not yet valid' }
-  }
 
-  if (now > this.validTo) {
-    return { valid: false, message: 'Coupon has expired' }
-  }
+const ScratchCard = mongoose.model("ScratchCard", scratchCardSchema);
+const Coupon = mongoose.model('Coupon', couponSchema)
 
-  // Check usage limit
-  if (this.usageLimit && this.usedCount >= this.usageLimit) {
-    return { valid: false, message: 'Coupon usage limit reached' }
-  }
-
-  // Check minimum purchase amount
-  if (amount < this.minPurchaseAmount) {
-    return {
-      valid: false,
-      message: `Minimum purchase amount of ₹${this.minPurchaseAmount} required`,
-    }
-  }
-
-  // Check if applicable to specific items
-  if (this.applicableTo === 'courses' || this.applicableTo === 'programs') {
-    if (this.applicableItems.length > 0 && itemId) {
-      const itemIdStr = itemId.toString()
-      const applicableIds = this.applicableItems.map((id) => id.toString())
-      if (!applicableIds.includes(itemIdStr)) {
-        return { valid: false, message: 'Coupon not applicable to this item' }
-      }
-    }
-  }
-
-  return { valid: true }
-}
-
-// Method to calculate discount
-couponSchema.methods.calculateDiscount = function (amount) {
-  let discount = 0
-
-  if (this.discountType === 'percentage') {
-    discount = (amount * this.discountValue) / 100
-    // Apply max discount limit if set
-    if (this.maxDiscountAmount && discount > this.maxDiscountAmount) {
-      discount = this.maxDiscountAmount
-    }
-  } else if (this.discountType === 'fixed') {
-    discount = this.discountValue
-    // Don't allow discount more than purchase amount
-    if (discount > amount) {
-      discount = amount
-    }
-  }
-
-  return Math.round(discount * 100) / 100 // Round to 2 decimal places
-}
-
-module.exports = mongoose.model('Coupon', couponSchema)
+module.exports = {
+  ScratchCard,
+  Coupon
+};
