@@ -71,10 +71,6 @@ const userProfileSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    maritalStatus: {
-      type: String,
-      enum: ['single', 'married'],
-    },
     currentAddress: addressSchema,
     permanentAddress: addressSchema,
     educationHistory: [educationSchema],

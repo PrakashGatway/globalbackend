@@ -32,7 +32,6 @@ const couponSchema = new mongoose.Schema(
       },
       discountValue: {
         type: Number,
-        required: true,
         min: 0,
       },
       isUserSpecific: {

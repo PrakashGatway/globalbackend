@@ -20,16 +20,17 @@ exports.getTickets = async (req, res) => {
     page = parseInt(page)
     limit = parseInt(limit)
 
-
-    // Build filter object
     let filter = {}
 
     if (status) filter.status = status
     if (category) filter.category = category
     if (priority) filter.priority = priority
-    filter.user = req.user.role === 'admin'? user : req.user._id
+    if(req.user.role == "admin"){
+      if (user) filter.user = user
+    }else{
+      filter.user = req.user._id
+    }
 
-    // Date filter
     if (fromDate || toDate) {
       filter.createdAt = {}
       if (fromDate) filter.createdAt.$gte = new Date(fromDate)
