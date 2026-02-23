@@ -51,6 +51,7 @@ const getAllUniversities = async (req, res) => {
       location_alias,
       extraStatus,
       populateExtra,
+      type,
       page = 1,
       limit = 10
     } = req.query;
@@ -65,7 +66,8 @@ const getAllUniversities = async (req, res) => {
     if (country) uniMatch.country = { $regex: country, $options: 'i' };
     if (city) uniMatch.city = { $regex: city, $options: 'i' };
     if (uniStatus) uniMatch.status = uniStatus;
-    if(location_alias) uniMatch.location_alias = { $regex: location_alias, $options: 'i' };
+
+    if (location_alias) uniMatch.location_alias = { $regex: location_alias, $options: 'i' };
     if (code) uniMatch.code = { $regex: code, $options: 'i' };
     if (established_year !== undefined) {
       const year = Number(established_year);
@@ -74,6 +76,7 @@ const getAllUniversities = async (req, res) => {
     if (on_compus_accommodation !== undefined) {
       uniMatch.on_compus_accommodation = on_compus_accommodation === 'true';
     }
+    if (type) uniMatch.uni_type = type;
 
     const pipeline = [];
 
@@ -348,10 +351,46 @@ const deleteUniversity = async (req, res) => {
   }
 };
 
+
+const getFlatUniversities = async (req, res) => {
+  try {
+    const { name, limit = 100 } = req.query;
+
+    console.log('Flat universities query:', req.query);
+
+    const query = {};
+
+    // Optional search by name
+    if (name) {
+      query.name = { $regex: name, $options: 'i' };
+    }
+
+    const universities = await University.find(query)
+      .select('_id name')   // only required fields
+      .sort({ name: 1 })    // optional sorting
+      .limit(Math.min(parseInt(limit) || 100, 500))
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      count: universities.length,
+      data: universities
+    });
+
+  } catch (error) {
+    console.error('Flat universities error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+};
+
 module.exports = {
   createUniversity,
   getAllUniversities,
   getUniversityById,
   updateUniversity,
   deleteUniversity,
+  getFlatUniversities
 };

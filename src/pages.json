@@ -949,6 +949,31 @@
         ]
       },
       {
+        "name": "contentSection",
+        "label": "contentSection",
+        "fields": [
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "default": "Our Trusted Partners"
+              },
+              {
+                "name": "subtitle",
+                "label": "Subtitle",
+                "type": "richtext",
+                "default": "subtitle"
+              }
+            ]
+          }
+        ]
+      },
+      {
         "name": "admissionRequirements",
         "label": "admissionRequirements",
         "fields": [
@@ -1550,6 +1575,13 @@
             "accept": "image/*"
           },
           {
+            "name": "upperImage",
+            "label": "Upper Image",
+            "type": "file",
+            "required": true,
+            "accept": "image/*"
+          },
+          {
             "name": "ctaText1",
             "label": "Call to Action Text 1",
             "type": "text",
@@ -1593,7 +1625,7 @@
           {
             "name": "subtitle",
             "label": "Subtitle",
-            "type": "textarea",
+            "type": "richtext",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -1627,7 +1659,7 @@
           {
             "name": "subtitle",
             "label": "Subtitle",
-            "type": "textarea",
+            "type": "richtext",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -1667,7 +1699,6 @@
             "name": "image",
             "label": "Image",
             "type": "file",
-            "required": true,
             "accept": "image/*"
           },
           {
@@ -1684,8 +1715,7 @@
               {
                 "name": "title",
                 "label": "Feature Title",
-                "type": "text",
-                "required": true
+                "type": "text"
               },
               {
                 "name": "description",
@@ -1775,18 +1805,6 @@
         "label": "Content Section",
         "fields": [
           {
-            "name": "title",
-            "label": "Section Title",
-            "type": "text",
-            "default": "Why Choose Us"
-          },
-          {
-            "name": "subTitle",
-            "label": "Section subTitle",
-            "type": "textarea",
-            "default": ""
-          },
-          {
             "name": "items",
             "label": "Features",
             "type": "repeater",
@@ -1794,8 +1812,7 @@
               {
                 "name": "title",
                 "label": "Title",
-                "type": "text",
-                "required": true
+                "type": "text"
               },
               {
                 "name": "description",
@@ -1806,7 +1823,7 @@
           }
         ]
       },
-            {
+      {
         "name": "scholarships",
         "label": "scholarships Section",
         "fields": [
@@ -1827,7 +1844,7 @@
             "label": "Features",
             "type": "repeater",
             "fields": [
-               {
+              {
                 "name": "icon",
                 "label": "Icon",
                 "type": "text"

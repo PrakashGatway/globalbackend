@@ -8,7 +8,7 @@ const blogCategorySchema = new mongoose.Schema(
             unique: true,
             trim: true,
         },
-        type:{
+        type: {
             type: String,
             default: 'blog',
         },
@@ -38,7 +38,7 @@ const blogSchema = new mongoose.Schema(
             required: [true, 'Blog title is required'],
             trim: true,
         },
-        blogType:{
+        blogType: {
             type: String,
             default: 'blog',
         },
@@ -56,11 +56,11 @@ const blogSchema = new mongoose.Schema(
             type: String,
             required: true, // HTML allowed
         },
-        category: {
+        category: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'BlogCategory',
             required: true,
-        },
+        }],
         tags: [String],
         coverImage: {
             type: String,

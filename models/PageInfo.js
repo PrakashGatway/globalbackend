@@ -16,6 +16,11 @@ const pageInformationSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    country: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Country',
+      default: null,
+    },
     slug: {
       type: String,
       required: true,

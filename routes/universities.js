@@ -6,17 +6,21 @@ const {
   getAllUniversities,
   getUniversityById,
   updateUniversity,
-  deleteUniversity
+  deleteUniversity,
+  getFlatUniversities
 } = require('../controllers/universityController'); // Adjust path as needed
 const { protect, authorize } = require('../middleware/auth');
 
 router.route('/')
-  .get( getAllUniversities)
+  .get(getAllUniversities)
   .post(protect, authorize('admin', 'manager'), createUniversity); // Typically protected in production
+
+router.route('/flat').get(getFlatUniversities); // New route for flat list of universities
 
 router.route('/:id')
   .get(getUniversityById)
   .put(protect, authorize('admin', 'manager'), updateUniversity)    // Typically protected
   .delete(protect, authorize('admin', 'manager'), deleteUniversity); // Typically protected
+
 
 module.exports = router;

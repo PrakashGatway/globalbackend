@@ -282,8 +282,6 @@ exports.getAllBlogs = async (req, res) => {
                 },
             },
 
-            { $unwind: '$category' },
-            // Sort after lookup/unwind for accurate pagination
             { $sort: sortObj },
             // Use $facet to get both paginated data and total count in single query
             {
@@ -315,11 +313,7 @@ exports.getAllBlogs = async (req, res) => {
                                 views: 1,
                                 isFeatured: 1,
                                 createdAt: 1,
-                                category: {
-                                    _id: 1,
-                                    name: 1,
-                                    slug: 1,
-                                },
+                                category:1,
                                 extraMetadata: 1
                             },
                         }

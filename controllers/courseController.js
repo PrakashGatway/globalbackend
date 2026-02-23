@@ -48,6 +48,7 @@ exports.getAllCourses = async (req, res) => {
       university,
       subject,
       level,
+      category,
       studyMode,
       currency,
       status,
@@ -56,6 +57,7 @@ exports.getAllCourses = async (req, res) => {
       duration,
       page = 1,
       limit = 10,
+      isExtra = "true",
       sort = '-createdAt',
     } = req.query
 
@@ -75,11 +77,13 @@ exports.getAllCourses = async (req, res) => {
 
     // 🎓 FILTERS
     if (university) matchStage.university = new mongoose.Types.ObjectId(university)
+    if (category) matchStage.category = new mongoose.Types.ObjectId(category)
     if (subject) matchStage.subject = new mongoose.Types.ObjectId(subject)
     if (level) matchStage.level = level
     if (studyMode) matchStage.studyMode = studyMode
     if (currency) matchStage.currency = currency
     if (status) matchStage.status = status
+    if (!status) matchStage.status = 'Active' // Default to active courses
     if (duration) matchStage.duration = duration
 
     // 💰 FEE RANGE
@@ -95,7 +99,20 @@ exports.getAllCourses = async (req, res) => {
     } else {
       sortStage[sort] = 1
     }
-
+    let lookupStages = []
+    if (isExtra == 'true') {
+      lookupStages = [{
+        $lookup: {
+          from: 'extracontents',
+          localField: 'extra_content',
+          foreignField: '_id',
+          as: 'extra_content',
+        },
+      },
+      { $unwind: '$extra_content' }]
+    } else {
+      lookupStages = []
+    }
 
     const pipeline = [
       { $match: matchStage },
@@ -129,15 +146,8 @@ exports.getAllCourses = async (req, res) => {
         },
       },
       { $unwind: '$subject' },
-      {
-        $lookup: {
-          from: 'extracontents',
-          localField: 'extra_content',
-          foreignField: '_id',
-          as: 'extra_content',
-        },
-      },
-      { $unwind: '$extra_content' },
+      ...lookupStages,
+
       // {
       //   $lookup: {
       //     from: 'scholarships',
@@ -184,7 +194,7 @@ exports.getAllCourses = async (req, res) => {
 exports.getCourseById = async (req, res) => {
   const { id } = req.params
   try {
-    const course = await Course.findOne(mongoose.Types.ObjectId.isValid(id) ? { _id: new mongoose.Types.ObjectId(id) } : { slug: id } )
+    const course = await Course.findOne(mongoose.Types.ObjectId.isValid(id) ? { _id: new mongoose.Types.ObjectId(id) } : { slug: id })
       .populate('university')
       .populate('subject')
       .populate('extra_content')

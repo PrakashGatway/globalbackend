@@ -61,7 +61,7 @@ exports.getAllPages = async (req, res) => {
     const pages = await PageInformation.find(query)
       .sort(sort)
       .skip(skip)
-      .limit(Number(limit))
+      .limit(Number(limit)).populate('country', 'name code flg')
 
     const total = await PageInformation.countDocuments(query)
 
@@ -121,7 +121,7 @@ exports.getNavTabs = async (req, res) => {
 
 exports.getPageById = async (req, res) => {
   try {
-    const page = await PageInformation.findById(req.params.id)
+    const page = await PageInformation.findById(req.params.id).populate('country', 'name code flg')
 
     if (!page) {
       return res.status(404).json({
@@ -146,7 +146,7 @@ exports.getPageBySlug = async (req, res) => {
     const page = await PageInformation.findOne({
       slug: req.params.slug,
       status: 'Published',
-    })
+    }).populate('country', 'name code flg')
 
     if (!page) {
       return res.status(404).json({

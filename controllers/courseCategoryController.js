@@ -31,6 +31,7 @@ exports.getAllCategories = async (req, res) => {
         if (req.query.isActive !== undefined) {
             filter.isActive = req.query.isActive === 'true';
         }
+        
         let sort = {};
         if (req.query.sort) {
             if (req.query.sort.startsWith('-')) {
