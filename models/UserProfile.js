@@ -38,13 +38,12 @@ const documentSchema = new mongoose.Schema(
 
 const educationSchema = new mongoose.Schema(
   {
-    level: {
+    highestEducationLevel: {
       type: String,
-      enum: ['10th', '12th', 'diploma', 'bachelor', 'master'],
     },
     institution: String,
     boardOrUniversity: String,
-    country: String,
+    countryOfEducation: String,
     passingYear: Number,
     score: String, // percentage / CGPA
   },

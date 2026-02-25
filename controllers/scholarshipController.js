@@ -243,8 +243,7 @@ exports.getScholarshipBySlug = async (req, res) => {
                     foreignField: '_id',
                     as: 'subject',
                 },
-            },
-            { $unwind: '$subject' },
+            }
         ]);
 
         if (!scholarships.length) {
@@ -335,15 +334,15 @@ exports.getPublicScholarships = async (req, res) => {
         const skip = (pageNumber - 1) * pageSize;
 
         const match = {
-            status: 'Active',
-            isPublished: true,
+            // status: 'Active',
+            // isPublished: true,
         };
 
-        if (country) match.country = new mongoose.Types.ObjectId(country);
-        if (university) match.university = new mongoose.Types.ObjectId(university);
-        if (subject) match.subject = new mongoose.Types.ObjectId(subject);
-        if (fundingType) match.fundingType = fundingType;
-        if (level) match.level = { $in: level.split(',') };
+        // if (country) match.country = new mongoose.Types.ObjectId(country);
+        // if (university) match.university = new mongoose.Types.ObjectId(university);
+        // if (subject) match.subject = new mongoose.Types.ObjectId(subject);
+        // if (fundingType) match.fundingType = fundingType;
+        // if (level) match.level = { $in: level.split(',') };
 
         const result = await Scholarship.aggregate([
             { $match: match },
@@ -368,15 +367,6 @@ exports.getPublicScholarships = async (req, res) => {
             },
             { $unwind: '$university' },
 
-            {
-                $lookup: {
-                    from: 'subjects',
-                    localField: 'subject',
-                    foreignField: '_id',
-                    as: 'subject',
-                },
-            },
-            { $unwind: '$subject' },
 
             { $sort: { createdAt: -1 } },
 

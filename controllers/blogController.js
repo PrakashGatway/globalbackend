@@ -74,6 +74,7 @@ exports.getBlogCategories = async (req, res) => {
             withBlogs,
         } = req.query
 
+
         const matchStage = {}
 
         if (search) {
@@ -213,9 +214,23 @@ exports.getAllBlogs = async (req, res) => {
             toDate,
             type,
             sort = '-createdAt',
+            method,
             page = 1,
             limit = 10,
         } = req.query
+
+        console.log(method)
+
+        
+        if (method == "flaten") {
+            console.log('Flat blogs query:', req.query);
+            const categories = await Blog.find({status: "Published"}).select('name slug blogType createdAt')
+
+            return res.status(200).json({
+                success: true,
+                data: categories,
+            })
+        }
 
         const matchStage = {}
 
@@ -313,7 +328,7 @@ exports.getAllBlogs = async (req, res) => {
                                 views: 1,
                                 isFeatured: 1,
                                 createdAt: 1,
-                                category:1,
+                                category: 1,
                                 extraMetadata: 1
                             },
                         }

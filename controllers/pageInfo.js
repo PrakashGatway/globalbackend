@@ -28,8 +28,17 @@ exports.getAllPages = async (req, res) => {
       toDate,
       sort = '-createdAt',
       page = 1,
+      method,
       limit = 10,
     } = req.query
+
+    if (method === "flaten") {
+      const pages = await PageInformation.find({ status: "Published" }).select('title slug pageType createdAt').sort(sort)
+      return res.status(200).json({
+        success: true,
+        data: pages,
+      })
+    }
 
     const query = {}
 

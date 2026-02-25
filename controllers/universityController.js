@@ -356,8 +356,6 @@ const getFlatUniversities = async (req, res) => {
   try {
     const { name, limit = 100 } = req.query;
 
-    console.log('Flat universities query:', req.query);
-
     const query = {};
 
     // Optional search by name
@@ -366,7 +364,7 @@ const getFlatUniversities = async (req, res) => {
     }
 
     const universities = await University.find(query)
-      .select('_id name')   // only required fields
+      .select('_id name slug cover_photo uni_logo address short_description')   // only required fields
       .sort({ name: 1 })    // optional sorting
       .limit(Math.min(parseInt(limit) || 100, 500))
       .lean();

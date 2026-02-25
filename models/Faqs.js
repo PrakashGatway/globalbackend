@@ -16,19 +16,7 @@ const faqSchema = new mongoose.Schema(
 
     type: {
       type: String,
-      required: true,
-      enum: [
-        'General',
-        'About',
-        'Contact',
-        'Course',
-        'University',
-        'Scholarship',
-        'Visa',
-        'Admission',
-        'Application',
-        'Other',
-      ],
+      required: true
     },
     isPublished: {
       type: Boolean,
