@@ -45,6 +45,7 @@ exports.getAllCourses = async (req, res) => {
   try {
     let {
       search,
+      country,
       university,
       subject,
       level,
@@ -85,8 +86,7 @@ exports.getAllCourses = async (req, res) => {
     if (status) matchStage.status = status
     if (!status) matchStage.status = 'Active' // Default to active courses
     if (duration) matchStage.duration = duration
-
-    // 💰 FEE RANGE
+    
     if (minFee || maxFee) {
       matchStage.tuitionFee = {}
       if (minFee) matchStage.tuitionFee.$gte = Number(minFee)

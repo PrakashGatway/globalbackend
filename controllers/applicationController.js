@@ -1,172 +1,246 @@
-const Application = require('../models/Application')
-const { paginate } = require('../utils/pagination')
+const mongoose = require('mongoose');
+const Application = require('../models/Application');
 
-// @desc    Get all applications
-// @route   GET /api/applications?page=1&limit=10&sortBy=updatedAt&sortOrder=desc
-// @access  Private
-exports.getApplications = async (req, res) => {
-  try {
-    const { search, primaryStatus, university, course } = req.query
-    
-    // Build filter object
-    const filter = {}
-    
-    if (search) {
-      filter.$or = [
-        { camsId: { $regex: search, $options: 'i' } },
-        { studentName: { $regex: search, $options: 'i' } },
-        { passportNo: { $regex: search, $options: 'i' } },
-        { studentId: { $regex: search, $options: 'i' } },
-      ]
-    }
-    
-    if (primaryStatus) {
-      filter.primaryStatus = primaryStatus
-    }
-    
-    if (university) {
-      filter.university = university
-    }
-    
-    if (course) {
-      filter.course = course
-    }
-
-    const { data, pagination } = await paginate(
-      Application,
-      filter,
-      req,
-      {
-        populate: [
-          { path: 'student', select: 'name email phone' },
-          { path: 'university', select: 'name country city' },
-          { path: 'course', select: 'name code' },
-        ],
-        sort: { updatedAt: -1 },
-      }
-    )
-
-    res.json({
-      success: true,
-      count: pagination.totalItems,
-      pagination,
-      data,
-    })
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
-
-// @desc    Get single application
-// @route   GET /api/applications/:id
-// @access  Private
-exports.getApplication = async (req, res) => {
-  try {
-    const application = await Application.findById(req.params.id)
-      .populate('student', 'name email phone')
-      .populate('university', 'name country city')
-      .populate('course', 'name code price')
-
-    if (!application) {
-      return res.status(404).json({ success: false, message: 'Application not found' })
-    }
-
-    res.json({ success: true, data: application })
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
-
-// @desc    Create application
-// @route   POST /api/applications
-// @access  Private
 exports.createApplication = async (req, res) => {
   try {
-    const application = await Application.create(req.body)
-    const populated = await Application.findById(application._id)
-      .populate('student', 'name email phone')
-      .populate('university', 'name country city')
-      .populate('course', 'name code')
+    const {
+      country,
+      course,
+      intake,
+      expectations,
+      documents,
+      extraRequirements,
+      backups,
+    } = req.body;
 
-    res.status(201).json({ success: true, data: populated })
-  } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({
+    const applicationNumber = `OS${Date.now()}`; // OS prefix uppercase
+    if (!req.user) {
+      return res.status(401).json({
         success: false,
-        message: 'CAMS ID already exists',
+        message: 'Unauthorized'
       })
     }
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
 
-// @desc    Update application
-// @route   PUT /api/applications/:id
-// @access  Private
+    const application = await Application.create({
+      applicationNumber,
+      student: req.user._id,
+      country,
+      course,
+      intake,
+      expectations,
+      documents,
+      extraRequirements,
+      backups,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: application,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getApplications = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      student,
+      country,
+      course,
+      intake,
+      paymentStatus,
+      primaryStatus,
+      search,
+      startDate,
+      endDate,
+    } = req.query;
+
+    const matchStage = {};
+
+    matchStage.student = new mongoose.Types.ObjectId(req.user._id);
+
+    if (course)
+      matchStage.course = new mongoose.Types.ObjectId(course);
+
+    if (country) matchStage.country = country;
+
+    if (intake) matchStage.intake = intake;
+
+    if (paymentStatus) matchStage.paymentStatus = paymentStatus;
+
+    if (primaryStatus) matchStage.primaryStatus = primaryStatus;
+
+    // Date filter
+    if (startDate || endDate) {
+      matchStage.createdAt = {};
+      if (startDate) matchStage.createdAt.$gte = new Date(startDate);
+      if (endDate) matchStage.createdAt.$lte = new Date(endDate);
+    }
+
+    // Search
+    if (search) {
+      matchStage.applicationNumber = {
+        $regex: search,
+        $options: 'i',
+      };
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const total = await Application.countDocuments(matchStage);
+
+    const pipeline = [
+      { $match: matchStage },
+
+      // Sort before pagination
+      { $sort: { createdAt: -1 } },
+
+      // Pagination BEFORE lookup (performance optimized)
+      { $skip: skip },
+      { $limit: Number(limit) },
+
+      // ...(req.user.role === 'admin'
+      //   ? [
+      //     {
+      //       $lookup: {
+      //         from: 'users',
+      //         localField: 'student',
+      //         foreignField: '_id',
+      //         as: 'student',
+      //       },
+      //     },
+      //     { $unwind: '$student' },
+      //   ]
+      //   : []),
+
+      {
+        $lookup: {
+          from: 'courses',
+          localField: 'course',
+          foreignField: '_id',
+          as: 'course',
+          pipeline: [
+            {
+              $lookup: {
+                from: 'universities',
+                localField: 'university',
+                foreignField: '_id',
+                as: 'university'
+              },
+            },
+            { $unwind: '$university' }
+          ]
+        },
+      },
+      { $unwind: '$course' },
+    ];
+
+    const data = await Application.aggregate(pipeline);
+
+    res.status(200).json({
+      success: true,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      pages: Math.ceil(total / limit),
+      results: data.length,
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getApplication = async (req, res) => {
+  try {
+    const application = await Application.findOne(mongoose.Types.ObjectId.isValid(req.params.id) ? { _id: new mongoose.Types.ObjectId(req.params.id) } : { applicationNumber: req.params.id })
+      .populate({
+        path: 'course',
+        populate: {
+          path: 'university',   // this must match your Course schema field name
+        }
+      }).populate('backups.course', 'name slug');
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: application,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 exports.updateApplication = async (req, res) => {
   try {
     const application = await Application.findByIdAndUpdate(
       req.params.id,
       req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    )
-      .populate('student', 'name email phone')
-      .populate('university', 'name country city')
-      .populate('course', 'name code')
+      { new: true, runValidators: true }
+    );
 
     if (!application) {
-      return res.status(404).json({ success: false, message: 'Application not found' })
-    }
-
-    res.json({ success: true, data: application })
-  } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
-        message: 'CAMS ID already exists',
-      })
+        message: 'Application not found',
+      });
     }
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
 
-// @desc    Delete application
-// @route   DELETE /api/applications/:id
-// @access  Private/Admin
+    res.status(200).json({
+      success: true,
+      data: application,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 exports.deleteApplication = async (req, res) => {
   try {
-    const application = await Application.findByIdAndDelete(req.params.id)
+    const application = await Application.findOneAndUpdate({
+      _id: req.params.id,
+      paymentStatus: 'Pending', // Only allow deletion if payment is still pending
+      isWithdrawn: false,
+    }, {
+      isWithdrawn: true
+    });
 
     if (!application) {
-      return res.status(404).json({ success: false, message: 'Application not found' })
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found or already withdrawn',
+      });
     }
 
-    res.json({ success: true, message: 'Application deleted successfully' })
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
-
-// @desc    Download all student data
-// @route   GET /api/applications/download/all
-// @access  Private
-exports.downloadAllApplications = async (req, res) => {
-  try {
-    const applications = await Application.find({})
-      .populate('student', 'name email phone')
-      .populate('university', 'name country city')
-      .populate('course', 'name code')
-      .sort({ updatedAt: -1 })
-
-    res.json({
+    res.status(200).json({
       success: true,
-      count: applications.length,
-      data: applications,
-    })
+      message: 'Application withdrawn successfully',
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
-}
+};

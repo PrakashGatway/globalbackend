@@ -219,11 +219,8 @@ exports.getAllBlogs = async (req, res) => {
             limit = 10,
         } = req.query
 
-        console.log(method)
-
         
         if (method == "flaten") {
-            console.log('Flat blogs query:', req.query);
             const categories = await Blog.find({status: "Published"}).select('name slug blogType createdAt')
 
             return res.status(200).json({
@@ -260,7 +257,7 @@ exports.getAllBlogs = async (req, res) => {
                 });
             }
         } else {
-            if (category) matchStage.category = new mongoose.Types.ObjectId(category)
+            if (category) matchStage.category =  new mongoose.Types.ObjectId(category)
         }
 
         if (author) matchStage.author = new mongoose.Types.ObjectId(author)
@@ -288,14 +285,14 @@ exports.getAllBlogs = async (req, res) => {
         // Create a facet pipeline for better performance
         const pipeline = [
             { $match: matchStage },
-            {
-                $lookup: {
-                    from: 'blogcategories',
-                    localField: 'category',
-                    foreignField: '_id',
-                    as: 'category',
-                },
-            },
+            // {
+            //     $lookup: {
+            //         from: 'blogcategories',
+            //         localField: 'category',
+            //         foreignField: '_id',
+            //         as: 'category',
+            //     },
+            // },
 
             { $sort: sortObj },
             // Use $facet to get both paginated data and total count in single query
@@ -378,15 +375,14 @@ exports.getBlogBySlug = async (req, res) => {
         const pipeline = [
             { $match: isMongooseId ? { _id: new mongoose.Types.ObjectId(req.params.slug) } : { slug: req.params.slug } },
 
-            {
-                $lookup: {
-                    from: 'blogcategories',
-                    localField: 'category',
-                    foreignField: '_id',
-                    as: 'category',
-                },
-            },
-            { $unwind: '$category' },
+            // {
+            //     $lookup: {
+            //         from: 'blogcategories',
+            //         localField: 'category',
+            //         foreignField: '_id',
+            //         as: 'category',
+            //     },
+            // }
 
             //   {
             //     $lookup: {

@@ -1,21 +1,12 @@
-const express = require('express')
-const router = express.Router()
-const { protect, admin } = require('../middleware/auth')
-const {
-  getApplications,
-  getApplication,
-  createApplication,
-  updateApplication,
-  deleteApplication,
-  downloadAllApplications,
-} = require('../controllers/applicationController')
+const express = require('express');
+const router = express.Router();
+const applicationController = require('../controllers/applicationController');
+const { protect } = require('../middleware/auth');
 
-// Routes
-router.get('/', protect, getApplications)
-// router.get('/download/all', protect, downloadAllApplications)
-// router.get('/:id', protect, getApplication)
-// router.post('/', protect, createApplication)
-// router.put('/:id', protect, updateApplication)
-// router.delete('/:id', protect, admin, deleteApplication)
+router.post('/',protect, applicationController.createApplication);
+router.get('/',protect, applicationController.getApplications);
+router.get('/:id',protect, applicationController.getApplication);
+router.put('/:id',protect, applicationController.updateApplication);
+router.delete('/:id',protect, applicationController.deleteApplication);
 
-module.exports = router
+module.exports = router;
