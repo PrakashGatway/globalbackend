@@ -43,6 +43,12 @@ const applicationSchema = new mongoose.Schema(
       {
         name: String,
         description: String,
+        status: {
+          type: String,
+          enum: ['Pending', 'Approved', 'Rejected'],
+          default: 'Pending',
+        },
+        rejectReason: String,
         docUrl: String,
         docType: String
       }
@@ -51,12 +57,18 @@ const applicationSchema = new mongoose.Schema(
       {
         name: String,
         description: String,
+        status: {
+          type: String,
+          enum: ['Pending', 'Approved', 'Rejected'],
+          default: 'Pending',
+        },
+        rejectReason: String,
         docUrl: String,
         docType: String
       }
     ],
     extraRequirements: {
-      type:mongoose.Schema.Types.Mixed
+      type: mongoose.Schema.Types.Mixed
     },
     backups: [
       {
@@ -72,11 +84,16 @@ const applicationSchema = new mongoose.Schema(
       type: String,
       enum: [
         'Pending',
-        'Under Review',
-        'Offer Received',
-        'Case Closed',
-        'Application Refused',
+        'Started',
+        'ReviewbyOoshas',
+        'SubmitToSchool',
+        'AwaitingSchoolResponse',
+        'AdmissionProcessing',
+        'Refused',
         'Withdrawn',
+        'PreArrival',
+        'Arrived',
+        'Completed',
       ],
       default: 'Pending',
     },

@@ -2,24 +2,35 @@ const mongoose = require('mongoose')
 
 const purchaseSchema = new mongoose.Schema(
   {
-    student: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    course: {
+    application: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Course',
+      ref: 'Application',
+      default: null
     },
-    program: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Program',
+    isService: {
+      type: Boolean,
+      default: false
+    },
+    serviceName: {
+      type: String,
+      default: ''
     },
     amount: {
       type: Number,
       required: true,
       min: 0,
     },
+    gst: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
     status: {
       type: String,
       enum: ['Pending', 'Completed', 'Cancelled', 'Refunded'],
@@ -32,15 +43,9 @@ const purchaseSchema = new mongoose.Schema(
     transactionId: {
       type: String,
     },
-    rewardsEarned: {
-      cashback: {
-        type: Number,
-        default: 0,
-      },
-      points: {
-        type: Number,
-        default: 0,
-      },
+    refId: {
+      type: String,
+      default: '',
     },
     couponCode: {
       type: String,
@@ -51,28 +56,35 @@ const purchaseSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
+    isWalletUsed: {
+      type: Boolean,
+      default: false
+    },
+    walletPointsUsed: {
+      type: Number,
+      default: 0
+    },
     originalAmount: {
       type: Number,
       default: 0,
     },
+    reason: {
+      type: String,
+      default: ''
+    },
+    refund: {
+      refundId: { type: String },
+      refundAmount: { type: Number },
+      refundDate: { type: Date },
+      reason: { type: String },
+    }
   },
   {
     timestamps: true,
   }
 )
 
-// Validation: Either course or program must be provided
-purchaseSchema.pre('validate', function (next) {
-  if (!this.course && !this.program) {
-    next(new Error('Either course or program must be provided'))
-  } else {
-    next()
-  }
-})
 
-// Index for faster queries
-purchaseSchema.index({ student: 1, course: 1 })
-purchaseSchema.index({ student: 1, program: 1 })
-purchaseSchema.index({ student: 1, createdAt: -1 })
+purchaseSchema.index({ user: 1, createdAt: -1 })
 
 module.exports = mongoose.model('Purchase', purchaseSchema)

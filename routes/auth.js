@@ -7,7 +7,8 @@ const {
   verifyOTP,
   getMe,
   updateProfile,
-  getMyReferrals
+  getMyReferrals,
+  createOrUpdateUserProfile
 } = require('../controllers/authController')
 
 // Routes
@@ -16,6 +17,7 @@ router.post('/send-otp', sendOTP)
 router.post('/verify-otp', verifyOTP)
 router.get('/me', protect, getMe)
 router.put('/profile', protect, updateProfile)
+router.post("/profile_info", protect, createOrUpdateUserProfile)
 router.get("/my-referrals", protect, getMyReferrals)
 
 module.exports = router

@@ -1,313 +1,372 @@
-const Purchase = require('../models/Purchase')
-const Course = require('../models/Course')
-const User = require('../models/User')
-const { paginate } = require('../utils/pagination')
+// controllers/checkoutController.js
+const mongoose = require('mongoose');
+const Application = require('../models/Application');
+const User = require('../models/User');
+const Purchase = require('../models/Purchase');
+const { Coupon } = require('../models/Coupon');
 
-// @desc    Purchase a course
-// @route   POST /api/purchases
-// @access  Private (Student only)
-exports.purchaseCourse = async (req, res) => {
+const catchAsync = (fn) => {
+  return (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
+
+const pointsToRupees = (points) => points / 10;
+
+const rupeesToPoints = (rupees) => rupees * 10;
+
+exports.getCheckoutDetails = catchAsync(async (req, res, next) => {
+  const { applicationId } = req.params;
+  const userId = req.user.id;
+
+  const application = await Application.findOne({
+    applicationNumber: applicationId,
+    student: userId
+  }).populate({
+    path: 'course',
+    populate: {
+      path: 'university'
+    }
+  });
+
+  if (!application) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'Application not found'
+    })
+  }
+
+  const user = await User.findById(userId).select('wallet');
+  const checkoutItem = {
+    id: application._id,
+    type: 'application_fee',
+    name: application.course.name,
+    description: `Application fee for ${application.course.name}`,
+    amount: application.course.applicationFee || 0,
+    currency: 'INR',
+    university: {
+      name: application.course.university.name,
+      logo: application.course.university.uni_logo
+    },
+    applicationNumber: application.applicationNumber,
+    programName: application.course.name,
+    intake: application.intake
+  };
+
+  const walletBalanceInRupees = pointsToRupees(user.wallet || 0);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      checkoutItem,
+      wallet: {
+        points: user.wallet || 0,
+        balanceInRupees: walletBalanceInRupees,
+        currency: 'INR'
+      }
+    }
+  });
+});
+
+exports.applyCoupon = catchAsync(async (req, res, next) => {
+  const { code } = req.body;
+  const { applicationId } = req.params;
+  const userId = req.user.id;
+
+  if (!code) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Coupon code is required'
+    });
+  }
+
+  // Find application
+  const application = await Application.findOne({
+    applicationNumber: applicationId,
+    student: userId
+  }).populate('course');
+
+  if (!application) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'Application not found'
+    });
+  }
+
+  const amount = application.course.applicationFee || 0;
+
+  // Find active coupon
+  const coupon = await Coupon.findOne({
+    code: code.toUpperCase(),
+    status: 'Active',
+    type: 'coupon',
+    validFrom: { $lte: new Date() },
+    validTo: { $gte: new Date() }
+  });
+
+  if (!coupon) {
+     return res.status(404).json({
+      status: 'error',
+      message: 'Coupon not found'
+    });
+  }
+
+  // Check if coupon is user specific
+  if (coupon.couponData?.isUserSpecific) {
+    if (!coupon.couponData.users.includes(userId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Coupon is not valid for this user'
+      })
+    }
+  }
+
+  // Check usage limit
+  if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Coupon usage limit reached'
+    })
+  }
+
+  // Check minimum purchase amount
+  if (coupon.couponData?.minPurchaseAmount) {
+    if (amount < coupon.couponData.minPurchaseAmount) {
+      return res.status(400).json({
+        status: 'error',
+        message: `Minimum purchase of ₹${coupon.couponData.minPurchaseAmount} required`
+      })
+    }
+  }
+
+  // Calculate discount
+  let discountAmount = 0;
+
+  if (coupon.couponData?.discountType === 'percentage') {
+    discountAmount = (amount * coupon.couponData.discountValue) / 100;
+
+    // Apply max discount limit if exists
+    if (coupon.couponData.maxDiscountAmount) {
+      discountAmount = Math.min(discountAmount, coupon.couponData.maxDiscountAmount);
+    }
+  } else if (coupon.couponData?.discountType === 'fixed') {
+    discountAmount = Math.min(coupon.couponData.discountValue, amount);
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      coupon: {
+        code: coupon.code,
+        discountType: coupon.couponData.discountType,
+        discountValue: coupon.couponData.discountValue,
+        maxDiscount: coupon.couponData.maxDiscountAmount,
+        minPurchase: coupon.couponData.minPurchaseAmount,
+        valid: true,
+        message: `${coupon.couponData.discountType === 'percentage' ?
+          coupon.couponData.discountValue + '%' :
+          '₹' + coupon.couponData.discountValue} discount applied!`
+      },
+      discountAmount
+    }
+  });
+});
+
+exports.processPayment = catchAsync(async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const { courseId, programId, paymentMethod, transactionId, couponCode } = req.body
-    const studentId = req.user._id
+    const { applicationId } = req.params;
+    const {
+      useWallet,
+      couponCode,
+      paymentMethod,
+      transactionId
+    } = req.body;
 
-    // Validate that either courseId or programId is provided
-    if (!courseId && !programId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Either courseId or programId is required',
-      })
-    }
+    const userId = req.user.id;
 
-    if (courseId && programId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide either courseId or programId, not both',
-      })
-    }
+    const application = await Application.findOne({
+      applicationNumber: applicationId,
+      student: userId,
+      paymentStatus: 'Pending'
+    }).populate('course').session(session);
 
-    // Check if user is a student
-    const user = await User.findById(studentId)
-    if (!user || user.role !== 'user') {
-      return res.status(403).json({
-        success: false,
-        message: 'Only students can purchase courses',
-      })
-    }
-
-    // Get item (course or program)
-    let item = null
-    let itemType = null
-    let itemId = null
-
-    if (courseId) {
-      item = await Course.findById(courseId)
-      itemType = 'course'
-      itemId = courseId
-    } else if (programId) {
-      item = await Program.findById(programId)
-      itemType = 'program'
-      itemId = programId
-    }
-
-    if (!item) {
+    if (!application) {
       return res.status(404).json({
         success: false,
-        message: itemType === 'course' ? 'Course not found' : 'Program not found',
+        message: 'Application not found'
       })
     }
 
-    if (item.status !== 'Active') {
+    if (application.paymentStatus === 'Completed') {
       return res.status(400).json({
         success: false,
-        message: `${itemType === 'course' ? 'Course' : 'Program'} is not available for purchase`,
+        message: 'Application already paid'
       })
     }
+    const user = await User.findById(userId).session(session);
 
-    // Check if student already purchased this item
-    const existingPurchase = await Purchase.findOne({
-      student: studentId,
-      [itemType === 'course' ? 'course' : 'program']: itemId,
-      status: 'Completed',
-    })
-
-    if (existingPurchase) {
-      return res.status(400).json({
-        success: false,
-        message: `You have already purchased this ${itemType === 'course' ? 'course' : 'program'}`,
-      })
-    }
-
-    const originalAmount = item.price || 0
-    let purchaseAmount = originalAmount
-    let couponDiscount = 0
-    let appliedCoupon = null
-
-    // Validate and apply coupon if provided
+    const originalAmount = application.course.applicationFee || 0;
+    let finalAmount = originalAmount;
+    let couponDiscount = 0;
+    let walletPointsUsed = 0;
     if (couponCode) {
-      const coupon = await Coupon.findOne({ code: couponCode.toUpperCase() })
+      const coupon = await Coupon.findOne({
+        code: couponCode.toUpperCase(),
+        status: 'Active',
+        type: 'coupon',
+        validFrom: { $lte: new Date() },
+        validTo: { $gte: new Date() }
+      }).session(session);
 
-      if (!coupon) {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid coupon code',
-        })
-      }
+      if (coupon) {
+        if (coupon.couponData?.isUserSpecific) {
+          if (!coupon.couponData.users.includes(userId)) {
+            return res.status(400).json({
+              success: false,
+              message: 'Coupon is not valid for this user'
+            })
+          }
+        }
 
-      // Check if coupon is applicable
-      if (coupon.applicableTo === 'courses' && itemType !== 'course') {
-        return res.status(400).json({
-          success: false,
-          message: 'This coupon is only applicable to courses',
-        })
-      }
+        if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
+          return res.status(400).json({
+            success: false,
+            message: 'Coupon usage limit reached'
+          })
+        }
 
-      if (coupon.applicableTo === 'programs' && itemType !== 'program') {
-        return res.status(400).json({
-          success: false,
-          message: 'This coupon is only applicable to programs',
-        })
-      }
+        if (coupon.couponData?.minPurchaseAmount) {
+          if (originalAmount < coupon.couponData.minPurchaseAmount) {
+            return res.status(400).json({
+              success: false,
+              message: `Minimum purchase of ₹${coupon.couponData.minPurchaseAmount} required`
+            })
+          }
+        }
 
-      // Validate coupon
-      const validation = coupon.isValid(originalAmount, itemId)
+        if (coupon.couponData?.discountType === 'percentage') {
+          couponDiscount = (originalAmount * coupon.couponData.discountValue) / 100;
+          if (coupon.couponData.maxDiscountAmount) {
+            couponDiscount = Math.min(couponDiscount, coupon.couponData.maxDiscountAmount);
+          }
+        } else if (coupon.couponData?.discountType === 'fixed') {
+          couponDiscount = Math.min(coupon.couponData.discountValue, originalAmount);
+        }
 
-      if (!validation.valid) {
-        return res.status(400).json({
-          success: false,
-          message: validation.message,
-        })
-      }
+        finalAmount -= couponDiscount;
 
-      // Calculate discount
-      couponDiscount = coupon.calculateDiscount(originalAmount)
-      purchaseAmount = originalAmount - couponDiscount
-
-      // Increment coupon usage
-      coupon.usedCount += 1
-      await coupon.save()
-
-      appliedCoupon = {
-        code: coupon.code,
-        discount: couponDiscount,
+        coupon.usedCount += 1;
+        await coupon.save({ session });
       }
     }
 
-    // Calculate rewards: 10% cashback
-    const cashbackAmount = (purchaseAmount * 10) / 100
+    if (useWallet && user.wallet > 0) {
+      const maxWalletRupees = pointsToRupees(user.wallet);
+      const walletRupeesToUse = Math.min(maxWalletRupees, finalAmount);
+      walletPointsUsed = rupeesToPoints(walletRupeesToUse);
 
-    // Calculate points: up to 500 points per purchase
-    // Points are calculated as 10% of purchase amount in points, capped at 500 points
-    // Example: ₹1000 purchase = 100 points, ₹5000 purchase = 500 points (capped)
-    const pointsEarned = Math.min(Math.floor((purchaseAmount * 10) / 100), 500)
+      finalAmount -= walletRupeesToUse;
 
-    // Create purchase record
-    const purchaseData = {
-      student: studentId,
-      amount: purchaseAmount,
+      user.wallet -= walletPointsUsed;
+      await user.save({ session });
+    }
+
+    const purchase = await Purchase.create([{
+      user: userId,
+      application: application._id,
+      amount: finalAmount,
       originalAmount: originalAmount,
+      couponDiscount: couponDiscount,
+      couponCode: couponCode || '',
+      isWalletUsed: useWallet,
+      walletPointsUsed: walletPointsUsed,
+      paymentMethod: paymentMethod,
+      transactionId: transactionId || `TXN${Date.now()}${Math.random().toString(36).substr(2, 9)}`,
       status: 'Completed',
-      paymentMethod: paymentMethod || 'Credit Card',
-      transactionId: transactionId || `TXN${Date.now()}`,
-      rewardsEarned: {
-        cashback: cashbackAmount,
-        points: pointsEarned,
-      },
-    }
+      gst: 0 
+    }], { session });
 
-    if (courseId) {
-      purchaseData.course = courseId
-    } else if (programId) {
-      purchaseData.program = programId
-    }
+    application.paymentStatus = 'Completed';
+    await application.save({ session });
+    await session.commitTransaction();
 
-    if (appliedCoupon) {
-      purchaseData.couponCode = appliedCoupon.code
-      purchaseData.couponDiscount = couponDiscount
-    }
-
-    const purchase = await Purchase.create(purchaseData)
-
-    // Update or create reward record for the student
-    let reward = await Reward.findOne({ user: studentId })
-
-    if (!reward) {
-      // Create new reward record
-      reward = await Reward.create({
-        user: studentId,
-        points: pointsEarned,
-        cashback: cashbackAmount,
-        totalEarned: {
-          points: pointsEarned,
-          cashback: cashbackAmount,
-        },
-      })
-    } else {
-      // Update existing reward record
-      reward.points += pointsEarned
-      reward.cashback += cashbackAmount
-      reward.totalEarned.points += pointsEarned
-      reward.totalEarned.cashback += cashbackAmount
-      await reward.save()
-    }
-
-    // Update item student count
-    item.students += 1
-    await item.save()
-
-    res.status(201).json({
-      success: true,
-      message: `${itemType === 'course' ? 'Course' : 'Program'} purchased successfully`,
+    res.status(200).json({
+      status: 'success',
       data: {
-        purchase: {
-          id: purchase._id,
-          itemName: item.name,
-          itemType: itemType,
-          originalAmount: originalAmount,
-          amount: purchaseAmount,
-          couponDiscount: couponDiscount,
-          couponCode: appliedCoupon?.code || null,
-          status: purchase.status,
-          rewardsEarned: {
-            cashback: cashbackAmount,
-            points: pointsEarned,
-          },
-        },
-        rewards: {
-          totalPoints: reward.points,
-          totalCashback: reward.cashback,
-        },
-      },
-    })
-  } catch (error) {
-    console.error('Purchase error:', error)
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
-
-// @desc    Get all purchases
-// @route   GET /api/purchases
-// @access  Private
-exports.getPurchases = async (req, res) => {
-  try {
-    const { data, pagination } = await paginate(
-      Purchase,
-      {},
-      req,
-      {
-        populate: [
-          { path: 'student', select: 'name email' },
-          { path: 'course', select: 'name code price' },
-        ],
-        sort: { createdAt: -1 },
+        purchase: purchase[0],
+        message: 'Payment completed successfully',
+        walletBalance: {
+          points: user.wallet,
+          rupees: pointsToRupees(user.wallet)
+        }
       }
-    )
-
-    res.json({
-      success: true,
-      count: pagination.totalItems,
-      pagination,
-      data,
-    })
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    await session.abortTransaction();
+    session.endSession();
+    return next(error);
+  } finally {
+    session.endSession();
   }
-}
+});
 
-// @desc    Get student's purchases
-// @route   GET /api/purchases/my-purchases
-// @access  Private
-exports.getMyPurchases = async (req, res) => {
-  try {
-    const studentId = req.user._id
 
-    const { data, pagination } = await paginate(
-      Purchase,
-      { student: studentId },
-      req,
-      {
-        populate: { path: 'course', select: 'name code price description university' },
-        sort: { createdAt: -1 },
+exports.getPaymentHistory = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const { page = 1, limit = 10 } = req.query;
+
+  const purchases = await Purchase.find({ user: userId })
+    .populate({
+      path: 'application',
+      populate: {
+        path: 'course',
+        populate: 'university'
       }
-    )
-
-    res.json({
-      success: true,
-      count: pagination.totalItems,
-      pagination,
-      data,
     })
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
-  }
-}
+    .sort('-createdAt')
+    .limit(limit * 1)
+    .skip((page - 1) * limit);
 
-// @desc    Get single purchase
-// @route   GET /api/purchases/:id
-// @access  Private
-exports.getPurchase = async (req, res) => {
-  try {
-    const purchase = await Purchase.findById(req.params.id)
-      .populate('student', 'name email')
-      .populate('course', 'name code price description university')
+  const total = await Purchase.countDocuments({ user: userId });
 
-    if (!purchase) {
-      return res.status(404).json({ success: false, message: 'Purchase not found' })
+  res.status(200).json({
+    status: 'success',
+    data: {
+      purchases,
+      pagination: {
+        total,
+        page: parseInt(page),
+        pages: Math.ceil(total / limit)
+      }
     }
+  });
+});
 
-    // Check if user has access (student can only see their own, admin/manager can see all)
-    if (
-      req.user.role === 'user' &&
-      purchase.student._id.toString() !== req.user._id.toString()
-    ) {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied',
-      })
+// Get payment details
+exports.getPaymentDetails = catchAsync(async (req, res, next) => {
+  const { purchaseId } = req.params;
+  const userId = req.user.id;
+
+  const purchase = await Purchase.findOne({
+    _id: purchaseId,
+    user: userId
+  }).populate({
+    path: 'application',
+    populate: {
+      path: 'course',
+      populate: 'university'
     }
+  });
 
-    res.json({ success: true, data: purchase })
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+  if (!purchase) {
+    return next(new AppError('Purchase not found', 404));
   }
-}
+
+  res.status(200).json({
+    status: 'success',
+    data: { purchase }
+  });
+});

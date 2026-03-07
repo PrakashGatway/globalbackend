@@ -3,6 +3,7 @@ const User = require('../models/User')
 const OTP = require('../models/OTP')
 const { sendOTPEmail, sendVerificationEmail } = require('../utils/emailService')
 const UserProfile = require('../models/UserProfile')
+const { default: mongoose } = require('mongoose')
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'your-secret-key', {
@@ -79,7 +80,7 @@ exports.sendOTP = async (req, res) => {
         referalby: referralUser ? referralUser._id : null,
         wallet: referralUser ? 50 : 0
       })
-      if(user){
+      if (user) {
         referralUser.wallet += 50;
         await referralUser.save();
       }
@@ -173,12 +174,58 @@ exports.verifyOTP = async (req, res) => {
   }
 }
 
+// exports.getMe = async (req, res) => {
+//   try {
+//     const user = await User.findById(req.user._id).select('-password')
+//     res.json({ success: true, data: user })
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message })
+//   }
+// }
+
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password')
-    res.json({ success: true, data: user })
+    const userId = req.user.id
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID",
+      })
+    }
+
+    const user = await User.findById(userId).select("-password")
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      })
+    }
+
+    let profile = await UserProfile.findOne({ user: userId })
+
+    if (!profile) {
+      profile = await UserProfile.create({ user: userId })
+    }
+
+    const completion = calculateProfileCompletion(profile.toObject())
+    profile.profileCompletion = completion
+    await profile.save()
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile fetched successfully",
+      data: user,
+      profile,
+      profileCompletion: completion,
+    })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    console.error("Get profile error:", error)
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    })
   }
 }
 
@@ -224,19 +271,86 @@ const calculateProfileCompletion = (profile) => {
   let totalFields = 10
   let completed = 0
 
-  if (profile.maritalStatus) completed++
-  if (profile.currentAddress?.city) completed++
-  if (profile.educationHistory?.length > 0) completed++
-  if (profile.preferredCountries?.length > 0) completed++
-  if (profile.preferredCourse) completed++
-  if (profile.preferredIntake) completed++
-  if (profile.budgetRange?.min) completed++
-  if (profile.passportNumber) completed++
-  if (profile.englishTest?.exam) completed++
-  if (profile.documents?.length > 0) completed++
+  // 1️⃣ Current Address
+  if (
+    profile.currentAddress?.addressLine1 &&
+    profile.currentAddress?.city &&
+    profile.currentAddress?.country
+  ) {
+    completed++
+  }
+
+  // 2️⃣ Permanent Address
+  if (
+    profile.permanentAddress?.addressLine1 &&
+    profile.permanentAddress?.city &&
+    profile.permanentAddress?.country
+  ) {
+    completed++
+  }
+
+  // 3️⃣ Highest Academic
+  if (
+    profile.highestAcademic?.highestEducationLevel &&
+    profile.highestAcademic?.countryOfEducation
+  ) {
+    completed++
+  }
+
+  // 4️⃣ Education History
+  if (profile.educationHistory?.length > 0) {
+    completed++
+  }
+
+  // 5️⃣ English Proficiency
+  if (
+    profile.englishProficiency ||
+    profile.englishProficiencyScore?.englishTest
+  ) {
+    completed++
+  }
+
+  // 6️⃣ GMAT / GRE / SAT
+  if (
+    profile.hasGmat ||
+    profile.hasGre ||
+    profile.gmatScore?.totalScore?.score ||
+    profile.satScore?.totalScore?.score
+  ) {
+    completed++
+  }
+
+  // 7️⃣ Visa Info
+  if (
+    profile.visaRefused !== undefined ||
+    profile.validVisas?.length > 0
+  ) {
+    completed++
+  }
+
+  // 8️⃣ Preferences
+  if (
+    profile.preferences?.preferredCountries?.length > 0 ||
+    profile.preferences?.preferredCourse ||
+    profile.preferences?.preferredIntake ||
+    profile.preferences?.budgetRange?.min
+  ) {
+    completed++
+  }
+
+  // 9️⃣ Documents
+  if (profile.documents?.length > 0) {
+    completed++
+  }
+
+  // 🔟 Notes / Other Details
+  if (profile.notes || profile.otherDetails) {
+    completed++
+  }
 
   return Math.round((completed / totalFields) * 100)
 }
+
 exports.createOrUpdateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id
@@ -253,7 +367,6 @@ exports.createOrUpdateUserProfile = async (req, res) => {
       user: userId,
     }
 
-    // 🔹 Calculate completion %
     const completion = calculateProfileCompletion(profileData)
     profileData.profileCompletion = completion
 

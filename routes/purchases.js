@@ -1,17 +1,18 @@
-const express = require('express')
-const router = express.Router()
-const { protect } = require('../middleware/auth')
-const {
-  purchaseCourse,
-  getPurchases,
-  getMyPurchases,
-  getPurchase,
-} = require('../controllers/purchaseController')
+// routes/checkoutRoutes.js
+const express = require('express');
+const router = express.Router({ mergeParams: true });
+const checkoutController = require('../controllers/purchaseController');
+const { protect } = require('../middleware/auth');
 
-// Routes
-router.post('/', protect, purchaseCourse)
-router.get('/my-purchases', protect, getMyPurchases)
-router.get('/', protect, getPurchases)
-router.get('/:id', protect, getPurchase)
 
-module.exports = router
+router.use(protect)
+// Checkout routes
+router.get('/:applicationId', checkoutController.getCheckoutDetails);
+router.post('/:applicationId/apply-coupon', checkoutController.applyCoupon);
+router.post('/:applicationId/payment', checkoutController.processPayment);
+
+// Payment history routes
+router.get('/payments/history', checkoutController.getPaymentHistory);
+router.get('/payments/:purchaseId', checkoutController.getPaymentDetails);
+
+module.exports = router;
