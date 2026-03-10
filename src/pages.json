@@ -59,91 +59,58 @@
         ]
       },
       {
-        "name": "stats",
-        "label": "Statistics Section",
-        "fields": [
-          {
-            "name": "stats",
-            "label": "Statistics Items",
-            "type": "repeater",
-            "fields": [
-              {
-                "name": "icon",
-                "label": "icon",
-                "type": "file",
-                "accept": "image/*"
-              },
-              {
-                "name": "number",
-                "label": "Statistic Number",
-                "type": "text",
-                "required": true
-              },
-              {
-                "name": "title",
-                "label": "Statistic Title",
-                "type": "text",
-                "required": true
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "universities",
-        "label": "Featured Universities",
+        "name": "formSection",
+        "label": "Form Section",
         "fields": [
           {
             "name": "title",
-            "label": "Section Title",
-            "fields": [
-              {
-                "name": "title",
-                "label": "Title",
-                "type": "text",
-                "required": true
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "whyUs",
-        "label": "Why Choose Us",
-        "fields": [
-          {
-            "name": "title",
-            "label": "Section Title",
+            "label": "Hero Title",
             "type": "text",
-            "default": "Why Choose Us"
+            "required": true,
+            "placeholder": "let our team reach out to you"
+          }
+        ]
+      },
+      {
+        "name": "dreamDestination",
+        "label": "Destinations Section",
+        "fields": [
+          {
+            "name": "Image",
+            "label": "Image",
+            "type": "file",
+            "required": true,
+            "accept": "image/*"
           },
           {
-            "name": "subTitle",
-            "label": "Section subTitle",
-            "type": "textarea",
-            "default": ""
-          },
-          {
-            "name": "items",
-            "label": "Features",
+            "name": "steps",
+            "label": "Steps",
             "type": "repeater",
             "fields": [
               {
-                "name": "icon",
-                "label": "Icon Class",
-                "type": "text",
-                "placeholder": "cil-award"
+                "name": "order",
+                "label": "Step Order",
+                "type": "number"
               },
               {
                 "name": "title",
-                "label": "Feature Title",
-                "type": "text",
-                "required": true
+                "label": "Step Title",
+                "type": "text"
               },
               {
-                "name": "description",
-                "label": "Feature Description",
-                "type": "textarea"
+                "name": "subtitle",
+                "label": "Step Subtitle",
+                "type": "text"
+              },
+              {
+                "name": "ctabutton",
+                "label": "Button label",
+                "type": "text"
+              },
+              {
+                "name": "ctaRoute",
+                "label": "Button Route",
+                "type": "text"
               }
             ]
           }
@@ -168,12 +135,6 @@
           {
             "name": "bgImage1",
             "label": "Section bgImage1",
-            "type": "file",
-            "accept": "image/*"
-          },
-          {
-            "name": "bgImage2",
-            "label": "Section bgImage2",
             "type": "file",
             "accept": "image/*"
           },
@@ -203,14 +164,14 @@
         ]
       },
       {
-        "name": "videoTestimonials",
-        "label": "Video Testimonials",
+        "name": "imageTestimonials",
+        "label": "image Testimonials",
         "fields": [
           {
             "name": "title",
             "label": "Section Title",
             "type": "text",
-            "default": "Video Testimonials"
+            "default": "Image Testimonials"
           },
           {
             "name": "subtitle",
@@ -221,14 +182,14 @@
         ]
       },
       {
-        "name": "imageTestimonials",
-        "label": "image Testimonials",
+        "name": "videoTestimonials",
+        "label": "Video Testimonials",
         "fields": [
           {
             "name": "title",
             "label": "Section Title",
             "type": "text",
-            "default": "Image Testimonials"
+            "default": "Video Testimonials"
           },
           {
             "name": "subtitle",
@@ -257,8 +218,38 @@
         ]
       },
       {
-        "name": "blogs",
-        "label": "blog-section",
+        "name": "universities",
+        "label": "Partner Universities",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text",
+                "required": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "studyDestinations",
+        "label": "study Destinations",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Why Choose Us"
+          }
+        ]
+      },
+      {
+        "name": "services",
+        "label": "Services Section",
         "fields": [
           {
             "name": "title",
@@ -267,10 +258,40 @@
             "default": "blogs"
           },
           {
-            "name": "subtitle",
-            "label": "Section Subtitle",
+            "name": "services",
+            "label": "Services",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "Service Icon",
+                "type": "file",
+                "required": true,
+                "accept": "image/*"
+              },
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text"
+              },
+              {
+                "name": "subTitle",
+                "label": "Sub Title",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      },
+            {
+        "name": "faq",
+        "label": "faq Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
             "type": "text",
-            "default": ""
+            "default": "Frequently Asked Questions"
           }
         ]
       }
