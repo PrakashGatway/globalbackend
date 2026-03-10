@@ -11,7 +11,7 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            "required": true,
+            
             "placeholder": "Welcome to Our Platform"
           },
           {
@@ -25,7 +25,7 @@
             "name": "heroImage",
             "label": "Hero Image",
             "type": "file",
-            "required": true,
+            
             "accept": "image/*"
           },
           {
@@ -66,7 +66,7 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            "required": true,
+            
             "placeholder": "let our team reach out to you"
           }
         ]
@@ -79,7 +79,7 @@
             "name": "Image",
             "label": "Image",
             "type": "file",
-            "required": true,
+            
             "accept": "image/*"
           },
           {
@@ -266,7 +266,7 @@
                 "name": "icon",
                 "label": "Service Icon",
                 "type": "file",
-                "required": true,
+                
                 "accept": "image/*"
               },
               {
@@ -309,7 +309,7 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            "required": true,
+            
             "placeholder": "Welcome to Our Platform"
           },
           {

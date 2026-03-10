@@ -5,6 +5,7 @@ exports.getCountries = async (req, res) => {
     let {
       search,
       status,
+      isFeatured,
       page = 1,
       limit = 10,
       sort = '-createdAt',
@@ -25,6 +26,9 @@ exports.getCountries = async (req, res) => {
 
     if (status) {
       matchStage.status = status
+    }
+    if (isFeatured) {
+      matchStage.isFeatured = isFeatured
     }
 
     const sortStage = {}

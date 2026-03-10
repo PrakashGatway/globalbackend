@@ -26,6 +26,11 @@ const countrySchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    isFeatured: {
+      type: String,
+      default: "No",
+      enum: ["Yes", "No"]
+    },
     students: {
       type: Number,
       default: 0,
