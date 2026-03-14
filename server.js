@@ -32,6 +32,7 @@ app.use('/api/upload', require('./routes/upload'))
 app.use('/api/page-information', require('./routes/pageInformation'))
 app.use('/api/blogs', require('./routes/blogRoutes'))
 app.use('/api/subjects', require('./routes/subjectRoutes'))
+app.use("/api",require("./routes/enquiry"))
 
 app.use('/api/notifications', require('./routes/notication'))
 
