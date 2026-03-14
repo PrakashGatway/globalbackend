@@ -11,7 +11,6 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            
             "placeholder": "Welcome to Our Platform"
           },
           {
@@ -25,7 +24,6 @@
             "name": "heroImage",
             "label": "Hero Image",
             "type": "file",
-            
             "accept": "image/*"
           },
           {
@@ -66,7 +64,6 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            
             "placeholder": "let our team reach out to you"
           }
         ]
@@ -79,7 +76,6 @@
             "name": "Image",
             "label": "Image",
             "type": "file",
-            
             "accept": "image/*"
           },
           {
@@ -266,7 +262,6 @@
                 "name": "icon",
                 "label": "Service Icon",
                 "type": "file",
-                
                 "accept": "image/*"
               },
               {
@@ -283,7 +278,7 @@
           }
         ]
       },
-            {
+      {
         "name": "faq",
         "label": "faq Section",
         "fields": [
@@ -309,7 +304,6 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            
             "placeholder": "Welcome to Our Platform"
           },
           {
@@ -778,7 +772,7 @@
     ]
   },
   "destinations": {
-    "name": "Destinations Page",
+    "name": "University Group",
     "description": "Main landing page configuration",
     "sections": [
       {
@@ -1748,6 +1742,42 @@
         ]
       },
       {
+        "name": "PopularCourses",
+        "label": "Popular Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Popular Courses"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section subTitle",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "coursesitem",
+            "label": "courses item",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "coursesname",
+                "label": "courses name",
+                "type": "text"
+              },
+              {
+                "name": "image",
+                "label": "Image",
+                "type": "file",
+                "accept": "image/*"
+              }
+            ]
+          }
+        ]
+      },
+      {
         "name": "lifeIn",
         "label": "lifeIn Section",
         "fields": [
@@ -1822,6 +1852,46 @@
         ]
       },
       {
+        "name": "eligibilityCriteria",
+        "label": "Eligibility Criteria",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Eligibility Title",
+            "type": "text"
+          },
+          {
+            "name": "subtitle",
+            "label": "Sub title",
+            "type": "text"
+          },
+          {
+            "name": "eligibilityItem",
+            "label": "Eligibilty Item",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "itemname",
+                "label": "Eligibility Item Name",
+                "type": "text"
+              },
+              {
+                "name": "subItems",
+                "label": "sub Items",
+                "type": "repeater",
+                "fields": [
+                  {
+                    "name": "subItems",
+                    "label": "Sub Items Name",
+                    "type": "text"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
         "name": "contentSection",
         "label": "Content Section",
         "fields": [
@@ -1843,6 +1913,23 @@
             ]
           }
         ]
+      },
+      {
+        "name" : "servicesection",
+        "label" : "Service Section",
+        "fields" : [
+          {"name": "servicetitle","label": "Service Title","type": "text"},
+          {"name": "servicesubtitle","label": "Service Sub Title","type": "text"},
+          {"name": "serviceitem","label": "Service Item","type": "repeater","fields":[
+            {"name": "itemicon","label": "Item Icon" , "type" : "text"},
+            {"name":"itemtitle","label":"Item Title","type":"text"},
+            {"name":"itemsubtitle","label":"Item Sub Title","type":"text"}
+          ]}
+
+
+
+        ]
+
       },
       {
         "name": "scholarships",
