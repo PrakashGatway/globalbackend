@@ -11,7 +11,6 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            
             "placeholder": "Welcome to Our Platform"
           },
           {
@@ -25,7 +24,6 @@
             "name": "heroImage",
             "label": "Hero Image",
             "type": "file",
-            
             "accept": "image/*"
           },
           {
@@ -66,7 +64,6 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            
             "placeholder": "let our team reach out to you"
           }
         ]
@@ -79,7 +76,6 @@
             "name": "Image",
             "label": "Image",
             "type": "file",
-            
             "accept": "image/*"
           },
           {
@@ -229,7 +225,7 @@
                 "name": "title",
                 "label": "Title",
                 "type": "text",
-                "required": true
+                "required": false
               }
             ]
           }
@@ -266,7 +262,6 @@
                 "name": "icon",
                 "label": "Service Icon",
                 "type": "file",
-                
                 "accept": "image/*"
               },
               {
@@ -283,7 +278,7 @@
           }
         ]
       },
-            {
+      {
         "name": "faq",
         "label": "faq Section",
         "fields": [
@@ -309,7 +304,6 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            
             "placeholder": "Welcome to Our Platform"
           },
           {
@@ -323,7 +317,7 @@
             "name": "heroImage",
             "label": "Hero Image",
             "type": "file",
-            "required": true,
+            "required": false,
             "accept": "image/*"
           },
           {
@@ -430,7 +424,7 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            "required": true,
+            "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
@@ -444,7 +438,7 @@
             "name": "heroImage",
             "label": "Hero Image",
             "type": "file",
-            "required": true,
+            "required": false,
             "accept": "image/*"
           },
           {
@@ -666,7 +660,7 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            "required": true,
+            "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
@@ -765,20 +759,20 @@
             "name": "title",
             "label": "Page Title",
             "type": "text",
-            "required": true
+            "required": false
           },
           {
             "name": "content",
             "label": "Main Content",
             "type": "richtext",
-            "required": true
+            "required": false
           }
         ]
       }
     ]
   },
   "destinations": {
-    "name": "Destinations Page",
+    "name": "University Group",
     "description": "Main landing page configuration",
     "sections": [
       {
@@ -789,7 +783,7 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            "required": true,
+            "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
@@ -803,7 +797,7 @@
             "name": "heroImage",
             "label": "Hero Image",
             "type": "file",
-            "required": true,
+            "required": false,
             "accept": "image/*"
           },
           {
@@ -848,7 +842,7 @@
                 "name": "title",
                 "label": "Title",
                 "type": "text",
-                "required": true
+                "required": false
               }
             ]
           }
@@ -866,13 +860,13 @@
                 "name": "title",
                 "label": "Title",
                 "type": "text",
-                "required": true
+                "required": false
               },
               {
                 "name": "subTitle",
                 "label": "subTitle",
                 "type": "text",
-                "required": true
+                "required": false
               }
             ]
           }
@@ -1213,7 +1207,7 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            "required": true,
+            "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
@@ -1234,7 +1228,7 @@
             "name": "heroImage",
             "label": "Hero Image",
             "type": "file",
-            "required": true,
+            "required": false,
             "accept": "image/*"
           },
           {
@@ -1316,7 +1310,7 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            "required": true,
+            "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
@@ -1337,14 +1331,14 @@
             "name": "bgImage1",
             "label": "bgImage1",
             "type": "file",
-            "required": true,
+            "required": false,
             "accept": "image/*"
           },
           {
             "name": "bgImage2",
             "label": "bgImage2",
             "type": "file",
-            "required": true,
+            "required": false,
             "accept": "image/*"
           },
           {
@@ -1388,7 +1382,7 @@
             "name": "title",
             "label": " Title",
             "type": "text",
-            "required": true,
+            "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
@@ -1578,7 +1572,7 @@
             "name": "title",
             "label": "Hero Title",
             "type": "text",
-            "required": true,
+            "required": false,
             "placeholder": "Welcome"
           },
           {
@@ -1592,14 +1586,14 @@
             "name": "heroImage",
             "label": "Hero Image",
             "type": "file",
-            "required": true,
+            "required": false,
             "accept": "image/*"
           },
           {
             "name": "upperImage",
             "label": "Upper Image",
             "type": "file",
-            "required": true,
+            "required": false,
             "accept": "image/*"
           },
           {
@@ -1640,7 +1634,7 @@
             "name": "title",
             "label": "Title",
             "type": "text",
-            "required": true,
+            "required": false,
             "placeholder": "Welcome"
           },
           {
@@ -1674,7 +1668,7 @@
             "name": "title",
             "label": "Title",
             "type": "text",
-            "required": true,
+            "required": false,
             "placeholder": "Welcome"
           },
           {
@@ -1748,6 +1742,42 @@
         ]
       },
       {
+        "name": "PopularCourses",
+        "label": "Popular Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Popular Courses"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section subTitle",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "coursesitem",
+            "label": "courses item",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "coursesname",
+                "label": "courses name",
+                "type": "text"
+              },
+              {
+                "name": "image",
+                "label": "Image",
+                "type": "file",
+                "accept": "image/*"
+              }
+            ]
+          }
+        ]
+      },
+      {
         "name": "lifeIn",
         "label": "lifeIn Section",
         "fields": [
@@ -1784,7 +1814,7 @@
                 "name": "title",
                 "label": "Feature Title",
                 "type": "text",
-                "required": true
+                "required": false
               },
               {
                 "name": "description",
@@ -1803,7 +1833,7 @@
             "name": "title",
             "label": "Title",
             "type": "text",
-            "required": true,
+            "required": false,
             "placeholder": "Welcome"
           },
           {
@@ -1818,6 +1848,46 @@
             "label": "Image",
             "type": "file",
             "accept": "image/*"
+          }
+        ]
+      },
+      {
+        "name": "eligibilityCriteria",
+        "label": "Eligibility Criteria",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Eligibility Title",
+            "type": "text"
+          },
+          {
+            "name": "subtitle",
+            "label": "Sub title",
+            "type": "text"
+          },
+          {
+            "name": "eligibilityItem",
+            "label": "Eligibilty Item",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "itemname",
+                "label": "Eligibility Item Name",
+                "type": "text"
+              },
+              {
+                "name": "subItems",
+                "label": "sub Items",
+                "type": "repeater",
+                "fields": [
+                  {
+                    "name": "subItems",
+                    "label": "Sub Items Name",
+                    "type": "text"
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -1843,6 +1913,23 @@
             ]
           }
         ]
+      },
+      {
+        "name" : "servicesection",
+        "label" : "Service Section",
+        "fields" : [
+          {"name": "servicetitle","label": "Service Title","type": "text"},
+          {"name": "servicesubtitle","label": "Service Sub Title","type": "text"},
+          {"name": "serviceitem","label": "Service Item","type": "repeater","fields":[
+            {"name": "itemicon","label": "Item Icon" , "type" : "text"},
+            {"name":"itemtitle","label":"Item Title","type":"text"},
+            {"name":"itemsubtitle","label":"Item Sub Title","type":"text"}
+          ]}
+
+
+
+        ]
+
       },
       {
         "name": "scholarships",
