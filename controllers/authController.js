@@ -85,7 +85,7 @@ exports.sendOTP = async (req, res) => {
         await referralUser.save();
       }
     }
-    const otpCode = '123456'
+    const otpCode = '987456'
     await OTP.deleteMany({ email, isUsed: false })
     const otp = await OTP.create({
       email,
