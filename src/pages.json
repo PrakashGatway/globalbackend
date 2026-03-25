@@ -7,6 +7,7 @@
         "name": "hero",
         "label": "Hero Section",
         "fields": [
+        
           {
             "name": "title",
             "label": "Hero Title",
@@ -1564,10 +1565,27 @@
     "name": "Country Page",
     "description": "Main landing page configuration",
     "sections": [
+      
       {
         "name": "hero",
         "label": "Hero Section",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Hero Title",
@@ -1630,6 +1648,22 @@
         "name": "formSection",
         "label": "formSection Section",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Title",
@@ -1664,6 +1698,22 @@
         "name": "whyChooseUs",
         "label": "whyChooseUs Section",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Title",
@@ -1698,6 +1748,22 @@
         "name": "whyStudy",
         "label": "whyStudy Section",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Section Title",
@@ -1745,6 +1811,22 @@
         "name": "PopularCourses",
         "label": "Popular Section",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Section Title",
@@ -1781,6 +1863,22 @@
         "name": "lifeIn",
         "label": "lifeIn Section",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Section Title",
@@ -1829,6 +1927,22 @@
         "name": "choosingUs",
         "label": "choosingUs Section",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Title",
@@ -1855,6 +1969,22 @@
         "name": "eligibilityCriteria",
         "label": "Eligibility Criteria",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Eligibility Title",
@@ -1895,6 +2025,22 @@
         "name": "contentSection",
         "label": "Content Section",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "items",
             "label": "Features",
@@ -1915,26 +2061,79 @@
         ]
       },
       {
-        "name" : "servicesection",
-        "label" : "Service Section",
-        "fields" : [
-          {"name": "servicetitle","label": "Service Title","type": "text"},
-          {"name": "servicesubtitle","label": "Service Sub Title","type": "text"},
-          {"name": "serviceitem","label": "Service Item","type": "repeater","fields":[
-            {"name": "itemicon","label": "Item Icon" , "type" : "text"},
-            {"name":"itemtitle","label":"Item Title","type":"text"},
-            {"name":"itemsubtitle","label":"Item Sub Title","type":"text"}
-          ]}
-
-
-
+        "name": "servicesection",
+        "label": "Service Section",
+        "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
+          {
+            "name": "servicetitle",
+            "label": "Service Title",
+            "type": "text"
+          },
+          {
+            "name": "servicesubtitle",
+            "label": "Service Sub Title",
+            "type": "text"
+          },
+          {
+            "name": "serviceitem",
+            "label": "Service Item",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "itemicon",
+                "label": "Item Icon",
+                "type": "text"
+              },
+              {
+                "name": "itemtitle",
+                "label": "Item Title",
+                "type": "text"
+              },
+              {
+                "name": "itemsubtitle",
+                "label": "Item Sub Title",
+                "type": "text"
+              }
+            ]
+          }
         ]
-
       },
       {
         "name": "scholarships",
         "label": "scholarships Section",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Section Title",
@@ -1970,6 +2169,22 @@
         "name": "videoTestimonials",
         "label": "Video Testimonials",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Section Title",
@@ -1988,6 +2203,22 @@
         "name": "imageTestimonials",
         "label": "image Testimonials",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Section Title",
@@ -2006,6 +2237,22 @@
         "name": "cta",
         "label": "cta Section",
         "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name": "title",
             "label": "Section Title",
