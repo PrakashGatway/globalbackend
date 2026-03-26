@@ -251,6 +251,7 @@ exports.getFaqs = async (req, res) => {
   try {
     const {
       type,
+      search,
       status,
       isPublished,
       referenceModel,
@@ -258,7 +259,6 @@ exports.getFaqs = async (req, res) => {
     } = req.query;
 
     const filter = {};
-
     if (type) filter.type = type;
     if (status) filter.status = status;
     if (isPublished && isPublished !== undefined && isPublished !== null) filter.isPublished = isPublished == 'true' ? true : "";

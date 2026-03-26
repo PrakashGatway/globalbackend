@@ -17,7 +17,7 @@
           {
             "name": "subtitle",
             "label": "Hero Subtitle",
-            "type": "textarea",
+            "type": "richtext",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -97,7 +97,7 @@
               {
                 "name": "subtitle",
                 "label": "Step Subtitle",
-                "type": "text"
+                "type": "richtext"
               },
               {
                 "name": "ctabutton",
@@ -126,7 +126,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": "subtitle"
           },
           {
@@ -173,7 +173,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           }
         ]
@@ -191,7 +191,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           }
         ]
@@ -209,7 +209,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           }
         ]
@@ -273,7 +273,7 @@
               {
                 "name": "subTitle",
                 "label": "Sub Title",
-                "type": "text"
+                "type": "richtext"
               }
             ]
           }
@@ -1596,7 +1596,7 @@
           {
             "name": "subtitle",
             "label": "Hero Subtitle",
-            "type": "textarea",
+            "type": "richtext",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -1836,7 +1836,7 @@
           {
             "name": "subtitle",
             "label": "Section subTitle",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           },
           {
@@ -1993,7 +1993,7 @@
           {
             "name": "subtitle",
             "label": "Sub title",
-            "type": "text"
+            "type": "richtext"
           },
           {
             "name": "eligibilityItem",
@@ -2088,7 +2088,7 @@
           {
             "name": "servicesubtitle",
             "label": "Service Sub Title",
-            "type": "text"
+            "type": "richtext"
           },
           {
             "name": "serviceitem",
@@ -2194,7 +2194,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           }
         ]
@@ -2228,7 +2228,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           }
         ]
@@ -2262,7 +2262,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           }
         ]
