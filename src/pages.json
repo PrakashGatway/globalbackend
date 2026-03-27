@@ -2233,6 +2233,40 @@
           }
         ]
       },
+        {
+        "name": "visastories",
+        "label": "visa Stories",
+        "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "richtext",
+            "default": ""
+          }
+        ]
+      },
       {
         "name": "cta",
         "label": "cta Section",
