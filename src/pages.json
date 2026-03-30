@@ -58,6 +58,35 @@
         ]
       },
       {
+        "name" : "stats",
+        "label": "Stats Section",
+        "fields":[
+          {
+            "name": "item",
+            "label" : "item name",
+            "type" : "repeater",
+            "fields" :[
+              {
+                "name" : "title",
+                "label" : "title",
+                "type" : "text"
+              },
+              {
+                "name" : "stats",
+                "label" : "stats",
+                "type" : "text"
+              },
+              {
+                "name" : "icon",
+                "label" : "icon",
+                "type" : "text"
+              }
+            ]
+          }
+        ]
+
+      },
+      {
         "name": "formSection",
         "label": "Form Section",
         "fields": [
@@ -196,6 +225,40 @@
           }
         ]
       },
+        {
+        "name": "visastories",
+        "label": "visa Stories",
+        "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "richtext",
+            "default": ""
+          }
+        ]
+      },
       {
         "name": "topUniversities",
         "label": "topUniversities",
@@ -279,6 +342,55 @@
           }
         ]
       },
+      {
+        "name": "topuniversity",
+        "label": "top university",
+        "fields":[
+          {
+            "name" : "title",
+            "label" :"Title",
+            "type" : "text"
+          },
+           {
+            "name" : "subtitle",
+            "label" :"Sub Title",
+            "type" : "text"
+          }
+        ]
+      },
+       {
+        "name": "blogs",
+        "label": "Blog",
+        "fields":[
+          {
+            "name" : "title",
+            "label" :"Title",
+            "type" : "text"
+          },
+           {
+            "name" : "subtitle",
+            "label" :"Sub Title",
+            "type" : "text"
+          }
+        ]
+      },
+       {
+        "name": "visa",
+        "label": "Visa Section",
+        "fields":[
+          {
+            "name" : "title",
+            "label" :"Title",
+            "type" : "text"
+          },
+           {
+            "name" : "subtitle",
+            "label" :"Sub Title",
+            "type" : "text"
+          }
+        ]
+      },
+
       {
         "name": "faq",
         "label": "faq Section",
