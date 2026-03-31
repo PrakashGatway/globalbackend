@@ -291,7 +291,7 @@
         ]
       },
       {
-        "name": "services",
+        "name": "servicesection",
         "label": "Services Section",
         "fields": [
           {
