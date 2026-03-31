@@ -225,9 +225,10 @@
           }
         ]
       },
-        {
-        "name": "visastories",
-        "label": "visa Stories",
+      
+      {
+        "name": "topUniversities",
+        "label": "Group Universities",
         "fields": [
             {
             "name": "isHidden",
@@ -245,24 +246,6 @@
             ],
             "default": "no"
           },
-          {
-            "name": "title",
-            "label": "Section Title",
-            "type": "text",
-            "default": "Image Testimonials"
-          },
-          {
-            "name": "subtitle",
-            "label": "Section Subtitle",
-            "type": "richtext",
-            "default": ""
-          }
-        ]
-      },
-      {
-        "name": "topUniversities",
-        "label": "topUniversities",
-        "fields": [
           {
             "name": "title",
             "label": "Section Title",
@@ -342,19 +325,37 @@
           }
         ]
       },
-      {
-        "name": "topuniversity",
-        "label": "top university",
-        "fields":[
-          {
-            "name" : "title",
-            "label" :"Title",
-            "type" : "text"
+        {
+        "name": "topUniversity",
+        "label": "top Universities Section",
+        "fields": [
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
           },
-           {
-            "name" : "subtitle",
-            "label" :"Sub Title",
-            "type" : "text"
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "richtext",
+            "default": ""
           }
         ]
       },
@@ -362,6 +363,22 @@
         "name": "blogs",
         "label": "Blog",
         "fields":[
+            {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
           {
             "name" : "title",
             "label" :"Title",
@@ -1966,6 +1983,11 @@
                 "label": "Image",
                 "type": "file",
                 "accept": "image/*"
+              },
+              {
+                "name": "description",
+                "label": "courses Description",
+                "type": "text"
               }
             ]
           }
