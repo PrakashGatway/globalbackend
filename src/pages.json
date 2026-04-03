@@ -7,12 +7,25 @@
         "name": "hero",
         "label": "Hero Section",
         "fields": [
-        
           {
             "name": "title",
             "label": "Hero Title",
             "type": "text",
             "placeholder": "Welcome to Our Platform"
+          },
+          {
+            "name": "tag",
+            "label": "Hero Tag",
+            "type": "select",
+            "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subtitle",
@@ -30,61 +43,40 @@
           {
             "name": "ctaText1",
             "label": "Call to Action Text 1",
-            "type": "text",
-            "required": false,
-            "placeholder": "Get Started"
+            "type": "text"
           },
           {
             "name": "ctaLink1",
             "label": "Call to Action Link 1",
-            "type": "text",
-            "required": false,
-            "placeholder": "/contact"
+            "type": "text"
           },
           {
             "name": "ctaText2",
             "label": "Call to Action Text 2",
-            "type": "text",
-            "required": false,
-            "placeholder": "Get Started"
+            "type": "text"
           },
           {
             "name": "ctaLink2",
             "label": "Call to Action Link 2",
-            "type": "text",
-            "required": false,
-            "placeholder": "/contact"
+            "type": "text"
           }
         ]
       },
       {
-        "name" : "stats",
+        "name": "stats",
         "label": "Stats Section",
-        "fields":[
+        "fields": [
           {
-            "name": "item",
-            "label" : "item name",
-            "type" : "repeater",
-            "fields" :[
-              {
-                "name" : "title",
-                "label" : "title",
-                "type" : "text"
-              },
-              {
-                "name" : "stats",
-                "label" : "stats",
-                "type" : "text"
-              },
-              {
-                "name" : "icon",
-                "label" : "icon",
-                "type" : "text"
-              }
+            "name": "items",
+            "label": "Items",
+            "type": "repeater",
+            "fields": [
+              { "name": "title", "label": "Title", "type": "text" },
+              { "name": "stats", "label": "Stats", "type": "text" },
+              { "name": "icon", "label": "Icon", "type": "text" }
             ]
           }
         ]
-
       },
       {
         "name": "formSection",
@@ -92,9 +84,23 @@
         "fields": [
           {
             "name": "title",
-            "label": "Hero Title",
+            "label": "Title",
             "type": "text",
-            "placeholder": "let our team reach out to you"
+            "placeholder": "Let our team reach out to you"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+            "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           }
         ]
       },
@@ -103,7 +109,7 @@
         "label": "Destinations Section",
         "fields": [
           {
-            "name": "Image",
+            "name": "image",
             "label": "Image",
             "type": "file",
             "accept": "image/*"
@@ -113,38 +119,18 @@
             "label": "Steps",
             "type": "repeater",
             "fields": [
-              {
-                "name": "order",
-                "label": "Step Order",
-                "type": "number"
-              },
-              {
-                "name": "title",
-                "label": "Step Title",
-                "type": "text"
-              },
-              {
-                "name": "subtitle",
-                "label": "Step Subtitle",
-                "type": "richtext"
-              },
-              {
-                "name": "ctabutton",
-                "label": "Button label",
-                "type": "text"
-              },
-              {
-                "name": "ctaRoute",
-                "label": "Button Route",
-                "type": "text"
-              }
+              { "name": "order", "label": "Step Order", "type": "number" },
+              { "name": "title", "label": "Title", "type": "text" },
+              { "name": "subtitle", "label": "Subtitle", "type": "richtext" },
+              { "name": "ctaButton", "label": "Button Label", "type": "text" },
+              { "name": "ctaRoute", "label": "Button Route", "type": "text" }
             ]
           }
         ]
       },
       {
         "name": "trustedPartners",
-        "label": "trustedPartners",
+        "label": "Trusted Partners",
         "fields": [
           {
             "name": "title",
@@ -153,275 +139,210 @@
             "default": "Our Trusted Partners"
           },
           {
-            "name": "subtitle",
-            "label": "Section Subtitle",
-            "type": "richtext",
-            "default": "subtitle"
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
-            "name": "bgImage1",
-            "label": "Section bgImage1",
+            "name": "subtitle",
+            "label": "Subtitle",
+            "type": "richtext"
+          },
+          {
+            "name": "bgImage",
+            "label": "Background Image",
             "type": "file",
             "accept": "image/*"
           },
           {
             "name": "items",
-            "label": "Features",
+            "label": "Items",
             "type": "repeater",
             "fields": [
-              {
-                "name": "tab",
-                "label": "tab",
-                "type": "text"
-              },
-              {
-                "name": "videoLink",
-                "label": "videoLink",
-                "type": "text"
-              },
-              {
-                "name": "features",
-                "label": "Features",
-                "type": "text",
-                "placeholder": "features with comma separated"
-              }
+              { "name": "tab", "type": "text" },
+              { "name": "videoLink", "type": "text" },
+              { "name": "features", "type": "text" }
             ]
           }
         ]
       },
       {
         "name": "imageTestimonials",
-        "label": "image Testimonials",
+        "label": "Image Testimonials",
         "fields": [
+          { "name": "title", "type": "text" },
           {
-            "name": "title",
-            "label": "Section Title",
-            "type": "text",
-            "default": "Image Testimonials"
+            "name": "tag",
+            "type": "select",
+            "options": [{ "label": "H2", "value": "2" }],
+            "default": "2"
           },
-          {
-            "name": "subtitle",
-            "label": "Section Subtitle",
-            "type": "richtext",
-            "default": ""
-          }
+          { "name": "subtitle", "type": "richtext" }
         ]
       },
       {
         "name": "videoTestimonials",
         "label": "Video Testimonials",
         "fields": [
+          { "name": "title", "type": "text" },
           {
-            "name": "title",
-            "label": "Section Title",
-            "type": "text",
-            "default": "Video Testimonials"
+            "name": "tag",
+            "type": "select",
+            "options": [{ "label": "H2", "value": "2" }],
+            "default": "2"
           },
-          {
-            "name": "subtitle",
-            "label": "Section Subtitle",
-            "type": "richtext",
-            "default": ""
-          }
+          { "name": "subtitle", "type": "richtext" }
         ]
       },
-      
       {
         "name": "topUniversities",
-        "label": "Group Universities",
+        "label": "Top Universities",
         "fields": [
-            {
+          {
             "name": "isHidden",
-            "label": "Hide Section",
             "type": "select",
             "options": [
-              {
-                "label": "No",
-                "value": "no"
-              },
-              {
-                "label": "Yes",
-                "value": "yes"
-              }
+              { "label": "No", "value": "no" },
+              { "label": "Yes", "value": "yes" }
             ],
             "default": "no"
           },
+          { "name": "title", "type": "text" },
           {
-            "name": "title",
-            "label": "Section Title",
-            "type": "text",
-            "default": "Image Testimonials"
+            "name": "tag",
+            "type": "select",
+            "options": [{ "label": "H2", "value": "2" }],
+            "default": "2"
           },
-          {
-            "name": "subtitle",
-            "label": "Section Subtitle",
-            "type": "richtext",
-            "default": ""
-          }
+          { "name": "subtitle", "type": "richtext" }
         ]
       },
       {
         "name": "universities",
         "label": "Partner Universities",
         "fields": [
+          { "name": "title", "type": "text" },
           {
-            "name": "title",
-            "label": "Section Title",
-            "fields": [
-              {
-                "name": "title",
-                "label": "Title",
-                "type": "text",
-                "required": false
-              }
-            ]
+            "name": "tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           }
         ]
       },
       {
         "name": "studyDestinations",
-        "label": "study Destinations",
+        "label": "Study Destinations",
         "fields": [
+          { "name": "title", "type": "text" },
           {
-            "name": "title",
-            "label": "Section Title",
-            "type": "text",
-            "default": "Why Choose Us"
+            "name": "tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           }
         ]
       },
       {
-        "name": "servicesection",
+        "name": "serviceSection",
         "label": "Services Section",
         "fields": [
-          {
-            "name": "title",
-            "label": "Section Title",
-            "type": "text",
-            "default": "blogs"
-          },
+          { "name": "title", "type": "text" },
           {
             "name": "services",
-            "label": "Services",
             "type": "repeater",
             "fields": [
-              {
-                "name": "icon",
-                "label": "Service Icon",
-                "type": "file",
-                "accept": "image/*"
-              },
-              {
-                "name": "title",
-                "label": "Title",
-                "type": "text"
-              },
-              {
-                "name": "subTitle",
-                "label": "Sub Title",
-                "type": "richtext"
-              }
+              { "name": "icon", "type": "file", "accept": "image/*" },
+              { "name": "title", "type": "text" },
+              { "name": "subTitle", "type": "richtext" }
             ]
           }
         ]
       },
-        {
-        "name": "topUniversity",
-        "label": "top Universities Section",
-        "fields": [
-            {
-            "name": "isHidden",
-            "label": "Hide Section",
-            "type": "select",
-            "options": [
-              {
-                "label": "No",
-                "value": "no"
-              },
-              {
-                "label": "Yes",
-                "value": "yes"
-              }
-            ],
-            "default": "no"
-          },
-          {
-            "name": "title",
-            "label": "Section Title",
-            "type": "text",
-            "default": "Image Testimonials"
-          },
-          {
-            "name": "subtitle",
-            "label": "Section Subtitle",
-            "type": "richtext",
-            "default": ""
-          }
-        ]
-      },
-       {
+      {
         "name": "blogs",
         "label": "Blog",
-        "fields":[
-            {
+        "fields": [
+          {
             "name": "isHidden",
-            "label": "Hide Section",
             "type": "select",
             "options": [
-              {
-                "label": "No",
-                "value": "no"
-              },
-              {
-                "label": "Yes",
-                "value": "yes"
-              }
+              { "label": "No", "value": "no" },
+              { "label": "Yes", "value": "yes" }
             ],
             "default": "no"
           },
-          {
-            "name" : "title",
-            "label" :"Title",
-            "type" : "text"
-          },
-           {
-            "name" : "subtitle",
-            "label" :"Sub Title",
-            "type" : "text"
-          }
+          { "name": "title", "type": "text" },
+          { "name": "subtitle", "type": "text" }
         ]
       },
-       {
+      {
         "name": "visa",
         "label": "Visa Section",
-        "fields":[
+        "fields": [
+          { "name": "title", "type": "text" },
           {
-            "name" : "title",
-            "label" :"Title",
-            "type" : "text"
+            "name": "tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
-           {
-            "name" : "subtitle",
-            "label" :"Sub Title",
-            "type" : "text"
-          }
+          { "name": "subtitle", "type": "text" }
         ]
       },
-
       {
         "name": "faq",
-        "label": "faq Section",
+        "label": "FAQ Section",
         "fields": [
+          { "name": "title", "type": "text" },
           {
-            "name": "title",
-            "label": "Section Title",
-            "type": "text",
-            "default": "Frequently Asked Questions"
+            "name": "tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           }
         ]
       }
     ]
   },
+
   "contact": {
     "name": "Contact Page",
     "description": "Contact information and form",
@@ -436,6 +357,7 @@
             "type": "text",
             "placeholder": "Welcome to Our Platform"
           },
+
           {
             "name": "subtitle",
             "label": "Hero Subtitle",
@@ -1694,12 +1616,11 @@
     "name": "Country Page",
     "description": "Main landing page configuration",
     "sections": [
-      
       {
         "name": "hero",
         "label": "Hero Section",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -1721,6 +1642,21 @@
             "type": "text",
             "required": false,
             "placeholder": "Welcome"
+          },
+          
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subtitle",
@@ -1777,7 +1713,7 @@
         "name": "formSection",
         "label": "formSection Section",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -1799,6 +1735,20 @@
             "type": "text",
             "required": false,
             "placeholder": "Welcome"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subtitle",
@@ -1827,7 +1777,7 @@
         "name": "whyChooseUs",
         "label": "whyChooseUs Section",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -1849,6 +1799,20 @@
             "type": "text",
             "required": false,
             "placeholder": "Welcome"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subtitle",
@@ -1877,7 +1841,7 @@
         "name": "whyStudy",
         "label": "whyStudy Section",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -1898,6 +1862,20 @@
             "label": "Section Title",
             "type": "text",
             "default": "Why Choose Us"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subTitle",
@@ -1927,6 +1905,20 @@
                 "label": "Feature Title",
                 "type": "text"
               },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
+          },
               {
                 "name": "description",
                 "label": "Feature Description",
@@ -1940,7 +1932,7 @@
         "name": "PopularCourses",
         "label": "Popular Section",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -1961,6 +1953,20 @@
             "label": "Section Title",
             "type": "text",
             "default": "Popular Courses"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subtitle",
@@ -1997,7 +2003,7 @@
         "name": "lifeIn",
         "label": "lifeIn Section",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -2018,6 +2024,20 @@
             "label": "Section Title",
             "type": "text",
             "default": "Why Choose Us"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subTitle",
@@ -2048,6 +2068,20 @@
                 "type": "text",
                 "required": false
               },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
+          },
               {
                 "name": "description",
                 "label": "Feature Description",
@@ -2061,7 +2095,7 @@
         "name": "choosingUs",
         "label": "choosingUs Section",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -2085,6 +2119,20 @@
             "placeholder": "Welcome"
           },
           {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
+          },
+          {
             "name": "subtitle",
             "label": "Subtitle",
             "type": "textarea",
@@ -2103,7 +2151,7 @@
         "name": "eligibilityCriteria",
         "label": "Eligibility Criteria",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -2123,6 +2171,20 @@
             "name": "title",
             "label": "Eligibility Title",
             "type": "text"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subtitle",
@@ -2159,7 +2221,7 @@
         "name": "contentSection",
         "label": "Content Section",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -2185,6 +2247,20 @@
                 "label": "Title",
                 "type": "text"
               },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
+          },
               {
                 "name": "description",
                 "label": "Feature Description",
@@ -2198,7 +2274,7 @@
         "name": "servicesection",
         "label": "Service Section",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -2252,7 +2328,7 @@
         "name": "scholarships",
         "label": "scholarships Section",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -2273,6 +2349,20 @@
             "label": "Section Title",
             "type": "text",
             "default": "Why Choose Us"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subTitle",
@@ -2303,7 +2393,7 @@
         "name": "videoTestimonials",
         "label": "Video Testimonials",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -2326,6 +2416,20 @@
             "default": "Video Testimonials"
           },
           {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
+          },
+          {
             "name": "subtitle",
             "label": "Section Subtitle",
             "type": "richtext",
@@ -2337,7 +2441,7 @@
         "name": "imageTestimonials",
         "label": "image Testimonials",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -2358,6 +2462,20 @@
             "label": "Section Title",
             "type": "text",
             "default": "Image Testimonials"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subtitle",
@@ -2367,11 +2485,11 @@
           }
         ]
       },
-        {
+      {
         "name": "visastories",
         "label": "visa Stories",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -2392,6 +2510,20 @@
             "label": "Section Title",
             "type": "text",
             "default": "Image Testimonials"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subtitle",
@@ -2405,7 +2537,7 @@
         "name": "cta",
         "label": "cta Section",
         "fields": [
-            {
+          {
             "name": "isHidden",
             "label": "Hide Section",
             "type": "select",
@@ -2426,6 +2558,20 @@
             "label": "Section Title",
             "type": "text",
             "default": "Image Testimonials"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+             "options": [
+              { "label": "H1", "value": "1" },
+              { "label": "H2", "value": "2" },
+              { "label": "H3", "value": "3" },
+              { "label": "H4", "value": "4" },
+              { "label": "H5", "value": "5" },
+              { "label": "H6", "value": "6" }
+            ],
+            "default": "2"
           },
           {
             "name": "subtitle",
