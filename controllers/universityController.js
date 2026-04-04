@@ -37,6 +37,44 @@ const createUniversity = async (req, res) => {
   }
 };
 
+const getUniversitie = async (req, res) => {
+  try{
+   const {name} = req.query;
+
+
+    // data = await University.find({},{'country':1,'name' : 1, 'uni_logo':1}).select('-__v');
+
+    const data = await University.aggregate([
+      {
+        $lookup: {
+          from: "countries",           // The name of the collection to join with
+          localField: "country",      // The field in University collection
+          foreignField: "code",        // The field in countrys collection to match
+          as: "countryData"           // Name of the output array field
+        }
+      },
+      {
+        $project: {
+          name: 1,
+          uni_logo: 1,
+          country: 1,
+          'countryData.name': 1,             // Includes the joined data
+          'countryData.flg': 1
+          // __v: 0                      // Explicitly exclude version key
+        }
+      }
+    ]);
+
+
+    res.status(200).json({ success : true, count : data.length, data });
+
+
+  }catch(error){
+      console.error('get universities error : ', error);
+      res.status(500).json({ success : false, message : 'server error' });
+  }
+}
+
 const getAllUniversities = async (req, res) => {
   try {
     const {
@@ -394,5 +432,6 @@ module.exports = {
   getUniversityById,
   updateUniversity,
   deleteUniversity,
-  getFlatUniversities
+  getFlatUniversities,
+  getUniversitie
 };
