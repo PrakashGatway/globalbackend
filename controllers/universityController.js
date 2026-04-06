@@ -56,6 +56,7 @@ const getUniversitie = async (req, res) => {
       {
         $project: {
           name: 1,
+          slug:1,
           uni_logo: 1,
           country: 1,
           'countryData.name': 1,             // Includes the joined data
