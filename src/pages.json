@@ -417,6 +417,60 @@
             "label": "Section Subtitle",
             "type": "text",
             "default": ""
+          },
+          {
+            "name": "points",
+            "label": "points Items",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "icon",
+                "type": "text"
+              },
+              {
+                "name": "title",
+                "label": "Section Title",
+                "type": "text",
+                "default": "sendMessage"
+              },
+              {
+                "name": "subtitle",
+                "label": "Section Subtitle",
+                "type": "text",
+                "default": ""
+              },
+              {
+                "name": "Number",
+                "label": "Section Number",
+                "type": "text",
+                "default": ""
+              },
+              {
+                "name": "email",
+                "label": "Section email",
+                "type": "text",
+                "default": ""
+              },
+              {
+                "name": "Location",
+                "label": "Section Location",
+                "type": "text",
+                "default": ""
+              },
+              {
+                "name": "timing",
+                "label": "Section timing",
+                "type": "text",
+                "default": ""
+              },
+              {
+                "name": "footertext",
+                "label": "Section footertext",
+                "type": "text",
+                "default": ""
+              }
+            ]
           }
         ]
       },
@@ -451,6 +505,33 @@
                 "label": "Section Title",
                 "type": "text",
                 "default": "sendMessage"
+              },
+              {
+                "name": "subtitle",
+                "label": "Section Subtitle",
+                "type": "text",
+                "default": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "OfficeLocation",
+        "label": "officeLocation-section",
+        "fields": [
+         
+          {
+            "name": "points",
+            "label": "points Items",
+            "type": "repeater",
+            "fields": [
+             
+              {
+                "name": "title",
+                "label": "Section Title",
+                "type": "text",
+                "default": ""
               },
               {
                 "name": "subtitle",
