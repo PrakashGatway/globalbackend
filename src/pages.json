@@ -18,12 +18,30 @@
             "label": "Hero Tag",
             "type": "select",
             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -71,9 +89,21 @@
             "label": "Items",
             "type": "repeater",
             "fields": [
-              { "name": "title", "label": "Title", "type": "text" },
-              { "name": "stats", "label": "Stats", "type": "text" },
-              { "name": "icon", "label": "Icon", "type": "text" }
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text"
+              },
+              {
+                "name": "stats",
+                "label": "Stats",
+                "type": "text"
+              },
+              {
+                "name": "icon",
+                "label": "Icon",
+                "type": "text"
+              }
             ]
           }
         ]
@@ -93,12 +123,30 @@
             "label": "Tag",
             "type": "select",
             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           }
@@ -119,11 +167,31 @@
             "label": "Steps",
             "type": "repeater",
             "fields": [
-              { "name": "order", "label": "Step Order", "type": "number" },
-              { "name": "title", "label": "Title", "type": "text" },
-              { "name": "subtitle", "label": "Subtitle", "type": "richtext" },
-              { "name": "ctaButton", "label": "Button Label", "type": "text" },
-              { "name": "ctaRoute", "label": "Button Route", "type": "text" }
+              {
+                "name": "order",
+                "label": "Step Order",
+                "type": "number"
+              },
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text"
+              },
+              {
+                "name": "subtitle",
+                "label": "Subtitle",
+                "type": "richtext"
+              },
+              {
+                "name": "ctaButton",
+                "label": "Button Label",
+                "type": "text"
+              },
+              {
+                "name": "ctaRoute",
+                "label": "Button Route",
+                "type": "text"
+              }
             ]
           }
         ]
@@ -142,13 +210,31 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -168,9 +254,18 @@
             "label": "Items",
             "type": "repeater",
             "fields": [
-              { "name": "tab", "type": "text" },
-              { "name": "videoLink", "type": "text" },
-              { "name": "features", "type": "text" }
+              {
+                "name": "tab",
+                "type": "text"
+              },
+              {
+                "name": "videoLink",
+                "type": "text"
+              },
+              {
+                "name": "features",
+                "type": "text"
+              }
             ]
           }
         ]
@@ -179,28 +274,50 @@
         "name": "imageTestimonials",
         "label": "Image Testimonials",
         "fields": [
-          { "name": "title", "type": "text" },
+          {
+            "name": "title",
+            "type": "text"
+          },
           {
             "name": "tag",
             "type": "select",
-            "options": [{ "label": "H2", "value": "2" }],
+            "options": [
+              {
+                "label": "H2",
+                "value": "2"
+              }
+            ],
             "default": "2"
           },
-          { "name": "subtitle", "type": "richtext" }
+          {
+            "name": "subtitle",
+            "type": "richtext"
+          }
         ]
       },
       {
         "name": "videoTestimonials",
         "label": "Video Testimonials",
         "fields": [
-          { "name": "title", "type": "text" },
+          {
+            "name": "title",
+            "type": "text"
+          },
           {
             "name": "tag",
             "type": "select",
-            "options": [{ "label": "H2", "value": "2" }],
+            "options": [
+              {
+                "label": "H2",
+                "value": "2"
+              }
+            ],
             "default": "2"
           },
-          { "name": "subtitle", "type": "richtext" }
+          {
+            "name": "subtitle",
+            "type": "richtext"
+          }
         ]
       },
       {
@@ -211,36 +328,74 @@
             "name": "isHidden",
             "type": "select",
             "options": [
-              { "label": "No", "value": "no" },
-              { "label": "Yes", "value": "yes" }
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
             ],
             "default": "no"
           },
-          { "name": "title", "type": "text" },
+          {
+            "name": "title",
+            "type": "text"
+          },
           {
             "name": "tag",
             "type": "select",
-            "options": [{ "label": "H2", "value": "2" }],
+            "options": [
+              {
+                "label": "H2",
+                "value": "2"
+              }
+            ],
             "default": "2"
           },
-          { "name": "subtitle", "type": "richtext" }
+          {
+            "name": "subtitle",
+            "type": "richtext"
+          }
         ]
       },
       {
         "name": "universities",
         "label": "Partner Universities",
         "fields": [
-          { "name": "title", "type": "text" },
+          {
+            "name": "title",
+            "type": "text"
+          },
           {
             "name": "tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           }
@@ -250,17 +405,38 @@
         "name": "studyDestinations",
         "label": "Study Destinations",
         "fields": [
-          { "name": "title", "type": "text" },
+          {
+            "name": "title",
+            "type": "text"
+          },
           {
             "name": "tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           }
@@ -270,14 +446,27 @@
         "name": "serviceSection",
         "label": "Services Section",
         "fields": [
-          { "name": "title", "type": "text" },
+          {
+            "name": "title",
+            "type": "text"
+          },
           {
             "name": "services",
             "type": "repeater",
             "fields": [
-              { "name": "icon", "type": "file", "accept": "image/*" },
-              { "name": "title", "type": "text" },
-              { "name": "subTitle", "type": "richtext" }
+              {
+                "name": "icon",
+                "type": "file",
+                "accept": "image/*"
+              },
+              {
+                "name": "title",
+                "type": "text"
+              },
+              {
+                "name": "subTitle",
+                "type": "richtext"
+              }
             ]
           }
         ]
@@ -290,51 +479,108 @@
             "name": "isHidden",
             "type": "select",
             "options": [
-              { "label": "No", "value": "no" },
-              { "label": "Yes", "value": "yes" }
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
             ],
             "default": "no"
           },
-          { "name": "title", "type": "text" },
-          { "name": "subtitle", "type": "text" }
+          {
+            "name": "title",
+            "type": "text"
+          },
+          {
+            "name": "subtitle",
+            "type": "text"
+          }
         ]
       },
       {
         "name": "visa",
         "label": "Visa Section",
         "fields": [
-          { "name": "title", "type": "text" },
+          {
+            "name": "title",
+            "type": "text"
+          },
           {
             "name": "tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
-          { "name": "subtitle", "type": "text" }
+          {
+            "name": "subtitle",
+            "type": "text"
+          }
         ]
       },
       {
         "name": "faq",
         "label": "FAQ Section",
         "fields": [
-          { "name": "title", "type": "text" },
+          {
+            "name": "title",
+            "type": "text"
+          },
           {
             "name": "tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           }
@@ -342,7 +588,6 @@
       }
     ]
   },
-
   "contact": {
     "name": "Contact Page",
     "description": "Contact information and form",
@@ -357,7 +602,6 @@
             "type": "text",
             "placeholder": "Welcome to Our Platform"
           },
-
           {
             "name": "subtitle",
             "label": "Hero Subtitle",
@@ -520,13 +764,11 @@
         "name": "OfficeLocation",
         "label": "officeLocation-section",
         "fields": [
-         
           {
             "name": "points",
             "label": "points Items",
             "type": "repeater",
             "fields": [
-             
               {
                 "name": "title",
                 "label": "Section Title",
@@ -1724,18 +1966,35 @@
             "required": false,
             "placeholder": "Welcome"
           },
-          
           {
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -1821,13 +2080,31 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -1885,13 +2162,31 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -1948,20 +2243,38 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
           {
             "name": "subTitle",
             "label": "Section subTitle",
-            "type": "textarea",
+            "type": "richtext2",
             "default": ""
           },
           {
@@ -1986,24 +2299,42 @@
                 "label": "Feature Title",
                 "type": "text"
               },
-          {
-            "name": "tag",
-            "label": "Tag",
-            "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
-            ],
-            "default": "2"
-          },
+              {
+                "name": "tag",
+                "label": "Tag",
+                "type": "select",
+                "options": [
+                  {
+                    "label": "H1",
+                    "value": "1"
+                  },
+                  {
+                    "label": "H2",
+                    "value": "2"
+                  },
+                  {
+                    "label": "H3",
+                    "value": "3"
+                  },
+                  {
+                    "label": "H4",
+                    "value": "4"
+                  },
+                  {
+                    "label": "H5",
+                    "value": "5"
+                  },
+                  {
+                    "label": "H6",
+                    "value": "6"
+                  }
+                ],
+                "default": "2"
+              },
               {
                 "name": "description",
                 "label": "Feature Description",
-                "type": "textarea"
+                "type": "richtext2"
               }
             ]
           }
@@ -2039,13 +2370,31 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -2063,7 +2412,7 @@
               {
                 "name": "coursesname",
                 "label": "courses name",
-                "type": "text"
+                "type": "richtext2"
               },
               {
                 "name": "image",
@@ -2074,7 +2423,7 @@
               {
                 "name": "description",
                 "label": "courses Description",
-                "type": "text"
+                "type": "richtext2"
               }
             ]
           }
@@ -2110,20 +2459,38 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
           {
             "name": "subTitle",
             "label": "Section subTitle",
-            "type": "textarea",
+            "type": "richtext2",
             "default": ""
           },
           {
@@ -2146,27 +2513,45 @@
               {
                 "name": "title",
                 "label": "Feature Title",
-                "type": "text",
+                "type": "richtext2",
                 "required": false
               },
-          {
-            "name": "tag",
-            "label": "Tag",
-            "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
-            ],
-            "default": "2"
-          },
+              {
+                "name": "tag",
+                "label": "Tag",
+                "type": "select",
+                "options": [
+                  {
+                    "label": "H1",
+                    "value": "1"
+                  },
+                  {
+                    "label": "H2",
+                    "value": "2"
+                  },
+                  {
+                    "label": "H3",
+                    "value": "3"
+                  },
+                  {
+                    "label": "H4",
+                    "value": "4"
+                  },
+                  {
+                    "label": "H5",
+                    "value": "5"
+                  },
+                  {
+                    "label": "H6",
+                    "value": "6"
+                  }
+                ],
+                "default": "2"
+              },
               {
                 "name": "description",
                 "label": "Feature Description",
-                "type": "textarea"
+                "type": "richtext2"
               }
             ]
           }
@@ -2203,13 +2588,31 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -2257,13 +2660,31 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -2328,20 +2749,38 @@
                 "label": "Title",
                 "type": "text"
               },
-          {
-            "name": "tag",
-            "label": "Tag",
-            "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
-            ],
-            "default": "2"
-          },
+              {
+                "name": "tag",
+                "label": "Tag",
+                "type": "select",
+                "options": [
+                  {
+                    "label": "H1",
+                    "value": "1"
+                  },
+                  {
+                    "label": "H2",
+                    "value": "2"
+                  },
+                  {
+                    "label": "H3",
+                    "value": "3"
+                  },
+                  {
+                    "label": "H4",
+                    "value": "4"
+                  },
+                  {
+                    "label": "H5",
+                    "value": "5"
+                  },
+                  {
+                    "label": "H6",
+                    "value": "6"
+                  }
+                ],
+                "default": "2"
+              },
               {
                 "name": "description",
                 "label": "Feature Description",
@@ -2394,12 +2833,12 @@
               {
                 "name": "itemtitle",
                 "label": "Item Title",
-                "type": "text"
+                "type": "richtext2"
               },
               {
                 "name": "itemsubtitle",
                 "label": "Item Sub Title",
-                "type": "text"
+                "type": "richtext2"
               }
             ]
           }
@@ -2435,13 +2874,31 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -2464,7 +2921,7 @@
               {
                 "name": "title",
                 "label": "Title",
-                "type": "text"
+                "type": "richtext2"
               }
             ]
           }
@@ -2500,13 +2957,31 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -2548,13 +3023,31 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -2596,13 +3089,31 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
@@ -2644,13 +3155,31 @@
             "name": "tag",
             "label": "Tag",
             "type": "select",
-             "options": [
-              { "label": "H1", "value": "1" },
-              { "label": "H2", "value": "2" },
-              { "label": "H3", "value": "3" },
-              { "label": "H4", "value": "4" },
-              { "label": "H5", "value": "5" },
-              { "label": "H6", "value": "6" }
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
             ],
             "default": "2"
           },
