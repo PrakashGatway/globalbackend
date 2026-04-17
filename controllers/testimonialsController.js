@@ -256,30 +256,68 @@ exports.getFaqs = async (req, res) => {
       isPublished,
       referenceModel,
       referenceId,
+      page = 1,
+      limit = 20,
     } = req.query;
 
-    const filter = {};
-    if (type) filter.type = type;
-    if (status) filter.status = status;
-    if (isPublished && isPublished !== undefined && isPublished !== null) filter.isPublished = isPublished == 'true' ? true : "";
-    // if (referenceModel) filter.referenceModel = referenceModel;
-    // if (referenceId) filter.referenceId = referenceId;
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const matchStage = {};
+
+    if (type) matchStage.type = type;
+    if (status) matchStage.status = status;
+
+   if (isPublished === 'true') {
+  matchStage.isPublished = true;
+} else if (isPublished === 'false') {
+  matchStage.isPublished = false;
+}
+
+    if (referenceModel) matchStage.referenceModel = referenceModel;
+    if (referenceId) matchStage.referenceId = referenceId;
+
     if (search && search.trim()) {
-      filter.$or = [
+      matchStage.$or = [
         { question: { $regex: search, $options: 'i' } },
         { answer: { $regex: search, $options: 'i' } },
-        {type: { $regex: search, $options: 'i' } },
-      ]
+        { type: { $regex: search, $options: 'i' } },
+      ];
     }
 
-    const faqs = await Faqs.find(filter)
-      .sort({ createdAt: -1 });
+    const pipeline = [
+      { $match: matchStage },
+
+      {
+        $facet: {
+          data: [
+            { $sort: { createdAt: -1 } },
+            { $skip: skip },
+            { $limit: limitNumber },
+          ],
+          totalCount: [
+            { $count: "count" }
+          ]
+        }
+      }
+    ];
+
+    const result = await Faqs.aggregate(pipeline);
+
+    const faqs = result[0].data;
+    const total = result[0].totalCount[0]?.count || 0;
 
     res.status(200).json({
       success: true,
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
       count: faqs.length,
       data: faqs,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
