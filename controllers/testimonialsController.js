@@ -264,6 +264,13 @@ exports.getFaqs = async (req, res) => {
     if (isPublished && isPublished !== undefined && isPublished !== null) filter.isPublished = isPublished == 'true' ? true : "";
     // if (referenceModel) filter.referenceModel = referenceModel;
     // if (referenceId) filter.referenceId = referenceId;
+    if (search && search.trim()) {
+      filter.$or = [
+        { question: { $regex: search, $options: 'i' } },
+        { answer: { $regex: search, $options: 'i' } },
+        {type: { $regex: search, $options: 'i' } },
+      ]
+    }
 
     const faqs = await Faqs.find(filter)
       .sort({ createdAt: -1 });
