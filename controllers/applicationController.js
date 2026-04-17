@@ -105,19 +105,19 @@ exports.getApplications = async (req, res) => {
       { $skip: skip },
       { $limit: Number(limit) },
 
-      // ...(req.user.role === 'admin'
-      //   ? [
-      //     {
-      //       $lookup: {
-      //         from: 'users',
-      //         localField: 'student',
-      //         foreignField: '_id',
-      //         as: 'student',
-      //       },
-      //     },
-      //     { $unwind: '$student' },
-      //   ]
-      //   : []),
+      ...(req.user.role === 'admin'
+        ? [
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'student',
+              foreignField: '_id',
+              as: 'student',
+            },
+          },
+          { $unwind: '$student' },
+        ]
+        : []),
 
       {
         $lookup: {

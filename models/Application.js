@@ -41,26 +41,23 @@ const applicationSchema = new mongoose.Schema(
     },
     documents: [
       {
+        type:{
+          type: String,
+          enum:['ooshas','user']
+        },
         name: String,
         description: String,
         status: {
           type: String,
-          enum: ['Pending', 'Approved', 'Rejected'],
+          enum: ['Pending', 'inreview', 'Approved', 'Rejected'],
           default: 'Pending',
         },
-        rejectReason: String,
-        docUrl: String,
-        docType: String
-      }
-    ],
-    OoshasDocuments: [
-      {
-        name: String,
-        description: String,
-        status: {
+        required: {
           type: String,
-          enum: ['Pending', 'Approved', 'Rejected'],
-          default: 'Pending',
+          enum: ['required', 'optional'],
+        },
+        extra:{
+          type: mongoose.Schema.Types.Mixed
         },
         rejectReason: String,
         docUrl: String,
@@ -70,6 +67,21 @@ const applicationSchema = new mongoose.Schema(
     extraRequirements: {
       type: mongoose.Schema.Types.Mixed
     },
+    rejectionReason: [
+      {
+        course: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Course',
+        },
+        reason: String,
+        order: Number,
+        status: {
+          type: String,
+          enum: ['Pending', 'inreview', 'Approved', 'Rejected'],
+          default: 'Pending',
+        }
+      }
+    ],
     backups: [
       {
         course: {

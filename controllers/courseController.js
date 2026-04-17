@@ -72,7 +72,7 @@ exports.getAllCourses = async (req, res) => {
       matchStage.$or = [
         { name: { $regex: search, $options: 'i' } },
         { shortName: { $regex: search, $options: 'i' } },
-        { tags: { $regex: search, $options: 'i' } },
+        { tags: { $regex: search, $options: 'i' } }
       ]
     }
 
