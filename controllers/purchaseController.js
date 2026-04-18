@@ -105,7 +105,7 @@ exports.applyCoupon = catchAsync(async (req, res, next) => {
   });
 
   if (!coupon) {
-     return res.status(404).json({
+    return res.status(404).json({
       status: 'error',
       message: 'Coupon not found'
     });
@@ -286,7 +286,7 @@ exports.processPayment = catchAsync(async (req, res, next) => {
       paymentMethod: paymentMethod,
       transactionId: transactionId || `TXN${Date.now()}${Math.random().toString(36).substr(2, 9)}`,
       status: 'Completed',
-      gst: 0 
+      gst: 0
     }], { session });
 
     application.paymentStatus = 'Completed';
@@ -315,10 +315,10 @@ exports.processPayment = catchAsync(async (req, res, next) => {
 
 
 exports.getPaymentHistory = catchAsync(async (req, res, next) => {
-  const userId = req.user.id;
+  const userId = req.user._id;
   const { page = 1, limit = 10 } = req.query;
 
-  const purchases = await Purchase.find({ user: userId })
+  const purchases = await Purchase.find({ user: new mongoose.Types.ObjectId(userId) })
     .populate({
       path: 'application',
       populate: {
@@ -329,6 +329,7 @@ exports.getPaymentHistory = catchAsync(async (req, res, next) => {
     .sort('-createdAt')
     .limit(limit * 1)
     .skip((page - 1) * limit);
+
 
   const total = await Purchase.countDocuments({ user: userId });
 
