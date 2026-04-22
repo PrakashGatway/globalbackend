@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const Application = require('../models/Application');
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
+
 
 exports.createApplication = async (req, res) => {
   try {
@@ -241,6 +245,76 @@ exports.deleteApplication = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+
+exports.uploadAndUpdateDocument = async (req, res) => {
+  try {
+    const { applicationId, documentId } = req.params;
+    const userId = req.user?._id || req.user?.id;
+
+    const fileUrl = `/uploads/docs/${req?.file?.filename || "nofile"}`;
+
+    const additionalUpdates = {};
+    if (req.body.answer) additionalUpdates['documents.$.answer'] = req.body.answer;
+
+
+    const updateFields = {
+      'documents.$.status': 'inreview',
+      ...additionalUpdates
+    };
+    if (req.body.docType != 'form') {
+      updateFields['documents.$.docUrl'] = fileUrl;
+    }
+
+    const updatedApplication = await Application.findOneAndUpdate(
+      {
+        _id: applicationId,
+        student: userId,
+        'documents._id': documentId
+      },
+      {
+        $set:updateFields
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedApplication) {
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({
+        success: false,
+        message: 'Application or document not found, or access denied.'
+      });
+    }
+
+    const updatedDoc = updatedApplication.documents.id(documentId) ||
+      updatedApplication.documents.find(d => d._id.toString() === documentId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Document uploaded successfully.',
+      data: { ...updatedDoc.toObject(), docUrl: fileUrl }
+    });
+  } catch (error) {
+    console.log(error)
+    if (req.file) {
+      try { fs.unlinkSync(req.file.path); } catch (e) { }
+    }
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'Invalid ID format.' });
+    }
+    if (error instanceof multer.MulterError) {
+      if (error.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ success: false, message: 'File too large. Max 10MB.' });
+      }
+      return res.status(400).json({ success: false, message: error.message });
+    }
+    res.status(500).json({
+      success: false,
+      message: 'Upload failed.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };

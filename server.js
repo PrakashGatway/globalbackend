@@ -13,6 +13,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan('dev'))
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'))
@@ -35,27 +36,6 @@ app.use('/api/subjects', require('./routes/subjectRoutes'))
 app.use("/api",require("./routes/enquiry"))
 
 app.use('/api/notifications', require('./routes/notication'))
-
-const QRCode = require('qrcode')
-
-async function generateUpiQr() {
-  try {
-    const upiUrl = "upi://pay?pa=kdas2024@nsdlpbma&pn=KDAS%20TECHNOLOGIES%20OPC%20PRIVATE%20LIMITED&mc=7372&tr=535562746895860038&tn=SchedulerTest&am=100&cu=INR&mode=05&orgid=181046&purpose=00&catagory=01&tid=NPT00000000000000535562746895860038&sign=MEUCIQDZ5+tADwWDVqZRJFgKqE1A940kcyLBSRGUpb48flY2owIge/K1FKDAYv0JNqFMi+6TegvfCGZD50KpYnh1AB4piqU="
-    const qrImage = await QRCode.toDataURL(upiUrl)
-
-    console.log({
-      success: true,
-      upiUrl,
-      qrImage // Base64 Image
-    })
-  } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    }
-  }
-}
-// generateUpiQr()
 
 
 app.get("/api/page-json", (req, res) => {

@@ -59,6 +59,7 @@ const applicationSchema = new mongoose.Schema(
         extra:{
           type: mongoose.Schema.Types.Mixed
         },
+        answer: String,
         rejectReason: String,
         docUrl: String,
         docType: String
