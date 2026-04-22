@@ -12,6 +12,7 @@ router.put(
     applicationController.uploadAndUpdateDocument
 );
 router.get('/', protect, applicationController.getApplications);
+router.put('/update/:id',protect, applicationController.updateIntakeAndBackups);
 router.get('/:id', protect, applicationController.getApplication);
 router.put('/:id', protect, applicationController.updateApplication);
 router.delete('/:id', protect, applicationController.deleteApplication);

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const OTP = require('../models/OTP')
-const { sendOTPEmail, sendVerificationEmail } = require('../utils/emailService')
+// const { sendOTPEmail, sendVerificationEmail } = require('../utils/emailService')
 const UserProfile = require('../models/UserProfile')
 const { default: mongoose } = require('mongoose')
 

@@ -3,8 +3,60 @@ const Application = require('../models/Application');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const Communication = require('../models/Communication');
 
 
+const defaultDocuments = [
+  {
+    "type": "user",
+    "name": "Passport",
+    "description": "Front and back copy of passport",
+    "status": "Pending",
+    "required": "required"
+  },
+  {
+    "type": "user",
+    "name": "Academic Documents",
+    "description": "10th, 12th, Bachelor's mark sheets (year-wise or semester-wise), consolidated mark sheet, degree or provisional certificate, other certificates",
+    "status": "Pending",
+    "required": "required"
+  },
+  {
+    "type": "user",
+    "name": "Updated CV",
+    "description": "Latest curriculum vitae",
+    "status": "Pending",
+    "required": "required"
+  },
+  {
+    "type": "user",
+    "name": "Experience Certificate",
+    "description": "Work experience certificate (if available)",
+    "status": "Pending",
+    "required": "optional"
+  },
+  {
+    "type": "user",
+    "name": "Photographs",
+    "description": "passport size photographs",
+    "status": "Pending",
+    "required": "required"
+  },
+  {
+    "type": "user",
+    "name": "IELTS Scorecard",
+    "description": "IELTS scorecard (if available)",
+    "status": "Pending",
+    "required": "optional"
+  },
+  {
+    "type": "user",
+    "name": "LOR",
+    "description": "Letter of Recommendation",
+    "status": "Pending",
+    "required": "optional"
+  }
+]
 exports.createApplication = async (req, res) => {
   try {
     const {
@@ -32,11 +84,19 @@ exports.createApplication = async (req, res) => {
       course,
       intake,
       expectations,
-      documents,
-      extraRequirements,
+      documents: defaultDocuments,
+      // extraRequirements,
       backups,
     });
-
+    if (application) {
+      await Communication.create({
+        application: application._id,
+        type: 'activity',
+        action: 'APPLICATION_CREATED',
+        description: `Application ${application.applicationNumber} was created with intake ${application.intake}.`,
+        user: req.user._id
+      });
+    }
     res.status(201).json({
       success: true,
       data: application,
@@ -276,7 +336,7 @@ exports.uploadAndUpdateDocument = async (req, res) => {
         'documents._id': documentId
       },
       {
-        $set:updateFields
+        $set: updateFields
       },
       { new: true, runValidators: true }
     );
@@ -315,6 +375,54 @@ exports.uploadAndUpdateDocument = async (req, res) => {
       success: false,
       message: 'Upload failed.',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+exports.updateIntakeAndBackups = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { intake, backups } = req.body;
+    if (Array.isArray(backups)) {
+      const seen = new Set();
+
+      for (const item of backups) {
+        const key = `${item.course}-${item.intake}`;
+
+        if (seen.has(key)) {
+          return res.status(400).json({
+            message: `Duplicate backup found for course + intake: ${item.course} / ${item.intake}`,
+          });
+        }
+        seen.add(key);
+      }
+    }
+    const updatedApplication = await Application.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          intake: intake || undefined,
+          backups: Array.isArray(backups) ? backups : [],
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    if (!updatedApplication) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+    return res.status(200).json({
+      message: "Updated successfully",
+      data: updatedApplication,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message,
     });
   }
 };

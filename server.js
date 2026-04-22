@@ -33,6 +33,8 @@ app.use('/api/upload', require('./routes/upload'))
 app.use('/api/page-information', require('./routes/pageInformation'))
 app.use('/api/blogs', require('./routes/blogRoutes'))
 app.use('/api/subjects', require('./routes/subjectRoutes'))
+app.use('/api/communication', require('./routes/applicationCom'))
+
 app.use("/api",require("./routes/enquiry"))
 
 app.use('/api/notifications', require('./routes/notication'))
@@ -89,7 +91,7 @@ app.use((req, res) => {
   })
 })
 
-const PORT = process.env.PORT || 5000
+const PORT = 5000
 
 // Listen on all network interfaces (0.0.0.0) to allow access from other devices on the network
 app.listen(PORT, '0.0.0.0', () => {

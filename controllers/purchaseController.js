@@ -12,7 +12,6 @@ const catchAsync = (fn) => {
 }
 
 const pointsToRupees = (points) => points / 10;
-
 const rupeesToPoints = (rupees) => rupees * 10;
 
 exports.getCheckoutDetails = catchAsync(async (req, res, next) => {
@@ -313,7 +312,6 @@ exports.processPayment = catchAsync(async (req, res, next) => {
   }
 });
 
-
 exports.getPaymentHistory = catchAsync(async (req, res, next) => {
   const userId = req.user._id;
   const { page = 1, limit = 10 } = req.query;
@@ -346,28 +344,212 @@ exports.getPaymentHistory = catchAsync(async (req, res, next) => {
   });
 });
 
-// Get payment details
-exports.getPaymentDetails = catchAsync(async (req, res, next) => {
-  const { purchaseId } = req.params;
-  const userId = req.user.id;
+exports.getAllPayments = catchAsync(async (req, res, next) => {
+  const {
+    page = 1,
+    limit = 10,
+    search = '',
+    status = '',
+    paymentMethod = '',
+    userId = '',
+    applicationId = '',
+    startDate = '',
+    endDate = '',
+    minAmount = '',
+    maxAmount = '',
+    sortBy = 'createdAt',
+    sortOrder = 'desc'
+  } = req.query;
 
-  const purchase = await Purchase.findOne({
-    _id: purchaseId,
-    user: userId
-  }).populate({
-    path: 'application',
-    populate: {
-      path: 'course',
-      populate: 'university'
+  // Build filter object
+  const filter = {};
+
+  if (search) {
+    filter.$or = [
+      { transactionId: { $regex: search, $options: 'i' } },
+      { refId: { $regex: search, $options: 'i' } },
+      { couponCode: { $regex: search, $options: 'i' } }
+    ];
+  }
+
+  if (status) filter.status = status;
+  if (paymentMethod) filter.paymentMethod = paymentMethod;
+  if (userId) filter.user = new mongoose.Types.ObjectId(userId);
+  if (applicationId) filter.application = new mongoose.Types.ObjectId(applicationId);
+
+  // Date range filter
+  if (startDate || endDate) {
+    filter.createdAt = {};
+    if (startDate) filter.createdAt.$gte = new Date(startDate);
+    if (endDate) filter.createdAt.$lte = new Date(endDate);
+  }
+
+  // Amount range filter
+  if (minAmount || maxAmount) {
+    filter.amount = {};
+    if (minAmount) filter.amount.$gte = Number(minAmount);
+    if (maxAmount) filter.amount.$lte = Number(maxAmount);
+  }
+
+  // Pagination
+  const pageNum = Math.max(1, parseInt(page));
+  const limitNum = Math.max(1, Math.min(100, parseInt(limit)));
+  const skip = (pageNum - 1) * limitNum;
+
+  // Sorting
+  const sortObj = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
+
+  // Execute query with population
+  const [payments, total] = await Promise.all([
+    Purchase.find(filter)
+      .populate({
+        path: 'user',
+        select: 'name email phone'
+      })
+      .populate({
+        path: 'application',
+        populate: [
+          { path: 'student', select: 'name email' },
+          { path: 'course', populate: { path: 'university', select: 'name uni_logo' } }
+        ]
+      })
+      .sort(sortObj)
+      .limit(limitNum)
+      .skip(skip)
+      .lean(),
+    Purchase.countDocuments(filter)
+  ]);
+
+  res.status(200).json({
+    success: true,
+    data: payments,
+    pagination: {
+      page: pageNum,
+      limit: limitNum,
+      total,
+      pages: Math.ceil(total / limitNum)
     }
   });
+});
+
+exports.getPaymentStats = catchAsync(async (req, res, next) => {
+  const { startDate, endDate } = req.query;
+
+  // Build date filter
+  const dateFilter = {};
+  if (startDate || endDate) {
+    dateFilter.createdAt = {};
+    if (startDate) dateFilter.createdAt.$gte = new Date(startDate);
+    if (endDate) dateFilter.createdAt.$lte = new Date(endDate);
+  }
+
+  // Base aggregation pipeline
+  const baseMatch = Object.keys(dateFilter).length ? { $match: dateFilter } : {};
+
+  const stats = await Purchase.aggregate([
+    ...Object.keys(baseMatch).length ? [baseMatch] : [],
+    {
+      $group: {
+        _id: null,
+        totalTransactions: { $sum: 1 },
+        totalRevenue: { $sum: '$amount' },
+        totalGst: { $sum: '$gst' },
+        totalDiscount: { $sum: '$couponDiscount' },
+        completedCount: {
+          $sum: { $cond: [{ $eq: ['$status', 'Completed'] }, 1, 0] }
+        },
+        pendingCount: {
+          $sum: { $cond: [{ $eq: ['$status', 'Pending'] }, 1, 0] }
+        },
+        cancelledCount: {
+          $sum: { $cond: [{ $eq: ['$status', 'Cancelled'] }, 1, 0] }
+        },
+        refundedCount: {
+          $sum: { $cond: [{ $eq: ['$status', 'Refunded'] }, 1, 0] }
+        },
+        walletUsedCount: {
+          $sum: { $cond: [{ $eq: ['$isWalletUsed', true] }, 1, 0] }
+        },
+        avgTransactionValue: { $avg: '$amount' }
+      }
+    }
+  ]);
+
+  // Payment method breakdown
+  const paymentMethodStats = await Purchase.aggregate([
+    ...Object.keys(baseMatch).length ? [baseMatch] : [],
+    { $match: { status: 'Completed' } },
+    {
+      $group: {
+        _id: '$paymentMethod',
+        count: { $sum: 1 },
+        totalAmount: { $sum: '$amount' }
+      }
+    },
+    { $sort: { totalAmount: -1 } }
+  ]);
+
+  // Status timeline (last 7 days)
+  const timelineStats = await Purchase.aggregate([
+    ...Object.keys(baseMatch).length ? [baseMatch] : [],
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+        count: { $sum: 1 },
+        revenue: { $sum: { $cond: [{ $eq: ['$status', 'Completed'] }, '$amount', 0] } }
+      }
+    },
+    { $sort: { _id: 1 } },
+    { $limit: 7 }
+  ]);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      overview: stats[0] || {
+        totalTransactions: 0,
+        totalRevenue: 0,
+        totalGst: 0,
+        totalDiscount: 0,
+        completedCount: 0,
+        pendingCount: 0,
+        cancelledCount: 0,
+        refundedCount: 0,
+        walletUsedCount: 0,
+        avgTransactionValue: 0
+      },
+      paymentMethods: paymentMethodStats,
+      timeline: timelineStats
+    }
+  });
+});
+
+exports.getPaymentDetails = catchAsync(async (req, res, next) => {
+  const { purchaseId } = req.params;
+
+  const purchase = await Purchase.findById(purchaseId)
+    .populate({
+      path: 'user',
+      select: 'name email phone wallet'
+    })
+    .populate({
+      path: 'application',
+      populate: [
+        { path: 'student', select: 'name email phone' },
+        { path: 'course', populate: { path: 'university' } },
+        { path: 'country' }
+      ]
+    });
 
   if (!purchase) {
-    return next(new AppError('Purchase not found', 404));
+    return res.status(404).json({
+      success: false,
+      message: 'Purchase record not found'
+    });
   }
 
   res.status(200).json({
-    status: 'success',
-    data: { purchase }
+    success: true,
+    data: purchase
   });
 });

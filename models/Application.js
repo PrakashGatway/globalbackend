@@ -102,6 +102,7 @@ const applicationSchema = new mongoose.Schema(
         'SubmitToSchool',
         'AwaitingSchoolResponse',
         'AdmissionProcessing',
+        'OfferReceived',
         'Refused',
         'Withdrawn',
         'PreArrival',
@@ -124,5 +125,17 @@ const applicationSchema = new mongoose.Schema(
 
 applicationSchema.index({ student: 1 })
 applicationSchema.index({ applicationNumber: 1 })
+
+applicationSchema.path('backups').validate(function (value) {
+  const seen = new Set();
+
+  for (const item of value) {
+    const key = `${item.course}-${item.intake}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+  }
+
+  return true;
+}, 'Duplicate course + intake found in backups');
 
 module.exports = mongoose.model('Application', applicationSchema)

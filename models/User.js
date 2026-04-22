@@ -32,9 +32,6 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Please provide a phone number'],
       trim: true,
     },
-    password: {
-      type: String,
-    },
     dateOfBirth: {
       type: Date,
       default: Date.now,

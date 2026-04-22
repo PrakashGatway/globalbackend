@@ -4,12 +4,12 @@ const nodemailer = require('nodemailer')
 const isEmailConfigured = () => {
   const emailUser = process.env.EMAIL_USER
   const emailPass = process.env.EMAIL_PASS
-  const isConfigured = emailUser && emailPass && 
-         emailUser !== 'your-email@gmail.com' && 
-         emailPass !== 'your-app-password' &&
-         emailUser.trim() !== '' &&
-         emailPass.trim() !== ''
-  
+  const isConfigured = emailUser && emailPass &&
+    emailUser !== 'your-email@gmail.com' &&
+    emailPass !== 'your-app-password' &&
+    emailUser.trim() !== '' &&
+    emailPass.trim() !== ''
+
   if (!isConfigured) {
     console.log('\n⚠️  EMAIL CONFIGURATION REQUIRED')
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
@@ -23,7 +23,7 @@ const isEmailConfigured = () => {
     console.log('3. Add credentials to .env and restart server')
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n')
   }
-  
+
   return isConfigured
 }
 
@@ -56,8 +56,7 @@ const createTransporter = () => {
 // Send OTP email
 const sendOTPEmail = async (email, otp, role) => {
   const transporter = createTransporter()
-  
-  // If email is not configured, skip sending in development mode
+
   if (!transporter) {
     const isDevelopment = true
     if (isDevelopment) {
@@ -104,36 +103,19 @@ const sendOTPEmail = async (email, otp, role) => {
     return { success: true, messageId: info.messageId }
   } catch (error) {
     console.error('❌ Error sending OTP email:', error.message)
-    
-    // Provide helpful error messages
-    if (error.code === 'EAUTH') {
-      console.error('❌ Authentication failed. Check your EMAIL_USER and EMAIL_PASS in .env')
-      console.error('   Make sure you\'re using a Gmail App Password, not your regular password.')
-    } else if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT') {
-      console.error('❌ Connection failed. Check your internet connection and email service settings.')
-    }
-    
-    // For development, log OTP to console if email fails
-    const isDevelopment = process.env.NODE_ENV !== 'production'
-    if (isDevelopment) {
-      console.log(`\n⚠️  Email sending failed. OTP for ${email} (${role}): ${otp}\n`)
-      console.log('   (This OTP will still work - check console logs)\n')
-    }
-    throw new Error('Failed to send OTP email')
   }
-}
 
-// Send email verification email
-const sendVerificationEmail = async (email, verificationToken, name) => {
-  try {
-    const transporter = createTransporter()
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`
+  // Send email verification email
+  const sendVerificationEmail = async (email, verificationToken, name) => {
+    try {
+      const transporter = createTransporter()
+      const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`
 
-    const mailOptions = {
-      from: process.env.EMAIL_FROM || 'noreply@cwayglobal.com',
-      to: email,
-      subject: 'Verify Your Email - C-way Global Admin',
-      html: `
+      const mailOptions = {
+        from: process.env.EMAIL_FROM || 'noreply@cwayglobal.com',
+        to: email,
+        subject: 'Verify Your Email - C-way Global Admin',
+        html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #4f46e5;">C-way Global Admin Dashboard</h2>
           <p>Hello ${name || 'there'},</p>
@@ -149,7 +131,7 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
           <p style="color: #6b7280; font-size: 12px;">This is an automated email. Please do not reply.</p>
         </div>
       `,
-      text: `
+        text: `
         C-way Global Admin Dashboard
         
         Hello ${name || 'there'},
@@ -161,23 +143,23 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
         
         If you didn't create an account, please ignore this email.
       `,
-    }
+      }
 
-    const info = await transporter.sendMail(mailOptions)
-    console.log('Verification Email sent:', info.messageId)
-    return { success: true, messageId: info.messageId }
-  } catch (error) {
-    console.error('Error sending verification email:', error)
-    // For development, log verification link to console if email fails
-    if (process.env.NODE_ENV === 'development') {
-      const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`
-      console.log('⚠️  Email not configured. Verification link for', email, 'is:', verificationUrl)
+      const info = await transporter.sendMail(mailOptions)
+      console.log('Verification Email sent:', info.messageId)
+      return { success: true, messageId: info.messageId }
+    } catch (error) {
+      console.error('Error sending verification email:', error)
+      // For development, log verification link to console if email fails
+      if (process.env.NODE_ENV === 'development') {
+        const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`
+        console.log('⚠️  Email not configured. Verification link for', email, 'is:', verificationUrl)
+      }
+      throw new Error('Failed to send verification email')
     }
-    throw new Error('Failed to send verification email')
   }
-}
 
-module.exports = {
-  sendOTPEmail,
-  sendVerificationEmail,
-}
+  module.exports = {
+    sendOTPEmail,
+    sendVerificationEmail,
+  }
