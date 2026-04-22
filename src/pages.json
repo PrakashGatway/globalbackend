@@ -1581,14 +1581,14 @@
           {
             "name": "title",
             "label": "Hero Title",
-            "type": "text",
+            "type": "richtext",
             "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
             "name": "subtitle",
             "label": "Hero Subtitle",
-            "type": "textarea",
+            "type": "richtext",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -1668,12 +1668,12 @@
           {
             "name": "title",
             "label": "Title",
-            "type": "text"
+            "type": "richtext"
           },
           {
             "name": "subTitle",
             "label": "subTitle",
-            "type": "text"
+            "type": "richtext"
           }
         ]
       },
@@ -1684,14 +1684,14 @@
           {
             "name": "title",
             "label": "Hero Title",
-            "type": "text",
+            "type": "richtext",
             "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
             "name": "subtitle",
             "label": "Hero Subtitle",
-            "type": "textarea",
+            "type": "richtext",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -1724,13 +1724,13 @@
               {
                 "name": "title",
                 "label": "Title",
-                "type": "text",
+                "type": "richtext",
                 "default": ""
               },
               {
                 "name": "subTitle",
                 "label": "subTitle",
-                "type": "text",
+                "type": "richtext",
                 "default": ""
               },
               {
@@ -1756,14 +1756,14 @@
           {
             "name": "title",
             "label": " Title",
-            "type": "text",
+            "type": "richtext",
             "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
             "name": "subtitle",
             "label": "Subtitle",
-            "type": "text",
+            "type": "richtext",
             "required": false,
             "placeholder": "Your journey "
           },
@@ -1782,13 +1782,13 @@
           {
             "name": "title",
             "label": "Section Title",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           },
           {
             "name": "subTitle",
             "label": "Section subTitle",
-            "type": "textarea",
+            "type": "richtext",
             "default": ""
           }
         ]
@@ -1800,14 +1800,103 @@
           {
             "name": "title",
             "label": "Title",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           },
           {
             "name": "subtitle",
             "label": "Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": ""
+          }
+        ]
+      },
+        {
+        "name": "eligibilityCriteria",
+        "label": "Eligibility Criteria",
+        "fields": [
+           {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
+            ],
+            "default": "2"
+          },
+          {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
+          {
+            "name": "title",
+            "label": "Eligibility Title",
+            "type": "text"
+          },
+         
+          {
+            "name": "subtitle",
+            "label": "Sub title",
+            "type": "richtext"
+          },
+          {
+            "name": "eligibilityItem",
+            "label": "Eligibilty Item",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "itemname",
+                "label": "Eligibility Item Name",
+                "type": "text"
+              },
+              {
+                "name": "subItems",
+                "label": "sub Items",
+                "type": "repeater",
+                "fields": [
+                  {
+                    "name": "subItems",
+                    "label": "Sub Items Name",
+                    "type": "text"
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -1818,14 +1907,55 @@
           {
             "name": "title",
             "label": "Section Title",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           },
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": "subtitle"
+          }
+        ]
+      },
+       {
+        "name": "servicesection",
+        "label": "Service Section",
+        "fields": [
+        
+          {
+            "name": "servicetitle",
+            "label": "Service Title",
+            "type": "richtext"
+          },
+
+           
+          {
+            "name": "servicesubtitle",
+            "label": "Service Sub Title",
+            "type": "richtext"
+          },
+          {
+            "name": "serviceitem",
+            "label": "Service Item",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "itemicon",
+                "label": "Item Icon",
+                "type": "text"
+              },
+              {
+                "name": "itemtitle",
+                "label": "Item Title",
+                "type": "richtext2"
+              },
+              {
+                "name": "itemsubtitle",
+                "label": "Item Sub Title",
+                "type": "richtext2"
+              }
+            ]
           }
         ]
       },
@@ -1842,7 +1972,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           },
           {
@@ -1860,13 +1990,13 @@
           {
             "name": "title",
             "label": "Section Title",
-            "type": "text",
+            "type": "richtext",
             "default": "Our Trusted Partners"
           },
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": "subtitle"
           },
           {
@@ -1891,13 +2021,13 @@
           {
             "name": "title",
             "label": "Section Title",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           },
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "text",
+            "type": "richtext",
             "default": ""
           },
           {
@@ -1932,6 +2062,179 @@
             ]
           }
         ]
+      },
+      {
+        "name" :"scholarshipOffers",
+        "label": "scholarshipOffers",
+        "fields" : [
+          {
+            "name" : "title",
+            "label" : "Section Title",
+            "type" : "richtext"
+          },
+          {
+            "name" : "subtitle",
+            "label" : "Section Subtitle",
+            "type" : "richtext"
+          }
+
+        ]
+      },
+        {
+        "name": "videoTestimonials",
+        "label": "Video Testimonials",
+        "fields": [
+           {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
+            ],
+            "default": "2"
+          },
+         
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Video Testimonials"
+          },
+        
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "richtext",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "imageTestimonials",
+        "label": "image Testimonials",
+        "fields": [
+           {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
+            ],
+            "default": "2"
+          },
+        
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+          
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "richtext",
+            "default": ""
+          }
+        ]
+      },
+      {
+        "name": "visastories",
+        "label": "visa Stories",
+        "fields": [
+           {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              }
+            ],
+            "default": "2"
+          },
+        
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+        
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "richtext",
+            "default": ""
+          }
+        ]
       }
     ]
   },
@@ -1962,7 +2265,7 @@
           {
             "name": "title",
             "label": "Hero Title",
-            "type": "text",
+            "type": "richtext",
             "required": false,
             "placeholder": "Welcome"
           },
@@ -2072,7 +2375,7 @@
           {
             "name": "title",
             "label": "Title",
-            "type": "text",
+            "type": "richtext",
             "required": false,
             "placeholder": "Welcome"
           },
