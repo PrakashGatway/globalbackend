@@ -35,7 +35,7 @@ app.use('/api/blogs', require('./routes/blogRoutes'))
 app.use('/api/subjects', require('./routes/subjectRoutes'))
 app.use('/api/communication', require('./routes/applicationCom'))
 
-app.use("/api",require("./routes/enquiry"))
+app.use("/api", require("./routes/enquiry"))
 
 app.use('/api/notifications', require('./routes/notication'))
 
@@ -58,8 +58,12 @@ app.get('/api/health', (req, res) => {
 
 // Database connection
 const connectDB = async () => {
+  if (process.env.MONGODB_URI === undefined) {
+    console.error('MONGODB_URI is not defined in environment variables')
+    process.exit(1)
+  }
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/cway-admin')
+    const conn = await mongoose.connect(process.env.MONGODB_URI || '')
     console.log(`MongoDB Connected: ${conn.connection.host}`)
   } catch (error) {
     console.error('Database connection error:', error.message)
@@ -93,9 +97,7 @@ app.use((req, res) => {
 
 const PORT = 5000
 
-// Listen on all network interfaces (0.0.0.0) to allow access from other devices on the network
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`)
-  console.log(`Access from network: http://<your-ip>:${PORT}`)
   console.log(`Local access: http://localhost:${PORT}`)
 })
