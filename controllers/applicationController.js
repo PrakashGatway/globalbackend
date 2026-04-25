@@ -127,7 +127,12 @@ exports.getApplications = async (req, res) => {
 
     const matchStage = {};
 
-    matchStage.student = new mongoose.Types.ObjectId(req.user._id);
+    if(req.user.role === 'user' ){
+        matchStage.student = new mongoose.Types.ObjectId(req.user._id);
+    }else {
+        if (student) matchStage.student = new mongoose.Types.ObjectId(student);
+    }
+    // matchStage.student = new mongoose.Types.ObjectId(req.user._id);
 
     if (course)
       matchStage.course = new mongoose.Types.ObjectId(course);

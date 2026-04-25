@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema(
       enum: ['admin', 'manager', 'counsellor', 'user'],
       default: 'user',
     },
+    assignto: {
+      type : String,
+      default: "",
+    },
     firstLanguage: {
       type: String,
     },

@@ -88,6 +88,7 @@ exports.getAllPages = async (req, res) => {
     })
   }
 }
+
 exports.getNavTabs = async (req, res) => {
   try {
     const {
@@ -150,6 +151,7 @@ exports.getPageById = async (req, res) => {
     })
   }
 }
+
 exports.getPageBySlug = async (req, res) => {
   try {
     const page = await PageInformation.findOne({

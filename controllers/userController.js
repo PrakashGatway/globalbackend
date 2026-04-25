@@ -121,6 +121,40 @@ exports.getUserById = async (req, res) => {
 }
 
 
+
+exports.AssingUsers = async (req, res) => {
+  try {
+    // const user = await User.findOne({assignto : req.params.id}).select('-password')
+    const pipeline = [
+      { $match: { assignto: req.params.code } },
+      {
+        $lookup: {
+          from: 'userprofiles',
+          localField: '_id',
+          foreignField: 'user',
+          as: 'profile',
+        },
+      }
+    ]
+
+    const users = await User.aggregate(pipeline)
+    const user = users[0]
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    })
+  } catch (error) {
+    res.status(400).json({ message: error.message })
+  }
+}
+
+
+
 exports.updateUser = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
