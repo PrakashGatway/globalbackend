@@ -49,6 +49,7 @@ exports.login = async (req, res) => {
       res.status(500).json({
         success: false,
         message: 'Failed to send OTP email. Please contact support.',
+        error : JSON.stringify(emailError),
       })
     }
   } catch (error) {

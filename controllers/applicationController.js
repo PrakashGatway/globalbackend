@@ -57,6 +57,7 @@ const defaultDocuments = [
     "required": "optional"
   }
 ]
+
 exports.createApplication = async (req, res) => {
   try {
     const {
@@ -313,7 +314,6 @@ exports.deleteApplication = async (req, res) => {
     });
   }
 };
-
 
 exports.uploadAndUpdateDocument = async (req, res) => {
   try {
