@@ -55,7 +55,7 @@ const sendOTPEmail = async ({ email, otp, role }) => {
   const transporter = createTransporter()
 
   if (!transporter) {
-    throw new Error('SMTP_NOT_CONFIGURED')
+    throw new Error('SMTP_NOT_CONFIGURED',transporter)
   }
 
   const mailOptions = {
@@ -76,7 +76,7 @@ const sendOTPEmail = async ({ email, otp, role }) => {
     }
   } catch (error) {
     console.error('❌ Email Error:', error)
-    throw new Error('EMAIL_SEND_FAILED')
+    throw new Error('EMAIL_SEND_FAILED',error);
   }
 }
 

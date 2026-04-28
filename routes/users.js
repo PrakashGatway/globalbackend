@@ -14,7 +14,7 @@ const {
 } = require('../controllers/userController')
 const { authorize, protect } = require('../middleware/auth')
 
-router.post('/', protect, authorize('admin', 'manager'), createUser)
+router.post('/', protect, authorize('admin', 'manager','counsellor'), createUser)
 router.get('/',protect, authorize('admin'),  getUsers)
 router.get('/:id',protect, authorize('admin', 'manager'), getUserById)
 router.get('/code/:code',protect, authorize('admin', 'counsellor'), AssingUsers)
