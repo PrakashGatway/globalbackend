@@ -30,6 +30,7 @@ exports.masterControllerWithTransaction = async (req, res) => {
       maritalStatus,
       passportNumber,
       passportExpiry,
+      destinationCountry
     } = req.body;
     const counsellorid = req.user._id;
 
@@ -78,11 +79,11 @@ exports.masterControllerWithTransaction = async (req, res) => {
       postalcode
     };
 
-    // Calculate completion (ensure this function exists)
-    const completion =
-      typeof calculateProfileCompletion === "function"
-        ? calculateProfileCompletion(profileData)
-        : 100;
+    // // Calculate completion (ensure this function exists)
+    // const completion =
+    //   typeof calculateProfileCompletion === "function"
+    //     ? calculateProfileCompletion(profileData)
+    //     : 100;
 
     const profile = await UserProfile.findOneAndUpdate(
       { user: userId },
@@ -100,7 +101,7 @@ exports.masterControllerWithTransaction = async (req, res) => {
           university,
           course,
           intake,
-          country, // This is the 'FR' from your payload
+          "country" : destinationCountry, 
         },
       ],
       { session },

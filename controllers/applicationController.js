@@ -340,7 +340,8 @@ exports.getApplications = async (req, res) => {
 
 exports.getApplication = async (req, res) => {
   try {
-    const application = await Application.findOne(mongoose.Types.ObjectId.isValid(req.params.id) ? { _id: new mongoose.Types.ObjectId(req.params.id) } : { applicationNumber: req.params.id })
+    const application = await Application.findOne(mongoose.Types.ObjectId.isValid(req.params.id) ?
+     { _id: new mongoose.Types.ObjectId(req.params.id) } : { applicationNumber: req.params.id })
       .populate({
         path: 'course',
         populate: {
