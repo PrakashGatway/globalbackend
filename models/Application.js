@@ -75,15 +75,10 @@ const applicationSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: 'Course',
         },
-        reason: String,
-        order: Number,
-        status: {
-          type: String,
-          enum: ['Pending', 'inreview', 'Approved', 'Rejected'],
-          default: 'Pending',
-        }
+        reason: String
       }
     ],
+    
     backups: [
       {
         course: {
