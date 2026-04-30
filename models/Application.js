@@ -41,9 +41,10 @@ const applicationSchema = new mongoose.Schema(
     },
     documents: [
       {
-        type:{
+        type: {
           type: String,
-          enum:['ooshas','user']
+          enum: ['ooshas', 'user'],
+          default: 'user'
         },
         name: String,
         description: String,
@@ -56,7 +57,7 @@ const applicationSchema = new mongoose.Schema(
           type: String,
           enum: ['required', 'optional'],
         },
-        extra:{
+        extra: {
           type: mongoose.Schema.Types.Mixed
         },
         answer: String,

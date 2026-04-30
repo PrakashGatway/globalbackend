@@ -56,8 +56,9 @@ const userSchema = new mongoose.Schema(
       default: 'user',
     },
     assignto: {
-      type : String,
-      default: "",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
     },
     firstLanguage: {
       type: String,

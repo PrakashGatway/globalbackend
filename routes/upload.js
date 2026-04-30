@@ -6,7 +6,9 @@ const { uploadImage, deleteImage, profileImage, resumeUpload } = require('../con
 const uploadResume = require('../middleware/fileUpload')
 
 
-router.post('/image', protect, upload.single('image'), uploadImage)
+router.post('/image',
+  //  protect,
+    upload.single('image'), uploadImage)
 router.delete('/image/:publicId', protect, deleteImage)
 router.put('/profile', protect, upload.single('image'), profileImage)
 router.post(

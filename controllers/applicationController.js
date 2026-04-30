@@ -58,6 +58,119 @@ const defaultDocuments = [
   }
 ]
 
+
+
+exports.createApplicationWithFiles = async (req, res) => {
+  try {
+    const {
+      country,
+      course,
+      intake,
+      university,
+      userId,
+    } = req.body;
+
+    const studentId = req.user?._id || userId;
+
+    if (!studentId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const applicationNumber = `OS${Date.now()}`;
+
+    // file URLs from multer
+    const passportUrl = req.files?.passport?.[0]
+      ? `/uploads/docs/${req.files.passport[0].filename}`
+      : "";
+
+    const academicUrl = req.files?.academic?.[0]
+      ? `/uploads/docs/${req.files.academic[0].filename}`
+      : "";
+
+    const updatedCvUrl = req.files?.cv?.[0]
+      ? `/uploads/docs/${req.files.cv[0].filename}`
+      : "";
+
+    const experienceCertificateUrl = req.files?.experience?.[0]
+      ? `/uploads/docs/${req.files.experience[0].filename}`
+      : "";
+
+    const photographUrl = req.files?.photo?.[0]
+      ? `/uploads/docs/${req.files.photo[0].filename}`
+      : "";
+
+    const documents = [
+      {
+        type: "user",
+        name: "Passport",
+        status: passportUrl ? "inreview" : "Pending",
+        required: "required",
+        docUrl: passportUrl,
+      },
+      {
+        type: "user",
+        name: "Academic Documents",
+        status: academicUrl ? "inreview" : "Pending",
+        required: "required",
+        docUrl: academicUrl,
+      },
+      {
+        type: "user",
+        name: "Updated CV",
+        status: updatedCvUrl ? "inreview" : "Pending",
+        required: "required",
+        docUrl: updatedCvUrl,
+      },
+      {
+        type: "user",
+        name: "Experience Certificate",
+        status: experienceCertificateUrl ? "inreview" : "Pending",
+        required: "optional",
+        docUrl: experienceCertificateUrl,
+      },
+      {
+        type: "user",
+        name: "Photographs",
+        status: photographUrl ? "inreview" : "Pending",
+        required: "required",
+        docUrl: photographUrl,
+      },
+    ];
+
+    const application = await Application.create({
+      applicationNumber,
+      student: studentId,
+      country,
+      course,
+      intake,
+      university,
+      documents
+    });
+
+    await Communication.create({
+      application: application._id,
+      type: "activity",
+      action: "APPLICATION_CREATED",
+      description: `Application ${application.applicationNumber} created.`,
+      user: studentId,
+    });
+
+    return res.status(201).json({
+      success: true,
+      data: application,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
 exports.createApplication = async (req, res) => {
   try {
     const {

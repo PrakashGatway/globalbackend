@@ -8,7 +8,8 @@ const {
   getMe,
   updateProfile,
   getMyReferrals,
-  createOrUpdateUserProfile
+  createOrUpdateUserProfile,
+  createOrUpdateUserProfileById
 } = require('../controllers/authController')
 
 // Routes
@@ -18,6 +19,7 @@ router.post('/verify-otp', verifyOTP)
 router.get('/me', protect, getMe)
 router.put('/profile', protect, updateProfile)
 router.post("/profile_info", protect, createOrUpdateUserProfile)
+router.post("/referral" , createOrUpdateUserProfileById)
 router.get("/my-referrals", protect, getMyReferrals)
 
 module.exports = router
