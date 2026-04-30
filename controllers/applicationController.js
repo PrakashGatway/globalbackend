@@ -241,12 +241,11 @@ exports.getApplications = async (req, res) => {
 
     const matchStage = {};
 
-    if(req.user.role === 'user' ){
-        matchStage.student = new mongoose.Types.ObjectId(req.user._id);
-    }else {
-        if (student) matchStage.student = new mongoose.Types.ObjectId(student);
+    if (req.user.role === 'admin') {
+      if (student) matchStage.student = new mongoose.Types.ObjectId(student);
+    } else {
+      matchStage.student = new mongoose.Types.ObjectId(req.user._id);
     }
-    // matchStage.student = new mongoose.Types.ObjectId(req.user._id);
 
     if (course)
       matchStage.course = new mongoose.Types.ObjectId(course);
@@ -280,11 +279,7 @@ exports.getApplications = async (req, res) => {
 
     const pipeline = [
       { $match: matchStage },
-
-      // Sort before pagination
       { $sort: { createdAt: -1 } },
-
-      // Pagination BEFORE lookup (performance optimized)
       { $skip: skip },
       { $limit: Number(limit) },
 
