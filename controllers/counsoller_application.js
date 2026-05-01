@@ -12,7 +12,7 @@ exports.masterControllerWithTransaction = async (req, res) => {
     const {
       // User/Profile fields
       university,
-      course,
+      // course,
       intake,
       name,
       email,
@@ -22,7 +22,7 @@ exports.masterControllerWithTransaction = async (req, res) => {
       address2,
       city,
       state,
-      country,
+      // country,
       postalcode,
       nationality,
       gender,
@@ -30,7 +30,9 @@ exports.masterControllerWithTransaction = async (req, res) => {
       maritalStatus,
       passportNumber,
       passportExpiry,
-      destinationCountry
+      destinationCountry,
+      destinationcourse,
+      backups
     } = req.body;
     const counsellorid = req.user._id;
 
@@ -87,7 +89,7 @@ exports.masterControllerWithTransaction = async (req, res) => {
 
     const profile = await UserProfile.findOneAndUpdate(
       { user: userId },
-      { $set: { ...profileData, profileCompletion: completion } },
+      { $set: { ...profileData } },
       { new: true, upsert: true, runValidators: true, session },
     );
 
@@ -99,9 +101,11 @@ exports.masterControllerWithTransaction = async (req, res) => {
           applicationNumber,
           student: userId,
           university,
-          course,
+          "course": destinationcourse,
           intake,
           "country" : destinationCountry, 
+          backups,
+          "rejectionReason": [{course: destinationcourse,reason: ""}]
         },
       ],
       { session },

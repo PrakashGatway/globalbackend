@@ -17,7 +17,10 @@ const { authorize, protect } = require('../middleware/auth')
 router.post('/', protect, authorize('admin', 'manager','counsellor'), createUser)
 router.get('/',protect, authorize('admin'),  getUsers)
 router.get('/:id',protect, authorize('admin', 'manager'), getUserById)
-router.get('/code/:code',protect, authorize('admin', 'counsellor'), AssingUsers)
+router.get('/code/:code/:id',
+    protect,
+   authorize('admin', 'counsellor'),
+    AssingUsers)
 router.put('/:id',protect, authorize('admin', 'manager'), updateUser)
 router.delete('/:id',protect, authorize('admin', 'manager'),  deleteUser)
 

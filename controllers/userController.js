@@ -120,29 +120,27 @@ exports.getUserById = async (req, res) => {
   }
 };
 
+
+
 exports.AssingUsers = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    // const user = await User.findOne({assignto : req.params.id}).select('-password')
-    // const pipeline = [
-    //   { $match: { assignto: req.params.code } },
-    //   {
-    //     $lookup: {
-    //       from: 'userprofiles',
-    //       localField: '_id',
-    //       foreignField: 'user',
-    //       as: 'profile',
-    //     },
-    //   }
-    // ]
+    const code = req.params.code;
+    const id = req.params.id;
 
     const pipeline = [
       {
         $match: {
-          assignto: req.params.code,
+          $or: [
+            { referalBy: code }, 
+            { assignto: mongoose.Types.ObjectId.isValid(id) 
+                ? new mongoose.Types.ObjectId(id) 
+                : null 
+            }
+          ],
         },
       },
       {
@@ -159,42 +157,47 @@ exports.AssingUsers = async (req, res) => {
           preserveNullAndEmptyArrays: true,
         },
       },
-      {
-        $lookup: {
-          from: "applications",
-          localField: "profile.user",
-          foreignField: "student",
-          as: "applications",
-        },
-      },
-      {
-        $skip : skip,
-      },
-      {
-        $limit : limit,
-      }
+      // {
+      //   $lookup: {
+      //     from: "applications",
+      //     localField: "_id",
+      //     foreignField: "student",
+      //     as: "applications",
+      //   },
+      // },
+      { $skip: skip },
+      { $limit: limit },
     ];
 
     const users = await User.aggregate(pipeline);
-    const user = users[0];
-    
-     const total = await User.countDocuments({
-      assignto: req.params.code,
-    });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const total = await User.countDocuments({
+      $or: [
+        { referalBy: code },
+        { assignto: mongoose.Types.ObjectId.isValid(code)
+            ? new mongoose.Types.ObjectId(code)
+            : null
+        }
+      ],
+    });
 
     res.status(200).json({
       success: true,
-      data: user,
-      totalPages: Math.ceil(total / limit)
+      data: users,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalUsers: total,
+      },
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
+
 
 exports.updateUser = async (req, res) => {
   try {
