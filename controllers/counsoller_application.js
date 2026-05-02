@@ -4,6 +4,61 @@ const UserProfile = require('../models/UserProfile');
 const Application = require('../models/Application');
 const Communication = require('../models/Communication');
 
+
+const defaultDocuments = [
+  {
+    "type": "user",
+    "name": "Passport",
+    "description": "Front and back copy of passport",
+    "status": "Pending",
+    "required": "required"
+  },
+  {
+    "type": "user",
+    "name": "Academic Documents",
+    "description": "10th, 12th, Bachelor's mark sheets (year-wise or semester-wise), consolidated mark sheet, degree or provisional certificate, other certificates",
+    "status": "Pending",
+    "required": "required"
+  },
+  {
+    "type": "user",
+    "name": "Updated CV",
+    "description": "Latest curriculum vitae",
+    "status": "Pending",
+    "required": "required"
+  },
+  {
+    "type": "user",
+    "name": "Experience Certificate",
+    "description": "Work experience certificate (if available)",
+    "status": "Pending",
+    "required": "optional"
+  },
+  {
+    "type": "user",
+    "name": "Photographs",
+    "description": "passport size photographs",
+    "status": "Pending",
+    "required": "required"
+  },
+  {
+    "type": "user",
+    "name": "IELTS Scorecard",
+    "description": "IELTS scorecard (if available)",
+    "status": "Pending",
+    "required": "optional"
+  },
+  {
+    "type": "user",
+    "name": "LOR",
+    "description": "Letter of Recommendation",
+    "status": "Pending",
+    "required": "optional"
+  }
+]
+
+
+
 exports.masterControllerWithTransaction = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -319,3 +374,56 @@ exports.updateApplication = async (req, res) => {
   }
 };
 
+
+exports.createApplication = async (req, res) => {
+  try {
+    const {
+          // applicationNumber,
+          student,
+          university,
+          destinationcourse,
+          intake,
+          destinationCountry, 
+          backups
+    } = req.body;
+ 
+    const applicationNumber = `OS${Date.now()}`; // OS prefix uppercase
+    if (!student) {
+      return res.status(401).json({
+        success: false,
+        message: 'Select an student.'
+      })
+    }
+
+    const application = await Application.create({ 
+      documents: defaultDocuments,
+          applicationNumber,
+          student,
+          university,
+          "course": destinationcourse,
+          intake,
+          "country" : destinationCountry, 
+          backups,
+          "rejectionReason": [{course: destinationcourse,reason: ""}]
+    });
+
+    if (application) {
+      await Communication.create({
+        application: application._id,
+        type: 'activity',
+        action: 'APPLICATION_CREATED',
+        description: `Application ${application.applicationNumber} was created with intake ${application.intake}.`,
+        user: student
+      });
+    }
+    res.status(201).json({
+      success: true,
+      data: application,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
