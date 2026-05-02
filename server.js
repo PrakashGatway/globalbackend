@@ -40,6 +40,8 @@ app.use('/api/blogs', require('./routes/blogRoutes'))
 app.use('/api/subjects', require('./routes/subjectRoutes'))
 app.use('/api/communication', require('./routes/applicationCom'))
 
+app.use("/api/dashboard", require("./routes/dashboardRoutes"))
+
 app.use("/api", require("./routes/enquiry"))
 
 app.use('/api/notifications', require('./routes/notication'))

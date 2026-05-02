@@ -224,7 +224,7 @@ exports.getDataByAssignTo = async (req, res) => {
 
   } catch (error) {
     return res.status(500).json({
-      success: false,
+      success: false, 
       message: error.message
     });
   }
@@ -378,7 +378,6 @@ exports.updateApplication = async (req, res) => {
 exports.createApplication = async (req, res) => {
   try {
     const {
-          // applicationNumber,
           student,
           university,
           destinationcourse,
@@ -387,7 +386,7 @@ exports.createApplication = async (req, res) => {
           backups
     } = req.body;
  
-    const applicationNumber = `OS${Date.now()}`; // OS prefix uppercase
+    const applicationNumber = `OS${Date.now()}`; // OS pref   ix uppercase
     if (!student) {
       return res.status(401).json({
         success: false,

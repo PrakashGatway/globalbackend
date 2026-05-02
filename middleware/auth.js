@@ -32,7 +32,13 @@ exports.protect = async (req, res, next) => {
         message: 'User no longer exists',
       })
     }
-
+    if(user.status != 'Active') {
+      return res.status(401).json({
+        success: false,
+        message: 'User is inactive',
+      })
+    }
+    
     req.user = user
     next()
   } catch (error) {

@@ -68,7 +68,7 @@ const sendOTPEmail = async ({ email, otp, role }) => {
 
   try {
     const info = await transporter.sendMail(mailOptions)
-    console.log('✅ OTP Email Sent:', info)
+    // console.log('✅ OTP Email Sent:', info)
 
     return {
       success: true,

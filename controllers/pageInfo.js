@@ -23,6 +23,7 @@ exports.getAllPages = async (req, res) => {
       pageType,
       isFeatured,
       isNavbar,
+      isFooter,
       slug,
       fromDate,
       toDate,
@@ -59,6 +60,9 @@ exports.getAllPages = async (req, res) => {
     if (isNavbar !== undefined)
       query.isNavbar = isNavbar === 'true'
 
+    if (isFooter !== undefined)
+      query.isFooter = isFooter === 'true'
+
     if (fromDate || toDate) {
       query.createdAt = {}
       if (fromDate) query.createdAt.$gte = new Date(fromDate)
@@ -94,6 +98,7 @@ exports.getNavTabs = async (req, res) => {
     const {
       isFeatured,
       isNavbar,
+      isFooter,
       type,
       page = 1,
       limit = 50,
@@ -108,6 +113,9 @@ exports.getNavTabs = async (req, res) => {
 
     if (isNavbar !== undefined)
       query.isNavbar = isNavbar === 'true'
+
+    if (isFooter !== undefined)
+      query.isFooter = isFooter === 'true'
 
     const skip = (page - 1) * limit
 
@@ -181,6 +189,8 @@ exports.getPageBySlug = async (req, res) => {
 
 exports.updatePage = async (req, res) => {
   try {
+
+    console.log(req.body)
     const page = await PageInformation.findByIdAndUpdate(
       req.params.id,
       req.body,

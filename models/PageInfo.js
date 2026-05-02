@@ -7,7 +7,7 @@ const pageInformationSchema = new mongoose.Schema(
     isNavbar: { type: Boolean, default: false },
     navbarTitle: { type: String, trim: true },
     description: { type: String, trim: true },
-    pageType: { type: String, trim: true,required: true },
+    pageType: { type: String, trim: true, required: true },
     cardImage: {
       type: String,
       trim: true,
@@ -37,11 +37,15 @@ const pageInformationSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    seoMeta:{
+    isFooter: {
+      type: Boolean,
+      default: false,
+    },
+    seoMeta: {
       type: mongoose.Schema.Types.Mixed,
       default: {},
     },
-    sections:{
+    sections: {
       type: mongoose.Schema.Types.Mixed,
       default: {},
     },

@@ -20,17 +20,17 @@ exports.login = async (req, res) => {
     }
     let isExist = false;
 
-    const user = await User.findOne({ email }).select('+password')
+    const user = await User.findOne({ email, status: 'Active' }).select('+password')
 
     if (!user) {
       return res.json({
         success: true,
         isExist,
-        message: 'User not found'
+        message: 'User not found/inactive',
       })
     }
 
-    const otpCode =  Math.floor(100000 + Math.random() * 900000).toString()
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString()
 
     await OTP.deleteMany({ email, isUsed: false })
 
@@ -51,7 +51,7 @@ exports.login = async (req, res) => {
       res.status(500).json({
         success: false,
         message: 'Failed to send OTP email. Please contact support.',
-        error : emailError,
+        error: emailError,
       })
     }
   } catch (error) {
@@ -66,7 +66,7 @@ exports.sendOTP = async (req, res) => {
     if (!email) {
       return res.status(400).json({ success: false, message: 'Please provide email' })
     }
-    let user = await User.findOne({ email })
+    let user = await User.findOne({ email, status: 'Active' })
     if (!user) {
       if (!phone) {
         return res.status(400).json({ success: false, message: 'Please provide email and phone for registration' })
@@ -98,7 +98,7 @@ exports.sendOTP = async (req, res) => {
     })
     // Send OTP email
     try {
-      // await sendOTPEmail({ email, otp: otpCode })
+      await sendOTPEmail({ email, otp: otpCode })
       res.json({
         success: true,
         message: 'OTP sent to your email',
@@ -131,7 +131,7 @@ exports.verifyOTP = async (req, res) => {
     })
 
     if (otp == '987456') {
-    const user = await User.findOne({ email })
+      const user = await User.findOne({ email, status: 'Active' })
       const token = generateToken(user._id)
       return res.json({
         success: true,
@@ -146,7 +146,7 @@ exports.verifyOTP = async (req, res) => {
     otpRecord.isUsed = true
     await otpRecord.save()
 
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email, status: 'Active' })
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -186,7 +186,7 @@ exports.getMe = async (req, res) => {
       })
     }
 
-    const user = await User.findById(userId).select("-password")
+    const user = await User.findOne({ _id: userId , status: 'Active'}).select("-password")
 
     if (!user) {
       return res.status(404).json({
