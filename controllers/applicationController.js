@@ -191,6 +191,8 @@ exports.createApplication = async (req, res) => {
       })
     }
 
+    let reward;
+
     const application = await Application.create({
       applicationNumber,
       student: req.user._id,
@@ -210,10 +212,15 @@ exports.createApplication = async (req, res) => {
         description: `Application ${application.applicationNumber} was created with intake ${application.intake}.`,
         user: req.user._id
       });
+      reward = await ScratchCard.create({
+        userId: req.user._id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      });
     }
     res.status(201).json({
       success: true,
       data: application,
+      isReward: !!reward
     });
   } catch (error) {
     res.status(500).json({
@@ -276,6 +283,8 @@ exports.getApplications = async (req, res) => {
     const skip = (Number(page) - 1) * Number(limit);
 
     const total = await Application.countDocuments(matchStage);
+
+    console.log(matchStage);
 
     const pipeline = [
       { $match: matchStage },
@@ -341,8 +350,7 @@ exports.getApplications = async (req, res) => {
 exports.getApplication = async (req, res) => {
   try {
     const application = await Application.findOne(mongoose.Types.ObjectId.isValid(req.params.id) ?
-     { _id: new mongoose.Types.ObjectId(req.params.id) } :
-     { applicationNumber: req.params.id })
+      { _id: new mongoose.Types.ObjectId(req.params.id) } : { applicationNumber: req.params.id })
       .populate({
         path: 'course',
         populate: {

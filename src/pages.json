@@ -2375,7 +2375,7 @@
           {
             "name": "title",
             "label": "Title",
-            "type": "richtext",
+            "type": "text",
             "required": false,
             "placeholder": "Welcome"
           },
