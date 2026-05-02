@@ -378,51 +378,58 @@ exports.updateApplication = async (req, res) => {
 exports.createApplication = async (req, res) => {
   try {
     const {
-          student,
-          university,
-          destinationcourse,
-          intake,
-          destinationCountry, 
-          backups
+      student,
+      university,
+      destinationcourse: course, // Renamed for model consistency
+      intake,
+      destinationCountry: country, 
+      backups
     } = req.body;
- 
-    const applicationNumber = `OS${Date.now()}`; // OS pref   ix uppercase
-    if (!student) {
-      return res.status(401).json({
+
+    // 1. Better Validation (400 instead of 401)
+    if (!student || !university || !course) {
+      return res.status(400).json({
         success: false,
-        message: 'Select an student.'
-      })
+        message: 'Missing required fields: student, university, or course.'
+      });
     }
+
+    // 2. Safer ID generation (OS + Timestamp + 4 random chars)
+    const applicationNumber = `OS${Date.now()}${Math.random().toString(36).set(2, 6).toUpperCase()}`;
 
     const application = await Application.create({ 
       documents: defaultDocuments,
-          applicationNumber,
-          student,
-          university,
-          "course": destinationcourse,
-          intake,
-          "country" : destinationCountry, 
-          backups,
-          "rejectionReason": [{course: destinationcourse,reason: ""}]
+      applicationNumber,
+      student,
+      university,
+      course,
+      intake,
+      country, 
+      backups,
+      rejectionReason: [{ course, reason: "" }]
     });
 
+    // 3. Activity Logging
     if (application) {
       await Communication.create({
         application: application._id,
         type: 'activity',
         action: 'APPLICATION_CREATED',
-        description: `Application ${application.applicationNumber} was created with intake ${application.intake}.`,
+        description: `Application ${application.applicationNumber} created for intake ${intake}.`,
         user: student
       });
     }
+
     res.status(201).json({
       success: true,
       data: application,
     });
+
   } catch (error) {
+    console.error("Application Creation Error:", error); // Log for debugging
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: 'Internal Server Error', // Hide raw DB errors from users
     });
   }
 };

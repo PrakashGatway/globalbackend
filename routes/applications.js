@@ -16,6 +16,12 @@
     counsellorApplication.getDataByAssignTo,
   );
 
+  router.post(
+    "/existing_user",
+    protect,
+    counsellorApplication.createApplication
+  )
+  
   router.put(
     "/updateApplication/:id",
     protect,
