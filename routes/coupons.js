@@ -6,7 +6,7 @@ const { protect, authorize } = require('../middleware/auth');
 
 
 // ADMIN
-router.post('/', protect, authorize('admin'), couponController.createCoupon);
+router.post('/', protect, authorize('admin','counsellor'), couponController.createCoupon); 
 router.get('/', protect, authorize('admin'), couponController.getCoupons);
 // router.get('/analytics', protect, authorize('admin'), couponController.getCouponAnalytics);
 router.get('/:id', protect, authorize('admin'), couponController.getCouponById);
