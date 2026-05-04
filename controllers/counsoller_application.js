@@ -365,7 +365,7 @@ exports.getDataByAssignTo = async (req, res) => {
 
     return res.status(200).json({ 
       success: true,
-      data: result
+      data
     });
 
   } catch (error) {
@@ -379,34 +379,30 @@ exports.getDataByAssignTo = async (req, res) => {
 exports.getApplicationsByCounsellor = async (req, res) => {
   try {
     const counsellorId = req.user._id;
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit, 10) || 10, 1);
+    const skip = (page - 1) * limit;
 
-    const applications = await Application.aggregate([
-      // 1. Join User (student)
+    const aggregated = await Application.aggregate([
       {
         $lookup: {
-          from: "users", // collection name (check lowercase plural in DB)
+          from: "users", 
           localField: "student",
           foreignField: "_id",
           as: "student"
         }
       },
-
-      // 2. Convert array → object
       {
         $unwind: {
           path: "$student",
           preserveNullAndEmptyArrays: false
         }
       },
-
-      // 3. Filter only users assigned to this counsellor
       {
         $match: {
           "student.assignto": counsellorId
         }
       },
-
-      // 4. (Optional) Join UserProfile
       {
         $lookup: {
           from: "userprofiles",
@@ -423,14 +419,14 @@ exports.getApplicationsByCounsellor = async (req, res) => {
       },
 
       // 5. (Optional) Join Communications
-      {
-        $lookup: {
-          from: "communications",
-          localField: "_id",
-          foreignField: "application",
-          as: "communications"
-        }
-      },
+      // {
+      //   $lookup: {
+      //     from: "communications",
+      //     localField: "_id",
+      //     foreignField: "application",
+      //     as: "communications"
+      //   }
+      // },
 
       // 6. Clean response (VERY IMPORTANT)
       {
@@ -444,7 +440,9 @@ exports.getApplicationsByCounsellor = async (req, res) => {
           status: 1,
           backups: 1,
           createdAt: 1,
-
+          primaryStatus: 1,
+          paymentStatus: 1,
+          
           // student fields
           "student._id": 1,
           "student.name": 1,
@@ -455,19 +453,31 @@ exports.getApplicationsByCounsellor = async (req, res) => {
           profile: 1,
 
           // communications
-          communications: 1
+          // communications: 1
         }
       },
 
       // 7. Sort latest first
       {
         $sort: { createdAt: -1 }
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }],
+          data: [{ $skip: skip }, { $limit: limit }]
+        }
       }
     ]);
+
+    const metadata = aggregated[0]?.metadata[0] || { total: 0 };
+    const applications = aggregated[0]?.data || [];
 
     return res.status(200).json({
       success: true,
       count: applications.length,
+      total: metadata.total,
+      page,
+      limit,
       data: applications
     });
 
