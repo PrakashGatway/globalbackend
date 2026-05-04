@@ -203,32 +203,6 @@ exports.masterControllerWithTransaction = async (req, res) => {
   }
 };
 
-exports.getDataByAssignTo = async (req, res) => {
-  try {
-    const counsellorId = req.user._id;
-
-    const data = await User.find({ assignto: counsellorId })
-      .populate("assignto", "name email")
-      .lean();
-
-    for (let user of data) {
-      user.profile = await UserProfile.findOne({ user: user._id });
-      user.applications = await Application.find({ student: user._id });
-      user.communications = await Communication.find({ user: user._id });
-    }
-
-    return res.status(200).json({
-      success: true,
-      data
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      success: false, 
-      message: error.message
-    });
-  }
-};
 
 exports.updateApplication = async (req, res) => {
   try {
@@ -374,6 +348,51 @@ exports.updateApplication = async (req, res) => {
   }
 };
 
+
+exports.getDataByAssignTo = async (req, res) => {
+  try {
+    const counsellorId = req.user._id;
+
+    // const data = await User.find({ assignto: counsellorId })
+    //   .populate("assignto", "name email")
+    //   .lean();
+
+    // for (let user of data) {
+    //   user.profile = await UserProfile.findOne({ user: user._id });
+    //   user.applications = await Application.find({ student: user._id });
+    //   user.communications = await Communication.find({ user: user._id });
+    // }
+
+    const users = await User.find({ assignto: counsellorId })
+  .populate("assignto", "name email")
+  .lean();
+
+    const userIds = users.map(u => u._id);
+
+    const applications = await Application.find({ student: { $in: userIds } });
+    const profiles = await UserProfile.find({ user: { $in: userIds } });
+    const communications = await Communication.find({ user: { $in: userIds } });
+
+    // map data
+    const result = users.map(user => ({
+      ...user,
+      profile: profiles.find(p => p.user.toString() === user._id.toString()),
+      applications: applications.filter(a => a.student.toString() === user._id.toString()),
+      communications: communications.filter(c => c.user.toString() === user._id.toString())
+    }));
+
+    return res.status(200).json({ 
+      success: true,
+      data: result
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false, 
+      message: error.message
+    });
+  }
+};
 
 exports.createApplication = async (req, res) => {
   try {
