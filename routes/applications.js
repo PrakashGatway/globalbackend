@@ -10,12 +10,14 @@
     protect,
     counsellorApplication.masterControllerWithTransaction,
   );
-  
+
   router.get(
     "/getDataByAssignTo",
     protect,
     counsellorApplication.getDataByAssignTo,
   );
+
+  router.get('/getApplicationsByCounsellor', protect, counsellorApplication.getApplicationsByCounsellor);
 
   router.post(
     "/existing_user",

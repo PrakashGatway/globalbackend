@@ -353,34 +353,15 @@ exports.getDataByAssignTo = async (req, res) => {
   try {
     const counsellorId = req.user._id;
 
-    // const data = await User.find({ assignto: counsellorId })
-    //   .populate("assignto", "name email")
-    //   .lean();
+    const data = await User.find({ assignto: counsellorId })
+      .populate("assignto", "name email")
+      .lean();
 
-    // for (let user of data) {
-    //   user.profile = await UserProfile.findOne({ user: user._id });
-    //   user.applications = await Application.find({ student: user._id });
-    //   user.communications = await Communication.find({ user: user._id });
-    // }
-
-    const users = await User.find({ assignto: counsellorId })
-    .populate("assignto", "name email")
-    .lean();
-
-    const userIds = users.map(u => u._id);
-
-    const applications = await Application.find({ student: { $in: userIds } });
-    // const profiles = await UserProfile.find({ user: { $in: userIds } }); 
-    // const communications = await Communication.find({ user: { $in: userIds } });
-
-    // map data
-    const result = users.map(user => ({
-      ...user,
-      applications: applications.filter(a => a.student.toString() === user._id.toString())
-    }));
-    
-      // profile: profiles.find(p => p.user.toString() === user._id.toString()),
-      // communications: communications.filter(c => c.user.toString() === user._id.toString())
+    for (let user of data) {
+      user.profile = await UserProfile.findOne({ user: user._id });
+      user.applications = await Application.find({ student: user._id });
+      user.communications = await Communication.find({ user: user._id });
+    }
 
     return res.status(200).json({ 
       success: true,
@@ -390,6 +371,110 @@ exports.getDataByAssignTo = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false, 
+      message: error.message
+    });
+  }
+};
+
+exports.getApplicationsByCounsellor = async (req, res) => {
+  try {
+    const counsellorId = req.user._id;
+
+    const applications = await Application.aggregate([
+      // 1. Join User (student)
+      {
+        $lookup: {
+          from: "users", // collection name (check lowercase plural in DB)
+          localField: "student",
+          foreignField: "_id",
+          as: "student"
+        }
+      },
+
+      // 2. Convert array → object
+      {
+        $unwind: {
+          path: "$student",
+          preserveNullAndEmptyArrays: false
+        }
+      },
+
+      // 3. Filter only users assigned to this counsellor
+      {
+        $match: {
+          "student.assignto": counsellorId
+        }
+      },
+
+      // 4. (Optional) Join UserProfile
+      {
+        $lookup: {
+          from: "userprofiles",
+          localField: "student._id",
+          foreignField: "user",
+          as: "profile"
+        }
+      },
+      {
+        $unwind: {
+          path: "$profile",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+
+      // 5. (Optional) Join Communications
+      {
+        $lookup: {
+          from: "communications",
+          localField: "_id",
+          foreignField: "application",
+          as: "communications"
+        }
+      },
+
+      // 6. Clean response (VERY IMPORTANT)
+      {
+        $project: {
+          _id: 1,
+          applicationNumber: 1,
+          university: 1,
+          course: 1,
+          intake: 1,
+          country: 1,
+          status: 1,
+          backups: 1,
+          createdAt: 1,
+
+          // student fields
+          "student._id": 1,
+          "student.name": 1,
+          "student.email": 1,
+          "student.phone": 1,
+
+          // profile
+          profile: 1,
+
+          // communications
+          communications: 1
+        }
+      },
+
+      // 7. Sort latest first
+      {
+        $sort: { createdAt: -1 }
+      }
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      count: applications.length,
+      data: applications
+    });
+
+  } catch (error) {
+    console.error("Aggregation Error:", error);
+    return res.status(500).json({
+      success: false,
       message: error.message
     });
   }
