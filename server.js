@@ -70,10 +70,14 @@ const connectDB = async () => {
     process.exit(1)
   }
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || '')
+    // const conn = await mongoose.connect(process.env.MONGODB_URI || '').
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+        family: 4
+      });
+
     console.log(`MongoDB Connected: ${conn.connection.host}`)
   } catch (error) {
-    console.error('Database connection error:', error.message)
+    console.error('Database connection error:', error)
     process.exit(1)
   }
 }

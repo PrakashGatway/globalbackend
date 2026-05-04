@@ -10,6 +10,7 @@
     protect,
     counsellorApplication.masterControllerWithTransaction,
   );
+  
   router.get(
     "/getDataByAssignTo",
     protect,
