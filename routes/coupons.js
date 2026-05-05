@@ -7,13 +7,19 @@ const { protect, authorize } = require('../middleware/auth');
 
 // ADMIN
 router.post('/', protect, authorize('admin','counsellor'), couponController.createCoupon); 
-router.get('/', protect, authorize('admin'), couponController.getCoupons);
+router.get('/', protect, authorize('admin','counsellor'), couponController.getCoupons);
 // router.get('/analytics', protect, authorize('admin'), couponController.getCouponAnalytics);
 router.get('/:id', protect, authorize('admin'), couponController.getCouponById);
-router.put('/:id', protect, authorize('admin'), couponController.updateCoupon);
-router.delete('/:id', protect, authorize('admin'), couponController.deleteCoupon);
 
-router.get('/available/list', protect, couponController.getAvailableCoupons);
+router.get('/assign/:id',
+    protect,
+    authorize('admin','counsellor'),
+    couponController.getAssignCoupon);
+
+router.put('/:id', protect, authorize('admin','counsellor'), couponController.updateCoupon);
+router.delete('/:id', protect, authorize('admin','counsellor'), couponController.deleteCoupon);
+ 
+router.get('/available/list', protect, couponController.getAvailableCoupons); //use
 router.post('/apply', protect, couponController.applyCoupon);
 
 router.patch("/scratch/create", protect, couponController.createScratchCard);

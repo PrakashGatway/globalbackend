@@ -113,7 +113,11 @@ const couponSchema = new mongoose.Schema(
       type: String,
       enum: ['Active', 'Inactive', 'Expired'],
       default: 'Active',
-    }
+    },
+    assingBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
   {
     timestamps: true,

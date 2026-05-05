@@ -18,6 +18,9 @@ exports.createCoupon = async (req, res) => {
         message: "rewardData required for reward type"
       });
     }
+
+    console.log(data,'data');
+
     const coupon = await Coupon.create(data);
     res.status(201).json({
       success: true,
@@ -129,6 +132,38 @@ exports.getCoupons = async (req, res) => {
 
   }
 };
+
+
+exports.getAssignCoupon = async (req, res) => {
+  try {
+    console.log(req.params.id, 'id');
+
+    // find() returns an ARRAY, not a single document
+    const coupons = await Coupon.find({ assingBy: req.params.id });
+
+    // Check if array is empty (length === 0), not !coupons
+    if (!coupons || coupons.length === 0) {
+      return res.json({
+        success: false,
+        message: "No coupons found for this user",
+        data: []
+      });
+    }
+
+    res.json({
+      success: true,
+      count: coupons.length,
+      data: coupons
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 
 exports.getCouponById = async (req, res) => {
   try {
