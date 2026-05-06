@@ -70,8 +70,8 @@ const supportSchema = new mongoose.Schema(
 supportSchema.pre('validate', async function (next) {
   if (!this.ticketNumber) {
     const count = await mongoose.model('Support').countDocuments()
-    this.ticketNumber = `T-${String(count + 1).padStart(3, '0')}`
-  }
+    this.ticketNumber = `T-${Date.now()}-${String(count + 1).padStart(3, '0')}`
+  } 
   next()
 })
 

@@ -91,6 +91,21 @@ exports.getTicket = async (req, res) => {
   }
 }
 
+
+
+exports.getuser = async (req, res) => {
+  try {
+    const ticket = await Support.find({ user: req.params.id }).populate('user', 'name email')
+    if (!ticket) {
+      return res.status(404).json({ success: false, message: 'Ticket not found' })
+    }
+    res.json({ success: true, data: ticket })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+
 exports.createTicket = async (req, res) => {
   try {
     const user = req.user

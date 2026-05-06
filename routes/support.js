@@ -7,12 +7,14 @@ const {
   createTicket,
   updateTicket,
   deleteTicket,
-  replyToTicket
+  replyToTicket,
+  getuser
 } = require('../controllers/supportController')
 
 // Routes
 router.get('/', protect, getTickets)
 router.get('/:id', protect, getTicket)
+router.get('/user/:id', protect, getuser)
 router.post('/', protect, createTicket)
 router.put('/:id', protect, updateTicket)
 router.delete('/:id', protect, deleteTicket)
