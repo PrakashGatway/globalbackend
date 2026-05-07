@@ -39,6 +39,7 @@
   );
 
   router.post("/", protect, applicationController.createApplication);
+  
   router.put(
     "/documents/:applicationId/:documentId",
     protect,

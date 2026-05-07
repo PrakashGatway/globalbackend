@@ -376,17 +376,188 @@ exports.getDataByAssignTo = async (req, res) => {
   }
 };
 
+// exports.getApplicationsByCounsellor = async (req, res) => {
+//   try {
+//     const counsellorId = req.user._id;
+//     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+//     const limit = Math.max(parseInt(req.query.limit, 10) || 10, 1);
+//     const skip = (page - 1) * limit;
+
+//     const aggregated = await Application.aggregate([
+//       {
+//         $lookup: {
+//           from: "users", 
+//           localField: "student",
+//           foreignField: "_id",
+//           as: "student"
+//         }
+//       },
+//       {
+//         $unwind: {
+//           path: "$student",
+//           preserveNullAndEmptyArrays: false
+//         }
+//       },
+//       {
+//         $match: {
+//           "student.assignto": counsellorId
+//         }
+//       },
+//       {
+//         $lookup: {
+//           from: "userprofiles",
+//           localField: "student._id",
+//           foreignField: "user",
+//           as: "profile"
+//         }
+//       },
+//       {
+//         $unwind: {
+//           path: "$profile",
+//           preserveNullAndEmptyArrays: true
+//         }
+//       },
+
+//       // 5. (Optional) Join Communications
+//       // {
+//       //   $lookup: {
+//       //     from: "communications",
+//       //     localField: "_id",
+//       //     foreignField: "application",
+//       //     as: "communications"
+//       //   }
+//       // },
+
+//       // 6. Clean response (VERY IMPORTANT)
+//       {
+//         $project: {
+//           _id: 1,
+//           applicationNumber: 1,
+//           university: 1,
+//           course: 1,
+//           intake: 1,
+//           country: 1,
+//           status: 1,
+//           backups: 1,
+//           createdAt: 1,
+//           primaryStatus: 1,
+//           paymentStatus: 1,
+          
+//           // student fields
+//           "student._id": 1,
+//           "student.name": 1,
+//           "student.email": 1,
+//           "student.phone": 1,
+
+//           // profile
+//           profile: 1,
+
+//           // communications
+//           // communications: 1
+//         }
+//       },
+
+//       // 7. Sort latest first
+//       {
+//         $sort: { createdAt: -1 }
+//       },
+//       {
+//         $facet: {
+//           metadata: [{ $count: "total" }],
+//           data: [{ $skip: skip }, { $limit: limit }]
+//         }
+//       }
+//     ]);
+
+//     const metadata = aggregated[0]?.metadata[0] || { total: 0 };
+//     const applications = aggregated[0]?.data || [];
+
+//     return res.status(200).json({
+//       success: true,
+//       count: applications.length,
+//       total: metadata.total,
+//       page,
+//       limit,
+//       data: applications
+//     });
+
+//   } catch (error) {
+//     console.error("Aggregation Error:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// };
+
 exports.getApplicationsByCounsellor = async (req, res) => {
   try {
     const counsellorId = req.user._id;
+
+    const {
+      course,
+      country,
+      intake,
+      paymentStatus,
+      primaryStatus,
+      startDate,
+      endDate,
+      search
+    } = req.query;
+
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
     const limit = Math.max(parseInt(req.query.limit, 10) || 10, 1);
     const skip = (page - 1) * limit;
 
+    // ✅ Build dynamic match stage
+    let matchStage = {};
+
+    if (course) matchStage.course = new mongoose.Types.ObjectId(course);
+
+    if (country) matchStage.country = country;
+
+    if (intake) matchStage.intake = intake;
+
+    if (paymentStatus) matchStage.paymentStatus = paymentStatus;
+
+    if (primaryStatus) matchStage.primaryStatus = primaryStatus;
+
+    // Date filter
+    if (startDate || endDate) {
+      matchStage.createdAt = {};
+      if (startDate) matchStage.createdAt.$gte = new Date(startDate);
+      if (endDate) matchStage.createdAt.$lte = new Date(endDate);
+    }
+
+    // // Search
+    // if (search) {
+    //   matchStage.applicationNumber = {
+    //     $regex: search,
+    //     $options: "i",
+    //   };
+    // }
+
+    // 🔍 Enhanced Search Logic (place this BEFORE building matchStage)
+    if (search && search.trim()) {
+      const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape regex special chars
+      
+      matchStage.$or = [
+        { applicationNumber: { $regex: escapedSearch, $options: "i" } },
+        // Student fields (after $lookup + $unwind, these are at root.student.*)
+        { "student.name": { $regex: escapedSearch, $options: "i" } },
+        { "student.email": { $regex: escapedSearch, $options: "i" } },
+        { "student.phone": { $regex: escapedSearch, $options: "i" } }, 
+        { university: { $regex: escapedSearch, $options: "i" } },
+        { country: { $regex: escapedSearch, $options: "i" } },
+        { intake: { $regex: escapedSearch, $options: "i" } },
+        
+      ];
+    }
+
     const aggregated = await Application.aggregate([
       {
         $lookup: {
-          from: "users", 
+          from: "users",
           localField: "student",
           foreignField: "_id",
           as: "student"
@@ -398,11 +569,19 @@ exports.getApplicationsByCounsellor = async (req, res) => {
           preserveNullAndEmptyArrays: false
         }
       },
+
+      // ✅ Counsellor filter
       {
         $match: {
           "student.assignto": counsellorId
         }
       },
+
+      // ✅ Apply dynamic filters here
+      {
+        $match: matchStage
+      },
+
       {
         $lookup: {
           from: "userprofiles",
@@ -418,17 +597,6 @@ exports.getApplicationsByCounsellor = async (req, res) => {
         }
       },
 
-      // 5. (Optional) Join Communications
-      // {
-      //   $lookup: {
-      //     from: "communications",
-      //     localField: "_id",
-      //     foreignField: "application",
-      //     as: "communications"
-      //   }
-      // },
-
-      // 6. Clean response (VERY IMPORTANT)
       {
         $project: {
           _id: 1,
@@ -442,22 +610,18 @@ exports.getApplicationsByCounsellor = async (req, res) => {
           createdAt: 1,
           primaryStatus: 1,
           paymentStatus: 1,
-          
-          // student fields
-          "student._id": 1,
-          "student.name": 1,
-          "student.email": 1,
-          "student.phone": 1,
 
-          // profile
-          profile: 1,
+          student: {
+            _id: "$student._id",
+            name: "$student.name",
+            email: "$student.email",
+            phone: "$student.phone"
+          },
 
-          // communications
-          // communications: 1
+          profile: 1
         }
       },
 
-      // 7. Sort latest first
       {
         $sort: { createdAt: -1 }
       },
@@ -489,6 +653,7 @@ exports.getApplicationsByCounsellor = async (req, res) => {
     });
   }
 };
+
 
 exports.createApplication = async (req, res) => {
   try {

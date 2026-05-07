@@ -245,6 +245,7 @@ exports.getApplications = async (req, res) => {
       search,
       startDate,
       endDate,
+      studentid
     } = req.query;
 
     const matchStage = {};
@@ -254,6 +255,8 @@ exports.getApplications = async (req, res) => {
     } else {
       matchStage.student = new mongoose.Types.ObjectId(req.user._id);
     }
+    
+    if(studentid) matchStage.student = new mongoose.Types.ObjectId(studentid);
 
     if (course)
       matchStage.course = new mongoose.Types.ObjectId(course);
@@ -456,7 +459,7 @@ exports.uploadAndUpdateDocument = async (req, res) => {
     const updatedApplication = await Application.findOneAndUpdate(
       {
         _id: applicationId,
-        student: userId,
+        // student: userId,
         'documents._id': documentId
       },
       {
@@ -472,6 +475,17 @@ exports.uploadAndUpdateDocument = async (req, res) => {
         message: 'Application or document not found, or access denied.'
       });
     }
+
+     if (updatedApplication) {
+          await Communication.create({
+            application: applicationId,
+            type: 'activity',
+            action: 'APPLICATION_UPDATED',
+            description: `Application ${updatedApplication.applicationNumber} updated for document ${documentId}.`,
+            user: userId
+          });
+        }
+
 
     const updatedDoc = updatedApplication.documents.id(documentId) ||
       updatedApplication.documents.find(d => d._id.toString() === documentId);
