@@ -6,7 +6,7 @@ const TokenSchema = new mongoose.Schema(
         type: String,
         default: "counsellor"
     },
-
+    userId : String, 
     fcmToken: {
       type: String,
       default: "",

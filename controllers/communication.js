@@ -1,4 +1,5 @@
 const Communication = require('../models/Communication');
+const sendNotification = require('../middleware/notificaion');
 
 // ============ HELPER FUNCTIONS ============
 const logActivity = async (data) => {
@@ -44,6 +45,21 @@ const sendMessage = async (req, res) => {
     // Populate user info before sending response
     await message.populate('user', 'name email');
     
+    const receiverUserId =  req.user.assignto;
+    console.log("sendMessage", req.user);
+    
+    await sendNotification({
+      userId: receiverUserId,
+      title: "New Message",
+      body: req.body.content,
+      data: {
+        type: "chat",
+        applicationId:
+          req.params.id.toString(),
+      },
+    });
+
+
     res.json({ success: true, data: message });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
