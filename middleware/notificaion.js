@@ -1,30 +1,84 @@
 const admin = require("../config/firebaseAdmin");
+
 const User = require("../models/firebase");
-const Notificaion = require("../models/Notification");
+
+const {
+  Notification,
+  NotificationRecipient,
+} = require("../models/Notification");
 
 const sendNotification = async ({
   userId,
+  sender = null,
   title,
   body,
+  type = "system",
+  entityId = null,
+  entityType = null,
+  redirectUrl = null,
+  coverImage = null,
+  priority = "medium",
   data = {},
 }) => {
   try {
 
     // FIND USER
-    const user = await User.findOne({userId: userId});
+    const user = await User.findOne({
+      userId: userId,
+    });
 
     if (!user) {
       console.log("User not found");
       return;
     }
 
-    // CHECK TOKEN
+
+    // CREATE NOTIFICATION
+    const notification =
+      await Notification.create({
+        sender,
+        title,
+        message: body,
+        type,
+        entityId,
+        entityType,
+        redirectUrl,
+        coverImage,
+
+        priority,
+
+        channels: {
+          inApp: true,
+          push: true,
+        },
+
+        metadata: {
+          ...data,
+        },
+      });
+
+    // CREATE RECIPIENT
+    await NotificationRecipient.create({
+      notification: notification._id,
+      user: userId,
+      isRead: false,
+    });
+
+    console.log(
+      "Notification stored in DB" + userId
+    );
+
+
     if (!user.fcmToken) {
-      console.log("FCM token missing");
-      return;
+
+      console.log(
+        "FCM token missing"
+      );
+
+      return notification;
     }
 
-    // MESSAGE OBJECT
+    // FIREBASE MESSAGE
     const message = {
       token: user.fcmToken,
 
@@ -34,7 +88,20 @@ const sendNotification = async ({
       },
 
       data: {
-        ...data,
+        notificationId:
+          notification._id.toString(),
+
+        type,
+
+        ...Object.keys(data).reduce(
+          (acc, key) => {
+            acc[key] =
+              String(data[key]);
+
+            return acc;
+          },
+          {}
+        ),
       },
 
       android: {
@@ -56,17 +123,22 @@ const sendNotification = async ({
       },
     };
 
-    // SEND
-    const response = await admin
-      .messaging()
-      .send(message);
+    // SEND PUSH
+    const response =
+      await admin
+        .messaging()
+        .send(message);
 
     console.log(
       "Notification sent:",
       response
     );
 
-    return response;
+    return {
+      success: true,
+      notification,
+      firebaseResponse: response,
+    };
 
   } catch (error) {
 
@@ -74,6 +146,11 @@ const sendNotification = async ({
       "Notification Error:",
       error.message
     );
+
+    return {
+      success: false,
+      error: error.message,
+    };
   }
 };
 
@@ -81,30 +158,170 @@ module.exports = sendNotification;
 
 
 
+// const admin = require("../config/firebaseAdmin");
+// const User = require("../models/firebase");
+// const Notificaion = require("../models/Notification");
 
-
-
-// const admin = require("./config/firebaseAdmin");
-
-// const sendNotification = async () => {
+// const sendNotification = async ({
+//   userId,
+//   title,
+//   body,
+//   data = {},
+// }) => {
 //   try {
-//     const response = await admin.messaging().send({
-//       token: "d2IWmcbInNTAkh8WHblAkE:APA91bGKD5bnoW5WN7PTSF9eyVe843vEZk4F4zcvsLkL1RwlhQCFBXq47b7UdcpmmU6YBctEiGzkI_0m6HTYjhtvjCguBIrvFbnnWobv3BzJF8KG_zoCJ2s",
+
+//     const user = await User.findOne({userId: userId});
+
+//     if (!user) {
+//       console.log("User not found");
+//       return;
+//     }
+    
+//     if (!user.fcmToken) {
+//       console.log("FCM token missing");
+//       return;
+//     }
+
+//     // MESSAGE OBJECT
+//     const message = {
+//       token: user.fcmToken,
 
 //       notification: {
-//         title: "New Message",
-//         body: "Hello from Node.js 🚀",
+//         title,
+//         body,
 //       },
 
 //       data: {
-//         type: "chat",
+//         ...data,
 //       },
-//     });
 
-//     console.log("Notification sent:", response);
+//       android: {
+//         priority: "high",
+//       },
+
+//       apns: {
+//         payload: {
+//           aps: {
+//             sound: "default",
+//           },
+//         },
+//       },
+
+//       webpush: {
+//         notification: {
+//           icon: "/images/logo.png",
+//         },
+//       },
+//     };
+
+//     // SEND
+//     const response = await admin
+//       .messaging()
+//       .send(message);
+
+//     console.log(
+//       "Notification sent:",
+//       response
+//     );
+
+//     return response;
+
 //   } catch (error) {
-//     console.log(error);
+
+//     console.log(
+//       "Notification Error:",
+//       error.message
+//     );
 //   }
 // };
 
-// sendNotification();
+// module.exports = sendNotification;
+
+
+
+
+
+
+
+// const admin = require("../config/firebaseAdmin");
+// const User = require("../models/firebase");
+// const Notificaion = require("../models/Notification");
+
+// const sendNotification = async ({
+//   userId,
+//   title,
+//   body,
+//   data = {},
+// }) => {
+//   try {
+
+//     const user = await User.findOne({userId: userId});
+
+//     if (!user) {
+//       console.log("User not found");
+//       return;
+//     }
+    
+//     if (!user.fcmToken) {
+//       console.log("FCM token missing");
+//       return;
+//     }
+
+//     // MESSAGE OBJECT
+//     const message = {
+//       token: user.fcmToken,
+
+//       notification: {
+//         title,
+//         body,
+//       },
+
+//       data: {
+//         ...data,
+//       },
+
+//       android: {
+//         priority: "high",
+//       },
+
+//       apns: {
+//         payload: {
+//           aps: {
+//             sound: "default",
+//           },
+//         },
+//       },
+
+//       webpush: {
+//         notification: {
+//           icon: "/images/logo.png",
+//         },
+//       },
+//     };
+
+//     // SEND
+//     const response = await admin
+//       .messaging()
+//       .send(message);
+
+//     console.log(
+//       "Notification sent:",
+//       response
+//     );
+
+//     return response;
+
+//   } catch (error) {
+
+//     console.log(
+//       "Notification Error:",
+//       error.message
+//     );
+//   }
+// };
+
+// module.exports = sendNotification;
+
+
+
+

@@ -433,7 +433,7 @@ exports.getUserNotifications = async (req, res) => {
         // Flatten structure for frontend
         const formattedNotifications = notifications.map(recipient => {
             const notif = recipient.notification;
-            if(notif === null) return [];
+            if (notif === null) return [];
             return {
                 id: notif?._id.toString(),
                 recipientId: recipient._id.toString(),
@@ -454,7 +454,7 @@ exports.getUserNotifications = async (req, res) => {
             };
         });
 
-        
+
 
         res.json({
             success: true,

@@ -5,6 +5,7 @@ const path = require('path');
 const multer = require('multer');
 const Communication = require('../models/Communication');
 const { ScratchCard } = require('../models/Coupon');
+const sendNotification = require('../middleware/notificaion');
 
 
 const defaultDocuments = [
@@ -218,6 +219,40 @@ exports.createApplication = async (req, res) => {
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       });
     }
+
+
+    let receiverUserId = null;
+
+    if (req.user.role === "user") {
+      receiverUserId =
+        req.user.assignto;
+    }
+    else {
+      receiverUserId = "admin";
+    }
+
+    if (receiverUserId) {
+
+      await sendNotification({
+        userId: receiverUserId,
+        sender: req.user._id,
+        title: `New Message from ${req.user.name}`,
+        body: `New Message from ${req.user.name}`,
+        type: "chat_message",
+        entityId: application._id,
+        entityType: "Application",
+        redirectUrl: `/applications/${req.params.id}`,
+        data: {
+          type: "chat",
+          applicationId:
+            req.params.id.toString(),
+          messageId:
+            message._id.toString(),
+        },
+      });
+    }
+
+
     res.status(201).json({
       success: true,
       data: application,
@@ -255,8 +290,8 @@ exports.getApplications = async (req, res) => {
     } else {
       matchStage.student = new mongoose.Types.ObjectId(req.user._id);
     }
-    
-    if(studentid) matchStage.student = new mongoose.Types.ObjectId(studentid);
+
+    if (studentid) matchStage.student = new mongoose.Types.ObjectId(studentid);
 
     if (course)
       matchStage.course = new mongoose.Types.ObjectId(course);
@@ -476,15 +511,15 @@ exports.uploadAndUpdateDocument = async (req, res) => {
       });
     }
 
-     if (updatedApplication) {
-          await Communication.create({
-            application: applicationId,
-            type: 'activity',
-            action: 'APPLICATION_UPDATED',
-            description: `Application ${updatedApplication.applicationNumber} updated for document ${documentId}.`,
-            user: userId
-          });
-        }
+    if (updatedApplication) {
+      await Communication.create({
+        application: applicationId,
+        type: 'activity',
+        action: 'APPLICATION_UPDATED',
+        description: `Application ${updatedApplication.applicationNumber} updated for document ${documentId}.`,
+        user: userId
+      });
+    }
 
 
     const updatedDoc = updatedApplication.documents.id(documentId) ||

@@ -675,7 +675,7 @@ exports.createApplication = async (req, res) => {
     }
 
     // 2. Safer ID generation (OS + Timestamp + 4 random chars)
-    const applicationNumber = `OS${Date.now()}${Math.random().toString(36).set(2, 6).toUpperCase()}`;
+    const applicationNumber = `OS${Date.now()}`;
 
     const application = await Application.create({ 
       documents: defaultDocuments,

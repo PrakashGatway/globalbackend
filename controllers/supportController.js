@@ -1,3 +1,4 @@
+const sendNotification = require('../middleware/notificaion')
 const Support = require('../models/Support')
 
 
@@ -25,9 +26,9 @@ exports.getTickets = async (req, res) => {
     if (status) filter.status = status
     if (category) filter.category = category
     if (priority) filter.priority = priority
-    if(req.user.role == "admin"){
+    if (req.user.role == "admin") {
       if (user) filter.user = user
-    }else{
+    } else {
       filter.user = req.user._id
     }
 
@@ -110,6 +111,21 @@ exports.createTicket = async (req, res) => {
   try {
     const user = req.user
     const ticket = await Support.create({ ...req.body, user: user._id })
+
+    const receiverUserId = req.user.assignto;
+    console.log("sendMessage", req.user);
+
+    await sendNotification({
+      userId: receiverUserId,
+      title: "New Support Ticket",
+      body: req.body.subject,
+      data: {
+        type: "support",
+        description: req.body.description,
+        ticketId: ticket._id,
+      },
+    });
+
     res.status(201).json({ success: true, data: ticket })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })

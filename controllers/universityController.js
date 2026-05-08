@@ -38,8 +38,8 @@ const createUniversity = async (req, res) => {
 };
 
 const getUniversitie = async (req, res) => {
-  try{
-   const {name} = req.query;
+  try {
+    const { name } = req.query;
 
 
     // data = await University.find({},{'country':1,'name' : 1, 'uni_logo':1}).select('-__v');
@@ -56,7 +56,7 @@ const getUniversitie = async (req, res) => {
       {
         $project: {
           name: 1,
-          slug:1,
+          slug: 1,
           uni_logo: 1,
           country: 1,
           'countryData.name': 1,             // Includes the joined data
@@ -67,12 +67,12 @@ const getUniversitie = async (req, res) => {
     ]);
 
 
-    res.status(200).json({ success : true, count : data.length, data });
+    res.status(200).json({ success: true, count: data.length, data });
 
 
-  }catch(error){
-      console.error('get universities error : ', error);
-      res.status(500).json({ success : false, message : 'server error' });
+  } catch (error) {
+    console.error('get universities error : ', error);
+    res.status(500).json({ success: false, message: 'server error' });
   }
 }
 
@@ -102,7 +102,11 @@ const getAllUniversities = async (req, res) => {
     const uniMatch = {};
 
     if (name) uniMatch.name = { $regex: name, $options: 'i' };
-    if (country) uniMatch.country = { $regex: country, $options: 'i' };
+
+
+    if (country && country.trim() !== "") uniMatch.country = { $regex: country, $options: 'i' };
+
+
     if (city) uniMatch.city = { $regex: city, $options: 'i' };
     if (uniStatus) uniMatch.status = uniStatus;
 
