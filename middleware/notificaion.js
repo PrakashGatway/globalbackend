@@ -1,5 +1,4 @@
 const admin = require("../config/firebaseAdmin");
-
 const User = require("../models/firebase");
 
 const {
@@ -27,6 +26,8 @@ const sendNotification = async ({
       userId: userId,
     });
 
+    console.log("user data : ", userId,sender)
+
     if (!user) {
       console.log("User not found");
       return;
@@ -34,8 +35,8 @@ const sendNotification = async ({
 
 
     // CREATE NOTIFICATION
-    const notification =
-      await Notification.create({
+    const notification = 
+    await Notification.create({
         sender,
         title,
         message: body,
@@ -44,14 +45,11 @@ const sendNotification = async ({
         entityType,
         redirectUrl,
         coverImage,
-
         priority,
-
         channels: {
           inApp: true,
           push: true,
         },
-
         metadata: {
           ...data,
         },
@@ -124,10 +122,7 @@ const sendNotification = async ({
     };
 
     // SEND PUSH
-    const response =
-      await admin
-        .messaging()
-        .send(message);
+    const response =  await admin.messaging().send(message);
 
     console.log(
       "Notification sent:",

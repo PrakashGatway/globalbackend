@@ -40,7 +40,7 @@ exports.login = async (req, res) => {
       expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
     })
     try {
-      await sendOTPEmail({ email, otp: otpCode })
+      // await sendOTPEmail({ email, otp: otpCode })
       res.json({
         success: true,
         isExist: true,
@@ -186,7 +186,7 @@ exports.getMe = async (req, res) => {
       })
     }
 
-    const user = await User.findOne({ _id: userId , status: 'Active'}).select("-password")
+    const user = await User.findOne({ _id: userId, status: 'Active' }).select("-password")
 
     if (!user) {
       return res.status(404).json({

@@ -158,9 +158,9 @@ exports.masterControllerWithTransaction = async (req, res) => {
           university,
           "course": destinationcourse,
           intake,
-          "country" : destinationCountry, 
+          "country": destinationCountry,
           backups,
-          "rejectionReason": [{course: destinationcourse,reason: ""}]
+          "rejectionReason": [{ course: destinationcourse, reason: "" }]
         },
       ],
       { session },
@@ -363,14 +363,14 @@ exports.getDataByAssignTo = async (req, res) => {
       user.communications = await Communication.find({ user: user._id });
     }
 
-    return res.status(200).json({ 
+    return res.status(200).json({
       success: true,
       data
     });
 
   } catch (error) {
     return res.status(500).json({
-      success: false, 
+      success: false,
       message: error.message
     });
   }
@@ -442,7 +442,7 @@ exports.getDataByAssignTo = async (req, res) => {
 //           createdAt: 1,
 //           primaryStatus: 1,
 //           paymentStatus: 1,
-          
+
 //           // student fields
 //           "student._id": 1,
 //           "student.name": 1,
@@ -540,17 +540,17 @@ exports.getApplicationsByCounsellor = async (req, res) => {
     // 🔍 Enhanced Search Logic (place this BEFORE building matchStage)
     if (search && search.trim()) {
       const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape regex special chars
-      
+
       matchStage.$or = [
         { applicationNumber: { $regex: escapedSearch, $options: "i" } },
         // Student fields (after $lookup + $unwind, these are at root.student.*)
         { "student.name": { $regex: escapedSearch, $options: "i" } },
         { "student.email": { $regex: escapedSearch, $options: "i" } },
-        { "student.phone": { $regex: escapedSearch, $options: "i" } }, 
+        { "student.phone": { $regex: escapedSearch, $options: "i" } },
         { university: { $regex: escapedSearch, $options: "i" } },
         { country: { $regex: escapedSearch, $options: "i" } },
         { intake: { $regex: escapedSearch, $options: "i" } },
-        
+
       ];
     }
 
@@ -608,6 +608,7 @@ exports.getApplicationsByCounsellor = async (req, res) => {
           status: 1,
           backups: 1,
           createdAt: 1,
+          updatedAt: 1,
           primaryStatus: 1,
           paymentStatus: 1,
 
@@ -662,7 +663,7 @@ exports.createApplication = async (req, res) => {
       university,
       destinationcourse: course, // Renamed for model consistency
       intake,
-      destinationCountry: country, 
+      destinationCountry: country,
       backups
     } = req.body;
 
@@ -677,14 +678,14 @@ exports.createApplication = async (req, res) => {
     // 2. Safer ID generation (OS + Timestamp + 4 random chars)
     const applicationNumber = `OS${Date.now()}`;
 
-    const application = await Application.create({ 
+    const application = await Application.create({
       documents: defaultDocuments,
       applicationNumber,
       student,
       university,
       course,
       intake,
-      country, 
+      country,
       backups,
       rejectionReason: [{ course, reason: "" }]
     });

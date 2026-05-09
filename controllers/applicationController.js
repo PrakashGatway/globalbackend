@@ -6,6 +6,7 @@ const multer = require('multer');
 const Communication = require('../models/Communication');
 const { ScratchCard } = require('../models/Coupon');
 const sendNotification = require('../middleware/notificaion');
+const User = require('../models/User');
 
 
 const defaultDocuments = [
@@ -221,36 +222,31 @@ exports.createApplication = async (req, res) => {
     }
 
 
-    let receiverUserId = null;
 
-    if (req.user.role === "user") {
-      receiverUserId =
-        req.user.assignto;
-    }
-    else {
-      receiverUserId = "admin";
+    // 🔥 Get all admins
+    const admins = await User.find({ role: "admin" }).select("_id");
+
+    console.log("amdin data on the ", admins, application);
+
+    // 🔔 Send notification to each admin
+    if (admins.length > 0) {
+      for (const admin of admins) {
+        await sendNotification({
+          userId: admin._id,
+          sender: req.user._id,
+          title: "New Application Created",
+          body: `Application ${application.applicationNumber} has been created.`,
+          type: "admin",
+          entityId: application._id,
+          entityType: "Application",
+          redirectUrl: `/applications/${application._id}`,
+          data: {
+            applicationId: application._id,
+          },
+        });
+      }
     }
 
-    if (receiverUserId) {
-
-      await sendNotification({
-        userId: receiverUserId,
-        sender: req.user._id,
-        title: `New Message from ${req.user.name}`,
-        body: `New Message from ${req.user.name}`,
-        type: "chat_message",
-        entityId: application._id,
-        entityType: "Application",
-        redirectUrl: `/applications/${req.params.id}`,
-        data: {
-          type: "chat",
-          applicationId:
-            req.params.id.toString(),
-          messageId:
-            message._id.toString(),
-        },
-      });
-    }
 
 
     res.status(201).json({
