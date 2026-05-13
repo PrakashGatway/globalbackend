@@ -569,19 +569,16 @@ exports.getApplicationsByCounsellor = async (req, res) => {
           preserveNullAndEmptyArrays: false
         }
       },
-
       // ✅ Counsellor filter
       {
         $match: {
           "student.assignto": counsellorId
         }
       },
-
       // ✅ Apply dynamic filters here
       {
         $match: matchStage
       },
-
       {
         $lookup: {
           from: "userprofiles",

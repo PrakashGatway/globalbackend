@@ -39,6 +39,12 @@ const countrySchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    extra_content: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CountryExtradetails',
+      required: true,
+      unique: true,
+    },
     flg: {
       type: String,
       default: '',

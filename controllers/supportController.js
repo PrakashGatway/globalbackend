@@ -106,7 +106,6 @@ exports.getuser = async (req, res) => {
   }
 }
 
-
 exports.createTicket = async (req, res) => {
   try {
     const user = req.user
@@ -149,9 +148,6 @@ exports.updateTicket = async (req, res) => {
   }
 }
 
-// @desc    Delete ticket
-// @route   DELETE /api/support/:id
-// @access  Private
 exports.deleteTicket = async (req, res) => {
   try {
     const ticket = await Support.findByIdAndDelete(req.params.id)
