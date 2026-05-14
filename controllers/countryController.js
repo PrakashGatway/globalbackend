@@ -92,103 +92,108 @@ exports.getCountries = async (req, res) => {
       extraStatus,
       page = 1,
       limit = 10,
-      sortBy = 'name',
-      sortOrder = 'asc',
-    } = req.query
+      sort = "-createdAt",
+    } = req.query;
 
-    page = Number(page)
-    limit = Number(limit)
+    page = Number(page);
+    limit = Number(limit);
 
-    const matchStage = {}
+    const matchStage = {};
 
     // Search filter
     if (search && search.trim()) {
       matchStage.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { code: { $regex: search, $options: 'i' } },
-        { currency: { $regex: search, $options: 'i' } },
-      ]
+        { name: { $regex: search, $options: "i" } },
+        { code: { $regex: search, $options: "i" } },
+        { currency: { $regex: search, $options: "i" } },
+      ];
     }
 
     // Status filter
     if (status) {
-      matchStage.status = status
+      matchStage.status = status;
     }
 
     // Featured filter
-    if (isFeatured) {
-      matchStage.isFeatured = isFeatured
+    if (isFeatured !== undefined) {
+      matchStage.isFeatured = isFeatured;
     }
 
     // Sort configuration
-    const sortStage = {}
-    const sortField = sortBy || 'name'
-    const sortValue = sortOrder === 'desc' ? -1 : 1
-    sortStage[sortField] = sortValue
+    const sortStage = {};
 
-    // 🧠 AGGREGATION PIPELINE
+    if (sort) {
+      if (sort.startsWith("-")) {
+        sortStage[sort.slice(1)] = -1;
+      } else {
+        sortStage[sort] = 1;
+      }
+    } else {
+      sortStage.createdAt = -1;
+    }
+
+    const shouldPopulate = populateExtra === "true";
+
+    // Data pipeline
+    const dataPipeline = [
+      { $sort: sortStage },
+      { $skip: (page - 1) * limit },
+      { $limit: limit },
+    ];
+
+    // Populate extra_content
+    if (shouldPopulate) {
+      dataPipeline.push({
+        $lookup: {
+          from: "countryextradetails",
+          localField: "extra_content",
+          foreignField: "_id",
+          as: "extra_content",
+        },
+      });
+
+      // Filter extra content by status
+      if (extraStatus) {
+        dataPipeline.push({
+          $addFields: {
+            extra_content: {
+              $filter: {
+                input: "$extra_content",
+                as: "item",
+                cond: {
+                  $eq: ["$$item.status", extraStatus],
+                },
+              },
+            },
+          },
+        });
+      }
+    }
+
+    // Remove __v
+    dataPipeline.push({
+      $project: {
+        __v: 0,
+        "extra_content.__v": 0,
+      },
+    });
+
     const pipeline = [
       { $match: matchStage },
       {
         $facet: {
-          data: [
-            { $sort: sortStage },
-            { $skip: (page - 1) * limit },
-            { $limit: limit },
-          ],
-          totalCount: [{ $count: 'count' }],
+          data: dataPipeline,
+          totalCount: [{ $count: "count" }],
         },
       },
-    ]
+    ];
 
-    const shouldPopulate = populateExtra === 'true'
+    console.log("pipeline", JSON.stringify(pipeline, null, 2));
 
-    if (shouldPopulate) {
-      // Add lookup for extra details
-      pipeline.push({
-        $lookup: {
-          from: 'countryextradetails', // Mongoose default collection name
-          localField: 'extra_content',
-          foreignField: '_id',
-          as: 'extra_content'
-        }
-      })
+    const result = await Country.aggregate(pipeline);
 
-      // Unwind the extra_content array
-      pipeline.push({
-        $unwind: {
-          path: '$extra_content',
-          preserveNullAndEmptyArrays: true
-        }
-      })
-
-      if (extraStatus) {
-        pipeline.push({
-          $match: {
-            'extra_content.status': extraStatus
-          }
-        })
-      }
-
-      pipeline.push({
-        $project: {
-          __v: 0,
-          'extra_content.__v': 0
-        }
-      })
-    } else {
-      pipeline.push({
-        $project: {
-          __v: 0
-        }
-      })
-    }
-
-    const result = await Country.aggregate(pipeline)
-
-    // Extract data and total count
-    const data = result[0]?.data || []
-    const total = result[0]?.totalCount?.[0]?.count || 0
+    const data = result[0]?.data || [];
+    const total = result[0]?.totalCount?.[0]?.count || 0;
 
     res.status(200).json({
       success: true,
@@ -197,15 +202,17 @@ exports.getCountries = async (req, res) => {
       pages: Math.ceil(total / limit),
       limit,
       data,
-    })
+    });
   } catch (error) {
-    console.error('Get Countries Error:', error)
+    console.error("Get Countries Error:", error);
+
     res.status(500).json({
       success: false,
       message: error.message,
-    })
+    });
   }
-}
+};
+
 
 exports.getCountry = async (req, res) => {
   try {
@@ -222,7 +229,7 @@ exports.getCountry = async (req, res) => {
 exports.createCountry = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
-  
+
   try {
     const { extra_details, ...countryData } = req.body;
 
@@ -237,9 +244,9 @@ exports.createCountry = async (req, res) => {
 
     // Create country with reference to extra details
     const country = await Country.create(
-      [{ 
-        ...countryData, 
-        extra_content: extraDetails ? extraDetails[0]._id : null 
+      [{
+        ...countryData,
+        extra_content: extraDetails ? extraDetails[0]._id : null
       }],
       { session }
     );

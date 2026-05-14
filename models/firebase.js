@@ -17,4 +17,7 @@ const TokenSchema = new mongoose.Schema(
   }
 ); 
 
+// Add the TTL index to the automatically generated createdAt field
+// TokenSchema.index({ createdAt: 1 }, { expireAfterSeconds: 7*24*60*60 });
+
 module.exports = mongoose.model("FirebaseToken", TokenSchema);
