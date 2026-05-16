@@ -92,6 +92,7 @@ exports.getCountries = async (req, res) => {
       extraStatus,
       page = 1,
       limit = 10,
+      code,
       sort = "-createdAt",
     } = req.query;
 
@@ -113,7 +114,9 @@ exports.getCountries = async (req, res) => {
     if (status) {
       matchStage.status = status;
     }
-
+    if(code) {
+      matchStage.code = code;
+    }
     // Featured filter
     if (isFeatured !== undefined) {
       matchStage.isFeatured = isFeatured;

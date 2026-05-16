@@ -66,7 +66,16 @@ exports.getUsers = async (req, res) => {
           as: "profile",
         },
       },
-
+      { 
+          $lookup: {
+            from: "users", 
+            localField: "assignto", 
+            foreignField: "_id",
+            as: "assignee" 
+          },
+          
+      },
+        { $unwind: { path: "$assignee", preserveNullAndEmptyArrays: true } },
       {
         $addFields: {
           profile: {

@@ -328,16 +328,27 @@ exports.getApplications = async (req, res) => {
       { $limit: Number(limit) },
 
       ...(req.user.role === 'admin'
-        ? [
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'student',
-              foreignField: '_id',
-              as: 'student',
-            },
-          },
-          { $unwind: '$student' },
+        ? [ {
+    $lookup: {
+      from: 'users', // Collection to join
+      localField: 'student', // Field in main collection
+      foreignField: '_id', // Field in 'users' collection
+      as: 'student', // Output field name
+      pipeline: [
+        {
+          $lookup: {
+            from: "users", // Nested lookup on 'users' again
+            localField: "assignto", // Field inside student document
+            foreignField: "_id",
+            as: "assignee" // Renamed 'users' to 'assignee' for clarity
+          }
+        },
+        // Unwind the assignee array if there is only 1 assignee
+        { $unwind: { path: "$assignee", preserveNullAndEmptyArrays: true } }
+      ]
+    }
+  },
+  { $unwind: '$student' } // Unwind the student array
         ]
         : []),
 

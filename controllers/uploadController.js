@@ -75,7 +75,6 @@ exports.deleteImage = async (req, res) => {
   }
 }
 
-
 exports.profileImage = async (req, res) => {
   try {
     if (!req.file) {
@@ -160,6 +159,41 @@ exports.resumeUpload = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message
+    });
+  }
+};
+
+
+exports.uploadDocument = async (req, res) => {
+  try {
+    const { applicationId, documentId } = req.params;
+    const userId = req.user?._id || req.user?.id;
+
+    const fileUrl = `/uploads/docs/${req?.file?.filename || "nofile"}`;
+
+
+    res.status(200).json({
+      success: true,
+      message: 'Document uploaded successfully.',
+      docUrl: fileUrl 
+    });
+    
+  } catch (error) {
+    console.log(error);
+
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'Invalid ID format.' });
+    }
+    if (error instanceof multer.MulterError) {
+      if (error.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ success: false, message: 'File too large. Max 10MB.' });
+      }
+      return res.status(400).json({ success: false, message: error.message });
+    }
+    res.status(500).json({
+      success: false,
+      message: 'Upload failed.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
