@@ -224,7 +224,10 @@ exports.getMe = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const { name, phone, profileImage, dateOfBirth, nationality, gender, firstLanguage, maritalStatus,
-       passportNumber, passportExpiry } = req.body
+       passportNumber, passportExpiry,
+    intake,
+    tuitionfee,
+     } = req.body
 
     // Build update object
     const updateData = {}
@@ -238,6 +241,8 @@ exports.updateProfile = async (req, res) => {
     if (maritalStatus) updateData.maritalStatus = maritalStatus
     if (passportNumber) updateData.passportNumber = passportNumber
     if (passportExpiry) updateData.passportExpiry = passportExpiry
+    if (intake) updateData.intake = intake
+    if (tuitionfee) updateData.tuitionfee = tuitionfee
 
     const user = await User.findByIdAndUpdate(
       req.user._id,
