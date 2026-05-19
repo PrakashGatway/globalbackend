@@ -24,6 +24,13 @@ const CountryExtradetails = new mongoose.Schema(
     visa_details: {
       type : mongoose.Schema.Types.Mixed,
       default: {}
+    },
+    rating : String,
+    tuitionfee : String,
+    psw : String,
+    keyHightlights : {
+      type : mongoose.Schema.Types.Mixed,
+      default : []
     }
   },
   { timestamps: true }

@@ -186,7 +186,7 @@ exports.getMe = async (req, res) => {
       })
     }
 
-    const user = await User.findOne({ _id: userId, status: 'Active' }).select("-password")
+    const user = await User.findOne({ _id: userId, status: 'Active' }).populate('assignto').select("-password")
 
     if (!user) {
       return res.status(404).json({
@@ -223,7 +223,8 @@ exports.getMe = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, phone, profileImage, dateOfBirth, nationality, gender, firstLanguage, maritalStatus, passportNumber, passportExpiry } = req.body
+    const { name, phone, profileImage, dateOfBirth, nationality, gender, firstLanguage, maritalStatus,
+       passportNumber, passportExpiry } = req.body
 
     // Build update object
     const updateData = {}
@@ -260,9 +261,9 @@ exports.updateProfile = async (req, res) => {
 }
 
 const calculateProfileCompletion = (profile) => {
-  let totalFields = 7
+  let totalFields = 4
   let completed = 0
-
+  console.log(profile,"profile",Object.keys(profile?.documents)?.length );
   if (
     profile.currentAddress?.addressLine1 &&
     profile.currentAddress?.city &&
@@ -271,14 +272,14 @@ const calculateProfileCompletion = (profile) => {
     completed++
   }
 
-  // 2️⃣ Permanent Address
-  if (
-    profile.permanentAddress?.addressLine1 &&
-    profile.permanentAddress?.city &&
-    profile.permanentAddress?.country
-  ) {
-    completed++
-  }
+  // // 2️⃣ Permanent Address
+  // if (
+  //   profile.permanentAddress?.addressLine1 &&
+  //   profile.permanentAddress?.city &&
+  //   profile.permanentAddress?.country
+  // ) {
+  //   completed++
+  // }
 
   // 3️⃣ Highest Academic
   if (
@@ -293,33 +294,33 @@ const calculateProfileCompletion = (profile) => {
     completed++
   }
 
-  // 5️⃣ English Proficiency
+
+  // // 5️⃣ English Proficiency
+  // if (
+  //   profile.englishProficiency ||
+  //   profile.englishProficiencyScore?.englishTest
+  // ) {
+  //   completed++
+  // }
+
+  // // 6️⃣ GMAT / GRE / SAT
+  // if (
+  //   profile.hasGmat ||
+  //   profile.hasGre ||
+  //   profile.gmatScore?.totalScore?.score ||
+  //   profile.satScore?.totalScore?.score
+  // ) {
+  //   completed++
+  // }
+
   if (
-    profile.englishProficiency ||
-    profile.englishProficiencyScore?.englishTest
+    profile.documents !== undefined ||
+    Object.keys(profile?.documents || {})?.length >= 7
   ) {
     completed++
   }
 
-  // 6️⃣ GMAT / GRE / SAT
-  if (
-    profile.hasGmat ||
-    profile.hasGre ||
-    profile.gmatScore?.totalScore?.score ||
-    profile.satScore?.totalScore?.score
-  ) {
-    completed++
-  }
-
-  // 7️⃣ Visa Info
-  if (
-    profile.visaRefused !== undefined ||
-    profile.validVisas?.length > 0
-  ) {
-    completed++
-  }
-
-
+ 
   return Math.round((completed / totalFields) * 100)
 }
 

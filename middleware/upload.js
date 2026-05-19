@@ -21,7 +21,8 @@ const storage = multer.diskStorage({
 
     const ext = path.extname(file.originalname).toLowerCase();
 
-    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+    // cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+    cb(null, `${file.originalname}`);
   },
 });
 
@@ -31,9 +32,7 @@ const fileFilter = (req, file, cb) => {
     "image/png",
     "image/gif",
     "image/webp",
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/pdf"
   ];
 
   if (allowedMimes.includes(file.mimetype)) {

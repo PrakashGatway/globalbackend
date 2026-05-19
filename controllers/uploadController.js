@@ -166,17 +166,23 @@ exports.resumeUpload = async (req, res) => {
 
 exports.uploadDocument = async (req, res) => {
   try {
-    const { applicationId, documentId } = req.params;
-    const userId = req.user?._id || req.user?.id;
+  
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded." });
+    }
 
-    const fileUrl = `/uploads/docs/${req?.file?.filename || "nofile"}`;
+    const userId = req.user?._id || req.user?.id;
+    
+    const fileUrl = `/uploads/docs/${req.file.originalname}`;
 
 
     res.status(200).json({
       success: true,
       message: 'Document uploaded successfully.',
-      docUrl: fileUrl 
+      docUrl: fileUrl,
+      fileData: req.file // Useful for debugging
     });
+
     
   } catch (error) {
     console.log(error);
