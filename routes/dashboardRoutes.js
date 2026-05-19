@@ -324,10 +324,10 @@ const getCounsellorDashboard = async (req, res) => {
         startOfWeek.setHours(0, 0, 0, 0);
         const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 
+        const assignedUsers = await User.find({ assignto: counsellorId })
+
         // Execute all queries in parallel
         const [
-            // Assigned Users
-            assignedUsers,
             assignedActiveUsers,
             assignedUsersByStatus,
             newAssignedUsersToday,
@@ -367,8 +367,6 @@ const getCounsellorDashboard = async (req, res) => {
             // Performance Metrics
             applicationsThisMonth
         ] = await Promise.all([
-            // Users assigned to this counsellor
-            User.find({ assignto: counsellorId }),
             User.countDocuments({ assignto: counsellorId, status: 'Active' }),
             User.aggregate([
                 { $match: { assignto: mongoose.Types.ObjectId.createFromHexString(counsellorId.toString()) } },
@@ -565,7 +563,7 @@ const getCounsellorDashboard = async (req, res) => {
                     applicationConversionRate: totalAssignedUsers > 0 ? (totalApplicationsCount / totalAssignedUsers * 100).toFixed(2) : 0,
                     offerRate: totalApplicationsCount > 0 ? (offerReceivedApplications / totalApplicationsCount * 100).toFixed(2) : 0,
                     completionRate: totalApplicationsCount > 0 ? (completedApplications / totalApplicationsCount * 100).toFixed(2) : 0,
-                    supportResolutionRate: totalTickets > 0 ? ((resolvedTickets + closedTickets || 0) / totalTickets * 100).toFixed(2) : 0,
+                    supportResolutionRate: totalTickets > 0 ? ((resolvedTickets  || 0) / totalTickets * 100).toFixed(2) : 0,
                     applicationsThisMonth: applicationsThisMonth,
                     averageUsersPerMonth: totalAssignedUsers > 0 ? (applicationsThisMonth / totalAssignedUsers).toFixed(2) : 0
                 }

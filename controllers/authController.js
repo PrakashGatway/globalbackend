@@ -432,3 +432,54 @@ exports.createOrUpdateUserProfileById = async (req, res) => {
     });
   }
 };
+
+exports.updateDoc = async (req, res) => {
+  try {
+    const { userId, documentNitame, status } = req.body;
+
+    // Validation
+    if (!userId || !documentName) {
+      return res.status(400).json({
+        success: false,
+        message: "userId and documentName are required",
+      });
+    }
+
+    // Update document status dynamically
+    const updatedProfile = await UserProfile.findOneAndUpdate(
+      { user: userId },
+      {
+        $set: {
+          [`documents.${documentName}.status`]: status,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedProfile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Document ${
+        status ? "approved" : "rejected"
+      } successfully`,
+      data: updatedProfile,
+    });
+
+  } catch (error) {
+    console.error("Update document error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

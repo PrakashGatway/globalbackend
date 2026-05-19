@@ -9,7 +9,8 @@ const {
   updateProfile,
   getMyReferrals,
   createOrUpdateUserProfile,
-  createOrUpdateUserProfileById
+  createOrUpdateUserProfileById,
+  updateDoc
 } = require('../controllers/authController')
 
 // Routes
@@ -21,5 +22,6 @@ router.put('/profile', protect, updateProfile)
 router.post("/profile_info", protect, createOrUpdateUserProfile)
 router.post("/referral" , createOrUpdateUserProfileById)
 router.get("/my-referrals", protect, getMyReferrals)
+router.patch("/edit-doc", updateDoc)
 
 module.exports = router
