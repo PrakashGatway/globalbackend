@@ -224,10 +224,10 @@ exports.getMe = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const { name, phone, profileImage, dateOfBirth, nationality, gender, firstLanguage, maritalStatus,
-       passportNumber, passportExpiry,
-    intake,
-    tuitionfee,
-     } = req.body
+      passportNumber, passportExpiry,
+      intake,
+      tuitionfee,
+    } = req.body
 
     // Build update object
     const updateData = {}
@@ -268,7 +268,7 @@ exports.updateProfile = async (req, res) => {
 const calculateProfileCompletion = (profile) => {
   let totalFields = 4
   let completed = 0
-  console.log(profile,"profile",Object.keys(profile?.documents)?.length );
+  console.log(profile, "profile", Object.keys(profile?.documents)?.length);
   if (
     profile.currentAddress?.addressLine1 &&
     profile.currentAddress?.city &&
@@ -325,7 +325,7 @@ const calculateProfileCompletion = (profile) => {
     completed++
   }
 
- 
+
   return Math.round((completed / totalFields) * 100)
 }
 
@@ -440,48 +440,90 @@ exports.createOrUpdateUserProfileById = async (req, res) => {
 };
 
 exports.updateDoc = async (req, res) => {
+
+  const user = req.user;
+
   try {
-    const { userId, documentNitame, status } = req.body;
 
-    // Validation
-    if (!userId || !documentName) {
-      return res.status(400).json({
-        success: false,
-        message: "userId and documentName are required",
-      });
-    }
+    const {
+      documentName,
+      status,
+      countries_shortlist,
+    } = req.body;
 
-    // Update document status dynamically
-    const updatedProfile = await UserProfile.findOneAndUpdate(
-      { user: userId },
-      {
-        $set: {
-          [`documents.${documentName}.status`]: status,
-        },
-      },
-      {
-        new: true,
-        runValidators: true,
+    let updateData = {};
+
+    if (countries_shortlist) {
+      const profile =
+        await UserProfile.findOne({
+          user: user._id,
+        });
+      const existingCountries =
+        profile?.otherDetails
+          ?.countries_shortlist || [];
+      const alreadyExists =
+        existingCountries.includes(
+          countries_shortlist
+        );
+
+      let updatedCountries = [];
+
+      if (alreadyExists) {
+        updatedCountries =
+          existingCountries.filter(
+            (id) =>
+              id.toString() !=
+              countries_shortlist
+          );
       }
-    );
 
-    if (!updatedProfile) {
-      return res.status(404).json({
-        success: false,
-        message: "Profile not found",
-      });
+      else {
+        updatedCountries = [
+          ...existingCountries,
+          countries_shortlist,
+        ];
+
+      }
+      updateData = {
+        "otherDetails.countries_shortlist":
+          updatedCountries,
+      };
+
     }
+    else {
+      updateData = {
+        [`documents.${documentName}.status`]:
+          status,
+      };
+
+    }
+
+   
+
+    const updatedProfile =
+      await UserProfile.findOneAndUpdate(
+        { user: user._id },
+        {
+          $set: updateData,
+        },
+        {
+          new: true,
+          runValidators: true,
+          upsert: true,
+        }
+      );
 
     res.status(200).json({
       success: true,
-      message: `Document ${
-        status ? "approved" : "rejected"
-      } successfully`,
       data: updatedProfile,
     });
 
   } catch (error) {
-    console.error("Update document error:", error);
+
+    console.error(
+      "Update document error:",
+      error
+    );
 
     res.status(500).json({
       success: false,

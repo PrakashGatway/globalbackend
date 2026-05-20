@@ -168,7 +168,7 @@ const userProfileSchema = new mongoose.Schema(
     notes: String,
     otherDetails: {
       type: mongoose.Schema.Types.Mixed,
-      default: '',
+      default: {},
     }
   },
   {
