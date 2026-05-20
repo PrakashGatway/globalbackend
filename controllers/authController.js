@@ -449,6 +449,7 @@ exports.updateDoc = async (req, res) => {
       documentName,
       status,
       countries_shortlist,
+      categorie_shortlist
     } = req.body;
 
     let updateData = {};
@@ -487,6 +488,40 @@ exports.updateDoc = async (req, res) => {
       updateData = {
         "otherDetails.countries_shortlist":
           updatedCountries,
+      };
+
+    }
+    else if (categorie_shortlist) {
+      const profile =
+        await UserProfile.findOne({
+          user: user._id,
+        });
+      const existingCategorie =
+        profile?.otherDetails ?.categorie_shortlist || [];
+      const alreadyExists =
+        existingCategorie.includes(categorie_shortlist);
+
+      let data = [];
+
+      if (alreadyExists) {
+        data =
+          existingCategorie.filter(
+            (id) =>
+              id.toString() !=
+              categorie_shortlist
+          );
+      }
+
+      else {
+        data = [
+          ...existingCategorie,
+          categorie_shortlist,
+        ];
+
+      }
+      updateData = {
+        "otherDetails.categorie_shortlist":
+          data,
       };
 
     }

@@ -21,7 +21,7 @@ const { protect, authorize } = require('../middleware/auth');
 
 
 router.post("/categories", protect, authorize('admin', 'manager'), createCategory);
-router.get("/categories", getAllCategories);
+router.get("/categories",protect, getAllCategories);
 router.get("/categories/:id", protect, authorize('admin', 'manager'), getCategoryById);
 router.put("/categories/:id", protect, authorize('admin', 'manager'), updateCategory);
 router.delete("/categories/:id", protect, authorize('admin', 'manager'), deleteCategory);
