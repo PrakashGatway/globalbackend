@@ -121,7 +121,7 @@ exports.getNavTabs = async (req, res) => {
 
     const pages = await PageInformation.find(query).select('pageType slug navbarTitle subTitle title subTitle cardImage navbarImage').sort('-createdAt')
       .skip(skip)
-      .limit(Number(limit))
+      .limit(Number(limit)).populate("country","name image flag")
 
     res.status(200).json({
       success: true,

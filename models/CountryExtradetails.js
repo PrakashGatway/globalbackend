@@ -31,6 +31,10 @@ const CountryExtradetails = new mongoose.Schema(
     keyHightlights : {
       type : mongoose.Schema.Types.Mixed,
       default : []
+    },
+    topcourse : {
+      type : mongoose.Schema.Types.Mixed,
+      default : []
     }
   },
   { timestamps: true }

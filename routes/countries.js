@@ -10,7 +10,7 @@ const {
 } = require('../controllers/countryController')
 
 // Routes
-router.get('/', getCountries)
+router.get('/',protect, getCountries)
 router.get('/:id', protect, getCountry)
 router.post('/', protect, createCountry)
 router.put('/:id', protect, updateCountry)
