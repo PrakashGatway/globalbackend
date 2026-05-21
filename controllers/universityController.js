@@ -104,8 +104,18 @@ const getAllUniversities = async (req, res) => {
 
     if (name) uniMatch.name = { $regex: name, $options: 'i' };
 
+    
+    // if (country && country.trim() !== "") uniMatch.country = { $regex: country, $options: 'i' };
 
-    if (country && country.trim() !== "") uniMatch.country = { $regex: country, $options: 'i' };
+      const countryVal = country ? country.trim() : "";
+      const countryArray = countryVal ? countryVal.split(",").map(c => c.trim()).filter(c => c !== "") : [];
+
+      if (countryArray.length > 0) {
+          uniMatch.country = { $in: countryArray };
+      } else if (countryVal !== "") {
+          uniMatch.country = { $regex: countryVal, $options: 'i' };
+      }
+
 
 
     if (city) uniMatch.city = { $regex: city, $options: 'i' };

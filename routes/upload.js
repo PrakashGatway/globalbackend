@@ -4,6 +4,7 @@ const { protect } = require('../middleware/auth')
 const upload = require('../middleware/upload')
 const { uploadImage, deleteImage, profileImage, resumeUpload, uploadDocument } = require('../controllers/uploadController')
 const uploadResume = require('../middleware/fileUpload')
+const DocumentUpload = require('../middleware/DocumentUpload')
 
 
 router.post('/image', protect, upload.single('image'), uploadImage)
@@ -14,7 +15,7 @@ router.post("/resume", uploadResume.single("resume"),resumeUpload);
 
 router.post("/",
     protect,
-    upload.single("file"),
+    DocumentUpload.single("file"),
     uploadDocument,
   );
 

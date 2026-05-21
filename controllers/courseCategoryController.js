@@ -90,7 +90,7 @@ exports.getAllCategories = async (req, res) => {
         $addFields: {
           selected: {
             $in: [
-              "$_id",
+              "$name",
               {
                 $map: {
                   input: {
@@ -104,10 +104,9 @@ exports.getAllCategories = async (req, res) => {
                       [],
                     ],
                   },
-                  as: "id",
-                  in: {
-                    $toObjectId: "$$id",
-                  },
+                  as: "name",
+                  in: "$$name",
+                  
                 },
               },
             ],
