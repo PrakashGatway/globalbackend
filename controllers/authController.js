@@ -446,13 +446,14 @@ exports.updateDoc = async (req, res) => {
   try {
 
     const {
-      documentName,
-      status,
+      documents,
+      userId,
       countries_shortlist,
       categorie_shortlist
     } = req.body;
 
     let updateData = {};
+    // const userId = req.body._id;
 
     if (countries_shortlist) {
       const profile =
@@ -527,8 +528,8 @@ exports.updateDoc = async (req, res) => {
     }
     else {
       updateData = {
-        [`documents.${documentName}.status`]:
-          status,
+      "documents":
+          documents,
       };
 
     }
@@ -537,7 +538,7 @@ exports.updateDoc = async (req, res) => {
 
     const updatedProfile =
       await UserProfile.findOneAndUpdate(
-        { user: user._id },
+        { user: userId || user._id },
         {
           $set: updateData,
         },
