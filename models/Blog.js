@@ -91,6 +91,14 @@ const blogSchema = new mongoose.Schema(
             },
             keywords: String,
         },
+          // FAQ SECTION
+    faq:{
+         type: mongoose.Schema.Types.Mixed,
+    },
+    country : {
+        type : String
+    },
+    
         extraMetadata: {
             type: mongoose.Schema.Types.Mixed,
         }

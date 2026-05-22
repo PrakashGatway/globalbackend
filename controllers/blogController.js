@@ -187,19 +187,31 @@ exports.getBlogCategories = async (req, res) => {
 
 exports.createBlog = async (req, res) => {
     try {
+        // Parse FAQ
+
+
+        if (req.body.faq) {
+            req.body.faq = JSON.parse(req.body.faq);
+        }
+
         const blog = await Blog.create({
             ...req.body,
+
             // author: req.user._id,
-        })
+        });
 
         res.status(201).json({
             success: true,
             data: blog,
-        })
+        });
+
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message })
+        res.status(400).json({
+            success: false,
+            message: error.message,
+        });
     }
-}
+};
 
 exports.getAllBlogs = async (req, res) => {
     try {
@@ -217,11 +229,12 @@ exports.getAllBlogs = async (req, res) => {
             method,
             page = 1,
             limit = 10,
+            faq
         } = req.query
 
-        
+
         if (method == "flaten") {
-            const categories = await Blog.find({status: "Published"}).select('name slug blogType createdAt')
+            const categories = await Blog.find({ status: "Published" }).select('name slug blogType createdAt')
 
             return res.status(200).json({
                 success: true,
@@ -257,7 +270,7 @@ exports.getAllBlogs = async (req, res) => {
                 });
             }
         } else {
-            if (category) matchStage.category =  new mongoose.Types.ObjectId(category)
+            if (category) matchStage.category = new mongoose.Types.ObjectId(category)
         }
 
         if (author) matchStage.author = new mongoose.Types.ObjectId(author)
@@ -326,7 +339,8 @@ exports.getAllBlogs = async (req, res) => {
                                 isFeatured: 1,
                                 createdAt: 1,
                                 category: 1,
-                                extraMetadata: 1
+                                extraMetadata: 1,
+                                faq: 1
                             },
                         }
                     ]
@@ -373,16 +387,53 @@ exports.getBlogBySlug = async (req, res) => {
 
     try {
         const pipeline = [
-            { $match: isMongooseId ? { _id: new mongoose.Types.ObjectId(req.params.slug) } : { slug: req.params.slug } },
+            {
+                $match: isMongooseId
+                    ? { _id: new mongoose.Types.ObjectId(req.params.slug) }
+                    : { slug: req.params.slug }
+            },
 
-            // {
-            //     $lookup: {
-            //         from: 'blogcategories',
-            //         localField: 'category',
-            //         foreignField: '_id',
-            //         as: 'category',
-            //     },
-            // }
+            {
+                $lookup: {
+                    from: 'blogcategories',
+                    localField: 'category',
+                    foreignField: '_id',
+                    as: 'category',
+                    pipeline: [
+                        {
+                            $project: {
+                                name: 1,
+                                slug: 1
+                            }
+                        }
+                    ]
+                },
+            },
+
+            {
+                $lookup: {
+                    from: "countries",
+                    localField: 'country',
+                    foreignField: 'name',
+                    as: "country",
+                    pipeline: [
+                        {
+                            $project: {
+                                name: 1,
+                                slug: 1,
+                                code: 1
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $unwind: {
+                    path: "$country",
+                    preserveNullAndEmptyArrays: true,
+                },
+            }
+
 
             //   {
             //     $lookup: {
@@ -419,10 +470,14 @@ exports.getBlogBySlug = async (req, res) => {
 
 exports.updateBlog = async (req, res) => {
     try {
-        const blog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true,
-        })
+        if (req.body.faq) {
+            req.body.faq = JSON.parse(req.body.faq);
+        }
+        const blog = await Blog.findByIdAndUpdate(req.params.id, req.body,
+            {
+                new: true,
+                runValidators: true,
+            })
 
         res.status(200).json({ success: true, data: blog })
     } catch (error) {
