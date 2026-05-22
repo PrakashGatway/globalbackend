@@ -159,7 +159,7 @@ const userProfileSchema = new mongoose.Schema(
     },
     documents: {
       type : mongoose.Schema.Types.Mixed,
-      default : {}
+      default : []
     },
     profileCompletion: {
       type: Number,

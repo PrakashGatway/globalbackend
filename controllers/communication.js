@@ -1,5 +1,6 @@
 const Communication = require('../models/Communication');
 const sendNotification = require('../middleware/notificaion');
+const UserProfile = require('../models/UserProfile');
 
 // ============ HELPER FUNCTIONS ============
 const logActivity = async (data) => {
@@ -74,12 +75,42 @@ const sendMessage = async (req, res) => {
       type: "message",
       content: req.body.content,
       user: req.user._id,
+      extra_content: req.body.extra_content,
       userType:
         req.user.role === "user"
-          ? "student"
-          : "ooshas",
-      isRead: false,
-    });
+          ?  'student': 'ooshas',
+          isRead: false,
+        });
+
+
+        if (req.body.userId) {
+    const attachments = req.body.extra_content?.attachments;
+
+    if (attachments && attachments.length > 0) {
+        const updateFields = {};
+
+        attachments.forEach((attachment, index) => {
+          
+            const uniqueId = `doc_${Date.now()}_${index}`;
+            
+            updateFields[`documents.${uniqueId}`] = {
+                url: attachment?.url,
+                status: false
+            };
+        });
+
+        const updatedProfile = await UserProfile.findOneAndUpdate(
+            { user: req.body.userId },
+            { $set: updateFields }, 
+            {
+                new: true,
+                runValidators: true,
+                upsert: true,
+            }
+        );
+    }
+}
+
 
     await message.save();
 

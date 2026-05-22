@@ -9,6 +9,7 @@ const {
 } = require('../controllers/communication');
 const { protect } = require('../middleware/auth');
 
+
 router.use(protect);
 router.get('/applications/:id/activities', getActivities);
 router.get('/applications/:id/messages', getMessages);

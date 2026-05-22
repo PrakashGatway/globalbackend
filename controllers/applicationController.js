@@ -203,10 +203,12 @@ exports.createApplication = async (req, res) => {
       course,
       intake,
       expectations,
-      documents: defaultDocuments,
+      documents: [], // defaultDocuments,
       // extraRequirements,
       backups,
     });
+
+
     if (application) {
       await Communication.create({
         application: application._id,
@@ -328,27 +330,27 @@ exports.getApplications = async (req, res) => {
       { $limit: Number(limit) },
 
       ...(req.user.role === 'admin'
-        ? [ {
-    $lookup: {
-      from: 'users', // Collection to join
-      localField: 'student', // Field in main collection
-      foreignField: '_id', // Field in 'users' collection
-      as: 'student', // Output field name
-      pipeline: [
-        {
+        ? [{
           $lookup: {
-            from: "users", // Nested lookup on 'users' again
-            localField: "assignto", // Field inside student document
-            foreignField: "_id",
-            as: "assignee" // Renamed 'users' to 'assignee' for clarity
+            from: 'users', // Collection to join
+            localField: 'student', // Field in main collection
+            foreignField: '_id', // Field in 'users' collection
+            as: 'student', // Output field name
+            pipeline: [
+              {
+                $lookup: {
+                  from: "users", // Nested lookup on 'users' again
+                  localField: "assignto", // Field inside student document
+                  foreignField: "_id",
+                  as: "assignee" // Renamed 'users' to 'assignee' for clarity
+                }
+              },
+              // Unwind the assignee array if there is only 1 assignee
+              { $unwind: { path: "$assignee", preserveNullAndEmptyArrays: true } }
+            ]
           }
         },
-        // Unwind the assignee array if there is only 1 assignee
-        { $unwind: { path: "$assignee", preserveNullAndEmptyArrays: true } }
-      ]
-    }
-  },
-  { $unwind: '$student' } // Unwind the student array
+        { $unwind: '$student' } // Unwind the student array
         ]
         : []),
 
@@ -402,7 +404,8 @@ exports.getApplication = async (req, res) => {
         populate: {
           path: 'university',   // this must match your Course schema field name
         }
-      }).populate('backups.course', 'name slug');
+      }).populate('backups.course', 'name slug').populate('student')
+
 
     if (!application) {
       return res.status(404).json({
@@ -435,6 +438,20 @@ exports.updateApplication = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Application not found',
+      });
+    }
+
+    if (application) {
+      await Communication.create({
+        application: application._id,
+        type: 'activity',
+        action: 'APPLICATION_updated',
+        description: `Application ${application.applicationNumber} was updated with intake ${application.intake}.`,
+        user: req.user._id
+      });
+      reward = await ScratchCard.create({
+        userId: req.user._id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       });
     }
 
