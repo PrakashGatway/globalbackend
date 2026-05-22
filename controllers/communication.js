@@ -82,29 +82,35 @@ const sendMessage = async (req, res) => {
           isRead: false,
         });
 
-         if(req.body.userId) {
 
-          let otherdoc = {
-            url : req.body.extra_content?.attachments[0]?.url,
-            status : false
-          }
+        if (req.body.userId) {
+    const attachments = req.body.extra_content?.attachments;
 
-          const updatedProfile =
-            await UserProfile.findOneAndUpdate(
-              { user: req.body.userId },
-              {
-                $set: {
-                  documents : otherdoc
-                },
-              },
-              {
+    if (attachments && attachments.length > 0) {
+        const updateFields = {};
+
+        attachments.forEach((attachment, index) => {
+          
+            const uniqueId = `doc_${Date.now()}_${index}`;
+            
+            updateFields[`documents.${uniqueId}`] = {
+                url: attachment?.url,
+                status: false
+            };
+        });
+
+        const updatedProfile = await UserProfile.findOneAndUpdate(
+            { user: req.body.userId },
+            { $set: updateFields }, 
+            {
                 new: true,
                 runValidators: true,
                 upsert: true,
-              }
-            );
-          
-      }
+            }
+        );
+    }
+}
+
 
     await message.save();
 
