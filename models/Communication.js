@@ -8,7 +8,7 @@ const communicationSchema = new mongoose.Schema({
   description: { type: String },
   oldValue: { type: mongoose.Schema.Types.Mixed },
   newValue: { type: mongoose.Schema.Types.Mixed },
-  
+  extra_content : {type : mongoose.Schema.Types.Mixed},
   content: { type: String },
   isRead: { type: Boolean, default: false },
   
