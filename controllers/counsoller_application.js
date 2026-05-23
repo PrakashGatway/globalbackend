@@ -707,7 +707,7 @@ exports.createApplication = async (req, res) => {
     console.error("Application Creation Error:", error); // Log for debugging
     res.status(500).json({
       success: false,
-      message: 'Internal Server Error', // Hide raw DB errors from users
+      message: 'Internal Server Error' + error, // Hide raw DB errors from users
     });
   }
 };

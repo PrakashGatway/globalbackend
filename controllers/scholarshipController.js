@@ -55,7 +55,12 @@ exports.getScholarships = async (req, res) => {
                     as: 'country',
                 },
             },
-            { $unwind: '$country' },
+            {
+                $unwind: {
+                    path: "$country",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
 
             {
                 $lookup: {
@@ -65,7 +70,12 @@ exports.getScholarships = async (req, res) => {
                     as: 'university',
                 },
             },
-            { $unwind: '$university' },
+            {
+                $unwind: {
+                    path: "$university",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
 
             //   {
             //     $lookup: {

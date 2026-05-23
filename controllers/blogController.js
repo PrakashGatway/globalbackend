@@ -187,16 +187,8 @@ exports.getBlogCategories = async (req, res) => {
 
 exports.createBlog = async (req, res) => {
     try {
-        // Parse FAQ
-
-
-        if (req.body.faq) {
-            req.body.faq = JSON.parse(req.body.faq);
-        }
-
         const blog = await Blog.create({
             ...req.body,
-
             // author: req.user._id,
         });
 
@@ -461,7 +453,7 @@ exports.getBlogBySlug = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: blogs[0],
+            data: {...blogs[0] , faq: JSON.parse(blogs[0].faq || '{}')},
         })
     } catch (error) {
         res.status(500).json({ success: false, message: error.message })
@@ -470,9 +462,6 @@ exports.getBlogBySlug = async (req, res) => {
 
 exports.updateBlog = async (req, res) => {
     try {
-        if (req.body.faq) {
-            req.body.faq = JSON.parse(req.body.faq);
-        }
         const blog = await Blog.findByIdAndUpdate(req.params.id, req.body,
             {
                 new: true,
