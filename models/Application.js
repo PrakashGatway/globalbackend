@@ -102,6 +102,7 @@ const applicationSchema = new mongoose.Schema(
         'Refused',
         'Withdrawn',
         'PreArrival',
+        'VISAPROCESSING',
         'Arrived',
         'Completed',
       ],
