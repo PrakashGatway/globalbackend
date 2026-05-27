@@ -136,7 +136,7 @@ exports.getSingleVisaProcessing = async (req, res) => {
 
         const data = await Visa.findOne({ application: req.params.id })
             .populate("userId", "name email")
-        // .populate("application");
+        .populate("application");
 
         if (!data) {
             return res.status(404).json({
@@ -168,12 +168,16 @@ exports.getVisaProcessing = async (req, res) => {
 
         const data = await Visa.findOne({ userId: req.user?._id })
         .populate("userId", "name email")
-        .populate("Application");
+        // .populate("applications");
+
+        // const data = await Visa.ag
+
         console.log("visa ", req.user.id);
         if (!data) {
             return res.status(404).json({
                 success: false,
                 message: "Visa processing not found",
+                data : []
             });
         }
 
