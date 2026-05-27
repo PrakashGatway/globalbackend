@@ -15,8 +15,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(morgan('dev'))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -39,6 +39,8 @@ app.use('/api/page-information', require('./routes/pageInformation'))
 app.use('/api/blogs', require('./routes/blogRoutes'))
 app.use('/api/subjects', require('./routes/subjectRoutes'))
 app.use('/api/communication', require('./routes/applicationCom'))
+app.use('/api/visa', require('./routes/visaProsessing'))
+
 
 app.use("/api/dashboard", require("./routes/dashboardRoutes"))
 
@@ -72,7 +74,7 @@ const connectDB = async () => {
   }
   try {
     // const conn = await mongoose.connect(process.env.MONGODB_URI || '').
-    console.log(process.env.MONGODB_URI,'MONGODB_URI')
+    console.log(process.env.MONGODB_URI, 'MONGODB_URI')
     const conn = await mongoose.connect(process.env.MONGODB_URI);
 
     console.log(`MongoDB Connected: ${conn.connection.host}`)

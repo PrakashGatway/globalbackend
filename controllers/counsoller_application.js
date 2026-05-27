@@ -203,7 +203,6 @@ exports.masterControllerWithTransaction = async (req, res) => {
   }
 };
 
-
 exports.updateApplication = async (req, res) => {
   try {
     const { id } = req.params;
@@ -347,7 +346,6 @@ exports.updateApplication = async (req, res) => {
     });
   }
 };
-
 
 exports.getDataByAssignTo = async (req, res) => {
   try {

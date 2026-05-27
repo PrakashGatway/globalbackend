@@ -4,7 +4,7 @@ const communicationSchema = new mongoose.Schema({
   application: { type: mongoose.Schema.Types.ObjectId, ref: 'Application', required: true },
   type: { type: String, enum: ['activity', 'message'], required: true },
   
-  action: { type: String }, // 'status_change', 'doc_upload', 'backup_added', 'intake_changed'
+  action: { type: String }, 
   description: { type: String },
   oldValue: { type: mongoose.Schema.Types.Mixed },
   newValue: { type: mongoose.Schema.Types.Mixed },
