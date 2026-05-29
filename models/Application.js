@@ -39,33 +39,37 @@ const applicationSchema = new mongoose.Schema(
         type: Boolean
       }
     },
-    documents: [
-      {
-        type: {
-          type: String,
-          enum: ['ooshas', 'user'],
-          default: 'user'
-        },
-        name: String,
-        description: String,
-        status: {
-          type: String,
-          enum: ['Pending', 'inreview', 'Approved', 'Rejected'],
-          default: 'Pending',
-        },
-        required: {
-          type: String,
-          enum: ['required', 'optional'],
-        },
-        extra: {
-          type: mongoose.Schema.Types.Mixed
-        },
-        answer: String,
-        rejectReason: String,
-        docUrl: String,
-        docType: String
-      }
-    ],
+    documents: {
+      type : mongoose.Schema.Types.ObjectId,
+      default : []
+    },
+    //  [
+    //   {
+    //     type: {
+    //       type: String,
+    //       enum: ['ooshas', 'user'],
+    //       default: 'user'
+    //     },
+    //     name: String,
+    //     description: String,
+    //     status: {
+    //       type: String,
+    //       enum: ['Pending', 'inreview', 'Approved', 'Rejected'],
+    //       default: 'Pending',
+    //     },
+    //     required: {
+    //       type: String,
+    //       enum: ['required', 'optional'],
+    //     },
+    //     extra: {
+    //       type: mongoose.Schema.Types.Mixed
+    //     },
+    //     answer: String,
+    //     rejectReason: String,
+    //     docUrl: String,
+    //     docType: String
+    //   }
+    // ],
     extraRequirements: {
       type: mongoose.Schema.Types.Mixed
     },

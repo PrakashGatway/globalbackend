@@ -36,7 +36,7 @@ const visaProcessingSchema = new mongoose.Schema(
             title: String,
             status: {
                 type: String,
-                enum: ["Pending", "Completed"],
+                enum: ["Pending" ,"In process" ,"Completed", "Upcoming"],
                 default: "Pending"
             },
             completedAt: Date,

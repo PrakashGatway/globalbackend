@@ -136,7 +136,7 @@ exports.getSingleVisaProcessing = async (req, res) => {
 
         const data = await Visa.findOne({ application: req.params.id })
             .populate("userId", "name email")
-        .populate("application");
+        // .populate("application");
 
         if (!data) {
             return res.status(404).json({
@@ -166,18 +166,89 @@ exports.getVisaProcessing = async (req, res) => {
 
         // const userId = req.user?._id;
 
-        const data = await Visa.findOne({ userId: req.user?._id })
-        .populate("userId", "name email")
-        // .populate("applications");
+        // const data = await Visa.findOne({ userId: req.user?._id })
+        // .populate("userId", "name email")
+        // .populate("applications",false);
 
-        // const data = await Visa.ag
 
-        console.log("visa ", req.user.id);
+        const data = await Visa.aggregate([
+            {
+                $match: {
+                    userId: new mongoose.Types.ObjectId(req.user?._id)
+                }
+            },
+            {
+                $lookup: {
+                    from: "applications",
+                    localField: "application",
+                    foreignField: "_id",
+                    as: "application"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "user"
+                }
+            },
+            {
+                $lookup: {
+                    from: "userprofiles",
+                    localField: "userId",
+                    foreignField: "user",
+                    as: "userprofile"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$application",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $unwind: {
+                    path: "$user",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $unwind: {
+                    path: "$userprofile",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            // {
+            //     $project: {
+            //         _id: 1,
+            //         visaStatus: 1,
+            //         createdAt: 1,
+            //         updatedAt: 1,
+
+            //         application: 1,
+
+            //         user: {
+            //             _id: "$user._id",
+            //             name: "$user.name",
+            //             email: "$user.email",
+            //             phone: "$user.phone"
+            //         },
+
+            //         userprofile: 1
+            //     }
+            // }
+
+        ]);
+
+
+        // console.log("visa ", req.user.id);
+
         if (!data) {
             return res.status(404).json({
                 success: false,
                 message: "Visa processing not found",
-                data : []
+                data: []
             });
         }
 
