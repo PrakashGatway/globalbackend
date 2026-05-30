@@ -337,6 +337,8 @@ exports.getPublicScholarships = async (req, res) => {
             fundingType,
             page = 1,
             limit = 10,
+            search,
+            deliveryMode
         } = req.query;
 
         const pageNumber = Math.max(parseInt(page), 1);
@@ -348,38 +350,45 @@ exports.getPublicScholarships = async (req, res) => {
             // isPublished: true,
         };
 
-        // if (country) match.country = new mongoose.Types.ObjectId(country);
-        // if (university) match.university = new mongoose.Types.ObjectId(university);
-        // if (subject) match.subject = new mongoose.Types.ObjectId(subject);
-        // if (fundingType) match.fundingType = fundingType;
-        // if (level) match.level = { $in: level.split(',') };
+        if (country && country != undefined && mongoose.isValidObjectId(country)) match.country = new mongoose.Types.ObjectId(country);
+        if (university) match.university = new mongoose.Types.ObjectId(university);
+        if (subject) match.subject = new mongoose.Types.ObjectId(subject);
+        if (fundingType) match.fundingType = fundingType;
+        if (level) match.level = { $in: level.split(',') };
+        if(deliveryMode) match.deliveryMode = deliveryMode
+
+     if(search) match.$or =  [
+        { title: { $regex: search, $options: "i" } }, 
+        { "university.name": { $regex: search, $options: "i" } },
+        { "subject.name": { $regex: search, $options: "i" } }
+      ]
+    
+
+        console.log(match)
 
         const result = await Scholarship.aggregate([
             { $match: match },
 
-            {
-                $lookup: {
-                    from: 'countries',
-                    localField: 'country',
-                    foreignField: '_id',
-                    as: 'country',
-                },
-            },
-            { $unwind: '$country' },
+            // {
+            //     $lookup: {
+            //         from: 'countries',
+            //         localField: 'country',
+            //         foreignField: '_id',
+            //         as: 'country',
+            //     },
+            // },
+            // { $unwind: '$country' },
 
-            {
-                $lookup: {
-                    from: 'universities',
-                    localField: 'university',
-                    foreignField: '_id',
-                    as: 'university',
-                },
-            },
-            { $unwind: '$university' },
-
-
+            // {
+            //     $lookup: {
+            //         from: 'universities',
+            //         localField: 'university',
+            //         foreignField: '_id',
+            //         as: 'university'
+            //     },
+            // },
+            // { $unwind: '$university' },
             { $sort: { createdAt: -1 } },
-
             {
                 $facet: {
                     data: [
