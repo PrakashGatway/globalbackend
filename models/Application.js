@@ -40,7 +40,7 @@ const applicationSchema = new mongoose.Schema(
       }
     },
     documents: {
-      type : mongoose.Schema.Types.ObjectId,
+      type : mongoose.Schema.Types.Mixed,
       default : []
     },
     //  [
@@ -104,7 +104,7 @@ const applicationSchema = new mongoose.Schema(
         'AdmissionProcessing',
         'OfferReceived',
         'Refused',
-        'VisaProsessing',
+        'VisaProcessing',
         'Withdrawn',
         'PreArrival',
         'Arrived',
