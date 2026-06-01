@@ -1,10 +1,29 @@
+const { default: axios } = require('axios');
 const ContactUs = require('../models/Contact')
 
-/**
- * CREATE CONTACT QUERY
- */
 exports.createContactUs = async (req, res) => {
   try {
+    const leadPayload = {
+      fullName: req.body.fullName,
+      email: req.body.email,
+      phone: req.body.phone,
+      countryOfResidence: req.body.country,
+      coursePreference: req.body.course,
+      city: req.body.city,
+      source: "website",
+      website: "ooshasGlobal",
+      extraDetails: {
+        message: req.body.description,
+        subject: req.body.subject,
+        type: req.body.type,
+        preferredCountry: req.body.destination,
+        ...req.body.extraDetails
+      },
+    };
+    await axios.post(
+      `https://server.gatewayabroadeducations.com/api/v1/leads`,
+      leadPayload
+    );
     const contact = await ContactUs.create(req.body)
 
     res.status(201).json({
