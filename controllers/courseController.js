@@ -1,6 +1,7 @@
 const Course = require('../models/Course')
 const mongoose = require('mongoose');
 const ExtraContent = require('../models/ExtraContent');
+const University = require('../models/University');
 
 exports.createCourse = async (req, res) => {
   const session = await mongoose.startSession();
@@ -20,6 +21,10 @@ exports.createCourse = async (req, res) => {
     }
 
     courseData.extra_content = extraContentId
+
+    const universityDetail = await University.findById(new mongoose.Types.ObjectId(courseData.university)).session(session);
+
+    courseData.country = universityDetail.country;
 
     const course = await Course.create([courseData], { session })
 
@@ -86,7 +91,7 @@ exports.getAllCourses = async (req, res) => {
     if (status) matchStage.status = status
     if (!status) matchStage.status = 'Active' // Default to active courses
     if (duration) matchStage.duration = duration
-    
+
     if (minFee || maxFee) {
       matchStage.tuitionFee = {}
       if (minFee) matchStage.tuitionFee.$gte = Number(minFee)

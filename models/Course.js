@@ -87,11 +87,10 @@ const courseSchema = new mongoose.Schema(
       ref: 'extraContent',
       required: true,
     },
-    // scholarShip: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: 'scholarship',
-    //   trim: true,
-    // },
+    country: {
+      type: String,
+      required: true,
+    },
     seoData: {
       type: mongoose.Schema.Types.Mixed,
       trim: true,

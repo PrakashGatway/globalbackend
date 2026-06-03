@@ -73,15 +73,17 @@ exports.sendOTP = async (req, res) => {
       }
       let referralUser;
       if (referalby) {
-        referralUser = await User.findOne({ referalCode: referalby });
+        referralUser = await User.findOne({ referalCode: referalby, status: 'Active' });
       }
-      user = await User.create({
+      const userData = {
         name: name || email.split('@')[0],
         email,
         phone,
-        referalby: referralUser ? referralUser._id : null,
-        wallet: referralUser ? 50 : 0
-      })
+        referalBy: referralUser ? referalby : null,
+        wallet: referralUser ? 50 : 0,
+        assignto: referralUser.role == 'counsellor' ? new mongoose.Types.ObjectId(referralUser._id) : null
+      }
+      user = await User.create(userData);
       if (user) {
         if (referralUser) {
           referralUser.wallet += 50;
@@ -154,7 +156,6 @@ exports.verifyOTP = async (req, res) => {
       })
     }
 
-    // Generate token
     const token = generateToken(user._id)
 
     res.json({
@@ -498,7 +499,7 @@ exports.updateDoc = async (req, res) => {
           user: user._id,
         });
       const existingCategorie =
-        profile?.otherDetails ?.categorie_shortlist || [];
+        profile?.otherDetails?.categorie_shortlist || [];
       const alreadyExists =
         existingCategorie.includes(categorie_shortlist);
 
@@ -528,13 +529,13 @@ exports.updateDoc = async (req, res) => {
     }
     else {
       updateData = {
-      "documents":
+        "documents":
           documents,
       };
 
     }
 
-   
+
 
     const updatedProfile =
       await UserProfile.findOneAndUpdate(

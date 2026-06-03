@@ -83,7 +83,7 @@ const applicationSchema = new mongoose.Schema(
         reason: String
       }
     ],
-    
+
     backups: [
       {
         course: {
