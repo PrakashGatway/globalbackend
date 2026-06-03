@@ -15,13 +15,12 @@ const storage = multer.diskStorage({
   },
 
   filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(
-      Math.random() * 1e9
-    )}`;
+    const uniqueSuffix = `${Date.now()}`;
 
     const ext = path.extname(file.originalname).toLowerCase();
 
-    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+    cb(null, `${file.originalname.split('.')[0]}-${uniqueSuffix}${ext}`);
+    // cb(null, `${file.originalname}`);
   },
 });
 

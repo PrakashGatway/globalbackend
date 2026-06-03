@@ -14,7 +14,7 @@ router.post("/resume", uploadResume.single("resume"),resumeUpload);
 
 
 router.post("/",
-    protect,
+    // protect,
     DocumentUpload.single("file"),
     uploadDocument,
   );

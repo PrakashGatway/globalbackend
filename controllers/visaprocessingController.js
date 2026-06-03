@@ -1,391 +1,434 @@
 const mongoose = require("mongoose");
 const Visa = require("../models/VisaProsesing");
-const Communication = require("../models/Communication");
 
+exports.createVisaProcessing = async (req, res) => {
+  const session = await mongoose.startSession();
 
-exports.startVisaProcessing = async (req, res) => {
+  try {
+    session.startTransaction();
 
-    const session = await mongoose.startSession();
+    const { userId, applicationId, country, course } = req.body;
 
-    try {
-
-        session.startTransaction();
-
-        const { userId, application } = req.body;
-
-        if (!userId || !application) {
-
-            await session.abortTransaction();
-
-            return res.status(400).json({
-                success: false,
-                message: "userId and applicationNumber are required",
-            });
-        }
-
-        // Check existing visa processing
-        const existing = await Visa.findOne({
-            application
-        })
-            .session(session)
-            .lean();
-
-        if (existing) {
-
-            await session.abortTransaction();
-
-            return res.status(400).json({
-                success: false,
-                message: "Visa processing already started",
-            });
-        }
-
-
-        const [data] = await Visa.create(
-            [req.body],
-            { session }
-        );
-
-
-        await Communication.create(
-            [{
-                application: application,
-                type: "activity",
-                action: "VISA_PROCESSING_START",
-                description: `Visa processing started for application ${application}.`,
-                user: userId,
-            }],
-            { session }
-        );
-
-        await session.commitTransaction();
-
-        return res.status(201).json({
-            success: true,
-            data,
-        });
-
-    } catch (error) {
-
-        if (session.inTransaction()) {
-            await session.abortTransaction();
-        }
-
-        return res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-
-    } finally {
-
-        await session.endSession();
-
+    if (!userId || !applicationId || !country || !course) {
+      await session.abortTransaction();
+      return res.status(400).json({
+        success: false,
+        message: "userId, applicationId, country, and course are required",
+      });
     }
+
+    const existing = await Visa.findOne({ applicationId }).session(session);
+
+    if (existing) {
+      await session.abortTransaction();
+      return res.status(400).json({
+        success: false,
+        message: "Visa processing already exists for this application",
+      });
+    }
+
+    const [data] = await Visa.create([req.body], { session });
+
+    await session.commitTransaction();
+
+    return res.status(201).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    if (session.inTransaction()) await session.abortTransaction();
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  } finally {
+    await session.endSession();
+  }
 };
 
 
 exports.getAllVisaProcessing = async (req, res) => {
-    try {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
+    const matchStage = {};
 
-        const skip = (page - 1) * limit;
+    // Apply active query filters
+    if (req.query.country) matchStage.country = req.query.country;
+    if (req.query.currentStep) matchStage.currentStep = Number(req.query.currentStep);
+    if (req.query.applicationId) matchStage.applicationId = req.query.applicationId; 
 
-        const filter = {};
+    const pipeline = [
+      { $match: matchStage },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
 
-        // Optional filters
-        if (req.query.status) {
-            filter["biometrics.status"] = req.query.status;
-        }
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
 
-        if (req.query.country) {
-            filter["visaDetails.country"] = req.query.country;
-        }
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "course",
+        },
+      },
+      { $unwind: { path: "$course", preserveNullAndEmptyArrays: true } },
 
-        const total = await Visa.countDocuments(filter);
+      {
+        $lookup: {
+          from: "applications",
+          localField: "applicationId",
+          foreignField: "applicationNumber",
+          as: "application",
+        },
+      },
+      { $unwind: { path: "$application", preserveNullAndEmptyArrays: true } },
 
-        const data = await Visa.find(filter)
-            .populate("userId", "name email")
-            .populate("applicationNumber")
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
+      {
+        $project: {
+          applicationId: 1,
+          country: 1,
+          currentStep: 1,
+          steps: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          user: { name: 1, email: 1, _id: 1 },
+          course: { name: 1, _id: 1 }, 
+          application: 1, 
+        },
+      },
+    ];
 
-        return res.status(200).json({
-            success: true,
-            total,
-            page,
-            totalPages: Math.ceil(total / limit),
-            data,
-        });
+    const totalPipeline = [
+      { $match: matchStage }, 
+      { $count: "total" }
+    ];
 
-    } catch (error) {
+    // Optimize execution time by running both aggregation queries in parallel
+    const [data, totalResult] = await Promise.all([
+      Visa.aggregate(pipeline),
+      Visa.aggregate(totalPipeline),
+    ]);
 
-        return res.status(500).json({
-            success: false,
-            message: error.message,
-        });
+    const total = totalResult.length > 0 ? totalResult[0].total : 0;
 
-    }
+    return res.status(200).json({
+      success: true,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
+
 
 
 exports.getSingleVisaProcessing = async (req, res) => {
-    try {
+  try {
+    const { id } = req.params;
 
-        const data = await Visa.findOne({ application: req.params.id })
-            .populate("userId", "name email")
-        // .populate("application");
-
-        if (!data) {
-            return res.status(404).json({
-                success: false,
-                message: "Visa processing not found",
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            data,
-        });
-
-    } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Visa Processing ID format",
+      });
     }
+
+    const pipeline = [
+      { $match: { _id: new mongoose.Types.ObjectId(id) } },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "course",
+        },
+      },
+      { $unwind: { path: "$course", preserveNullAndEmptyArrays: true } },
+
+      {
+        $lookup: {
+          from: "applications",
+          localField: "applicationId",
+          foreignField: "applicationNumber",
+          as: "application",
+        },
+      },
+      { $unwind: { path: "$application", preserveNullAndEmptyArrays: true } },
+
+      {
+        $project: {
+          applicationId: 1,
+          country: 1,
+          currentStep: 1,
+          steps: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          user: { name: 1, email: 1, _id: 1 },
+          course: { name: 1, _id: 1 }, 
+          application: 1
+        },
+      },
+    ];
+
+    const result = await Visa.aggregate(pipeline);
+
+    if (!result || result.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Visa processing not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: result[0],
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 
-exports.getVisaProcessing = async (req, res) => {
-    try {
-
-        // const userId = req.user?._id;
-
-        // const data = await Visa.findOne({ userId: req.user?._id })
-        // .populate("userId", "name email")
-        // .populate("applications",false);
 
 
-        const data = await Visa.aggregate([
-            {
-                $match: {
-                    userId: new mongoose.Types.ObjectId(req.user?._id)
-                }
-            },
-            {
-                $lookup: {
-                    from: "applications",
-                    localField: "application",
-                    foreignField: "_id",
-                    as: "application"
-                }
-            },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "userId",
-                    foreignField: "_id",
-                    as: "user"
-                }
-            },
-            {
-                $lookup: {
-                    from: "userprofiles",
-                    localField: "userId",
-                    foreignField: "user",
-                    as: "userprofile"
-                }
-            },
-            {
-                $unwind: {
-                    path: "$application",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $unwind: {
-                    path: "$user",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $unwind: {
-                    path: "$userprofile",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            // {
-            //     $project: {
-            //         _id: 1,
-            //         visaStatus: 1,
-            //         createdAt: 1,
-            //         updatedAt: 1,
+exports.getUserVisaProcessing = async (req, res) => {
+  try {
+    const pipeline = [
+      { $match: { userId: req.user._id } },
 
-            //         application: 1,
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "course",
+        },
+      },
+      { $unwind: { path: "$course", preserveNullAndEmptyArrays: true } },
 
-            //         user: {
-            //             _id: "$user._id",
-            //             name: "$user.name",
-            //             email: "$user.email",
-            //             phone: "$user.phone"
-            //         },
+      {
+        $lookup: {
+          from: "applications",
+          localField: "applicationId",
+          foreignField: "applicationNumber",
+          as: "application",
+        },
+      },
+      { $unwind: { path: "$application", preserveNullAndEmptyArrays: true } },
 
-            //         userprofile: 1
-            //     }
-            // }
+      { $sort: { createdAt: -1 } },
 
-        ]);
+      {
+        $project: {
+          applicationId: 1,
+          country: 1,
+          currentStep: 1,
+          steps: 1,
+          createdAt: 1,
+          course: 1,
+          application : 1
+        },
+      },
+    ];
 
+    const data = await Visa.aggregate(pipeline);
 
-        // console.log("visa ", req.user.id);
-
-        if (!data) {
-            return res.status(404).json({
-                success: false,
-                message: "Visa processing not found",
-                data: []
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            data,
-        });
-
-    } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-
-    }
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 
 exports.updateVisaProcessing = async (req, res) => {
-    try {
+  try {
+    const data = await Visa.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
 
-        const data = await Visa.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            {
-                new: true,
-                runValidators: true,
-            }
-        );
-
-        if (!data) {
-            return res.status(404).json({
-                success: false,
-                message: "Visa processing not found",
-            });
-        }
-
-        await Communication.create({
-            application: data.application,
-            type: "activity",
-            action: "VISA_PROCESSING_UPDATED",
-            description: `Visa processing updated.`,
-            user: data.userId,
-        });
-
-        return res.status(200).json({
-            success: true,
-            data,
-        });
-
-    } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "Visa processing not found",
+      });
     }
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
+exports.updateCurrentStep = async (req, res) => {
+  try {
+    const { currentStep } = req.body;
+
+    const visa = await Visa.findById(req.params.id);
+
+    if (!visa) {
+      return res.status(404).json({
+        success: false,
+        message: "Visa processing not found",
+      });
+    }
+
+    visa.currentStep = currentStep;
+    await visa.save();
+
+    return res.status(200).json({
+      success: true,
+      data: visa,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateStep = async (req, res) => {
+  try {
+    const { visaId, stepId } = req.params; // Better to take visaId from params too
+    const { stepData } = req.body;
+
+    const visa = await Visa.findById(visaId || req.body.visaId);
+
+    if (!visa) {
+      return res.status(404).json({
+        success: false,
+        message: "Visa processing not found",
+      });
+    }
+
+    const step = visa.steps.find((item) => item.id === Number(stepId));
+
+    if (!step) {
+      return res.status(404).json({
+        success: false,
+        message: "Step not found",
+      });
+    }
+
+    Object.assign(step, stepData);
+    await visa.save();
+
+    return res.status(200).json({
+      success: true,
+      data: visa,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateStepSection = async (req, res) => {
+  try {
+    const { visaId, stepId, sectionKey, payload } = req.body;
+
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({
+        success: false,
+        message: "Visa processing not found",
+      });
+    }
+
+    const step = visa.steps.find((s) => s.id === Number(stepId));
+
+    if (!step) {
+      return res.status(404).json({
+        success: false,
+        message: "Step not found",
+      });
+    }
+
+    step.sections[sectionKey] = payload;
+
+    await visa.save();
+
+    return res.status(200).json({
+      success: true,
+      data: visa,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 exports.deleteVisaProcessing = async (req, res) => {
-    try {
+  try {
+    const data = await Visa.findByIdAndDelete(req.params.id);
 
-        const data = await Visa.findByIdAndDelete(req.params.id);
-
-        if (!data) {
-            return res.status(404).json({
-                success: false,
-                message: "Visa processing not found",
-            });
-        }
-
-        await Communication.create({
-            application: data.applicationNumber,
-            type: "activity",
-            action: "VISA_PROCESSING_DELETED",
-            description: `Visa processing deleted.`,
-            user: data.userId,
-        });
-
-        return res.status(200).json({
-            success: true,
-            message: "Visa processing deleted successfully",
-        });
-
-    } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "Visa processing not found",
+      });
     }
+
+    return res.status(200).json({
+      success: true,
+      message: "Visa processing deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
-
-
-exports.updateDocumentStatus = async (req, res) => {
-    try {
-
-        const { visaId, documentId, status } = req.body;
-
-        const visa = await Visa.findById(visaId);
-
-        if (!visa) {
-            return res.status(404).json({
-                success: false,
-                message: "Visa processing not found",
-            });
-        }
-
-        const document = visa.documents.id(documentId);
-
-        if (!document) {
-            return res.status(404).json({
-                success: false,
-                message: "Document not found",
-            });
-        }
-
-        document.status = status;
-
-        await visa.save();
-
-        return res.status(200).json({
-            success: true,
-            data: visa,
-        });
-
-    } catch (error) {
-
-        return res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-
-    }
-};
-

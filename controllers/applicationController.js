@@ -278,7 +278,8 @@ exports.getApplications = async (req, res) => {
       search,
       startDate,
       endDate,
-      studentid
+      studentid,
+      isVisashortlist
     } = req.query;
 
     const matchStage = {};
@@ -301,6 +302,8 @@ exports.getApplications = async (req, res) => {
     if (paymentStatus) matchStage.paymentStatus = paymentStatus;
 
     if (primaryStatus) matchStage.primaryStatus = primaryStatus;
+    
+    if (isVisashortlist) matchStage.isVisashortlist = isVisashortlist;
 
     // Date filter
     if (startDate || endDate) {
