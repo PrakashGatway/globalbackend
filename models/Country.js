@@ -52,7 +52,7 @@ const countrySchema = new mongoose.Schema(
     },
     visaSteps: {
       type : mongoose.Schema.Types.Mixed,
-      default: []
+      default: {}
     }
     
   },
