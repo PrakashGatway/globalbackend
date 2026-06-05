@@ -147,7 +147,7 @@ const userProfileSchema = new mongoose.Schema(
     // documents: [documentSchema],
     documents: {
     type: String,
-    default: '[]',
+    default: '',
     get: function(value) {
       // Automatically parse when accessing the field
       try {

@@ -57,15 +57,12 @@ const defaultDocuments = [
   }
 ]
 
-
-
 exports.masterControllerWithTransaction = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
     const {
-      // User/Profile fields
       university,
       // course,
       intake,
@@ -373,121 +370,6 @@ exports.getDataByAssignTo = async (req, res) => {
     });
   }
 };
-
-// exports.getApplicationsByCounsellor = async (req, res) => {
-//   try {
-//     const counsellorId = req.user._id;
-//     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
-//     const limit = Math.max(parseInt(req.query.limit, 10) || 10, 1);
-//     const skip = (page - 1) * limit;
-
-//     const aggregated = await Application.aggregate([
-//       {
-//         $lookup: {
-//           from: "users", 
-//           localField: "student",
-//           foreignField: "_id",
-//           as: "student"
-//         }
-//       },
-//       {
-//         $unwind: {
-//           path: "$student",
-//           preserveNullAndEmptyArrays: false
-//         }
-//       },
-//       {
-//         $match: {
-//           "student.assignto": counsellorId
-//         }
-//       },
-//       {
-//         $lookup: {
-//           from: "userprofiles",
-//           localField: "student._id",
-//           foreignField: "user",
-//           as: "profile"
-//         }
-//       },
-//       {
-//         $unwind: {
-//           path: "$profile",
-//           preserveNullAndEmptyArrays: true
-//         }
-//       },
-
-//       // 5. (Optional) Join Communications
-//       // {
-//       //   $lookup: {
-//       //     from: "communications",
-//       //     localField: "_id",
-//       //     foreignField: "application",
-//       //     as: "communications"
-//       //   }
-//       // },
-
-//       // 6. Clean response (VERY IMPORTANT)
-//       {
-//         $project: {
-//           _id: 1,
-//           applicationNumber: 1,
-//           university: 1,
-//           course: 1,
-//           intake: 1,
-//           country: 1,
-//           status: 1,
-//           backups: 1,
-//           createdAt: 1,
-//           primaryStatus: 1,
-//           paymentStatus: 1,
-
-//           // student fields
-//           "student._id": 1,
-//           "student.name": 1,
-//           "student.email": 1,
-//           "student.phone": 1,
-
-//           // profile
-//           profile: 1,
-
-//           // communications
-//           // communications: 1
-//         }
-//       },
-
-//       // 7. Sort latest first
-//       {
-//         $sort: { createdAt: -1 }
-//       },
-//       {
-//         $facet: {
-//           metadata: [{ $count: "total" }],
-//           data: [{ $skip: skip }, { $limit: limit }]
-//         }
-//       }
-//     ]);
-
-//     const metadata = aggregated[0]?.metadata[0] || { total: 0 };
-//     const applications = aggregated[0]?.data || [];
-
-//     return res.status(200).json({
-//       success: true,
-//       count: applications.length,
-//       total: metadata.total,
-//       page,
-//       limit,
-//       data: applications
-//     });
-
-//   } catch (error) {
-//     console.error("Aggregation Error:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-
 exports.getApplicationsByCounsellor = async (req, res) => {
   try {
     const counsellorId = req.user._id;
@@ -500,7 +382,8 @@ exports.getApplicationsByCounsellor = async (req, res) => {
       primaryStatus,
       startDate,
       endDate,
-      search
+      search,
+      student
     } = req.query;
 
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
@@ -509,11 +392,15 @@ exports.getApplicationsByCounsellor = async (req, res) => {
 
     // ✅ Build dynamic match stage
     let matchStage = {};
+    let studentMatchs = {};
 
     if (course) matchStage.course = new mongoose.Types.ObjectId(course);
 
     if (country) matchStage.country = country;
 
+    if (student) {
+      studentMatchs["student._id"] = new mongoose.Types.ObjectId(student);
+    }
     if (intake) matchStage.intake = intake;
 
     if (paymentStatus) matchStage.paymentStatus = paymentStatus;
@@ -527,28 +414,17 @@ exports.getApplicationsByCounsellor = async (req, res) => {
       if (endDate) matchStage.createdAt.$lte = new Date(endDate);
     }
 
-    // // Search
-    // if (search) {
-    //   matchStage.applicationNumber = {
-    //     $regex: search,
-    //     $options: "i",
-    //   };
-    // }
-
-    // 🔍 Enhanced Search Logic (place this BEFORE building matchStage)
     if (search && search.trim()) {
       const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape regex special chars
 
       matchStage.$or = [
         { applicationNumber: { $regex: escapedSearch, $options: "i" } },
-        // Student fields (after $lookup + $unwind, these are at root.student.*)
         { "student.name": { $regex: escapedSearch, $options: "i" } },
         { "student.email": { $regex: escapedSearch, $options: "i" } },
         { "student.phone": { $regex: escapedSearch, $options: "i" } },
         { university: { $regex: escapedSearch, $options: "i" } },
         { country: { $regex: escapedSearch, $options: "i" } },
         { intake: { $regex: escapedSearch, $options: "i" } },
-
       ];
     }
 
@@ -558,7 +434,18 @@ exports.getApplicationsByCounsellor = async (req, res) => {
           from: "users",
           localField: "student",
           foreignField: "_id",
-          as: "student"
+          as: "student",
+          pipeline: [
+            {
+              $project: {
+                name: 1,
+                email: 1,
+                phone: 1,
+                assignto: 1,
+                _id: 1
+              }
+            }
+          ]
         }
       },
       {
@@ -567,31 +454,74 @@ exports.getApplicationsByCounsellor = async (req, res) => {
           preserveNullAndEmptyArrays: false
         }
       },
-      // ✅ Counsellor filter
       {
         $match: {
-          "student.assignto": counsellorId
+          "student.assignto": counsellorId,
+          ...studentMatchs
         }
       },
-      // ✅ Apply dynamic filters here
       {
         $match: matchStage
       },
       {
         $lookup: {
-          from: "userprofiles",
-          localField: "student._id",
-          foreignField: "user",
-          as: "profile"
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "courseDetails",
+          pipeline: [
+            {
+              $lookup: {
+                from: "universities",
+                localField: "university",
+                foreignField: "_id",
+                as: "university",
+                pipeline: [
+                  {
+                    $project: {
+                      name: 1,
+                      slug: 1
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              $unwind: {
+                path: "$university",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $project: {
+                name: 1,
+                slug: 1,
+                university: 1
+              }
+            }]
         }
       },
       {
         $unwind: {
-          path: "$profile",
+          path: "$courseDetails",
           preserveNullAndEmptyArrays: true
         }
       },
 
+      // {
+      //   $lookup: {
+      //     from: "userprofiles",
+      //     localField: "student._id",
+      //     foreignField: "user",
+      //     as: "profile"
+      //   }
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$profile",
+      //     preserveNullAndEmptyArrays: true
+      //   }
+      // },
       {
         $project: {
           _id: 1,
@@ -606,15 +536,13 @@ exports.getApplicationsByCounsellor = async (req, res) => {
           updatedAt: 1,
           primaryStatus: 1,
           paymentStatus: 1,
-
           student: {
             _id: "$student._id",
             name: "$student.name",
             email: "$student.email",
             phone: "$student.phone"
           },
-
-          profile: 1
+          courseDetails: 1
         }
       },
 
@@ -649,7 +577,6 @@ exports.getApplicationsByCounsellor = async (req, res) => {
     });
   }
 };
-
 
 exports.createApplication = async (req, res) => {
   try {

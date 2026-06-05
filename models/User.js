@@ -38,7 +38,6 @@ const userSchema = new mongoose.Schema(
     },
     intake : String,
     tuitionfee : String,
-    
     nationality: String,
     gender: {
       type: String,

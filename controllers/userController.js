@@ -3,6 +3,11 @@ const mongoose = require("mongoose");
 
 exports.createUser = async (req, res) => {
   try {
+
+    if (req.user.role === "counsellor") {
+      req.body.assignto = req.user._id;
+      req.body.referalBy = req.user.referalCode;
+    }
     const user = await User.create(req.body);
 
     res.status(201).json({
@@ -22,19 +27,51 @@ exports.getUsers = async (req, res) => {
       sort = "-createdAt",
       search,
       role,
+      dateFrom,
+      dateTo,
       status,
+      assignto,
+      intake,
+      nationality
     } = req.query;
 
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
     const skip = (pageNumber - 1) * limitNumber;
 
-    // 🔹 Match Stage
     const matchStage = {};
 
     if (role) matchStage.role = role;
     if (status) matchStage.status = status;
 
+    if (assignto) matchStage.assignto = new mongoose.Types.ObjectId(assignto);
+    if (intake) matchStage.intake = intake;
+    if (nationality) matchStage.nationality = nationality;
+    if (dateFrom) {
+      const startDate = new Date(dateFrom);
+      startDate.setHours(0, 0, 0, 0);
+
+      matchStage.createdAt = {
+        ...matchStage.createdAt,
+        $gte: startDate,
+      };
+    }
+
+    if (dateTo) {
+      const endDate = new Date(dateTo);
+      endDate.setHours(23, 59, 59, 999);
+
+      matchStage.createdAt = {
+        ...matchStage.createdAt,
+        $lte: endDate,
+      };
+    }
+
+    if (req.user.role === "counsellor") {
+      matchStage.assignto = req.user._id;
+      matchStage.status = "Active";
+      matchStage.role = "user";
+    }
     if (search) {
       matchStage.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -42,8 +79,6 @@ exports.getUsers = async (req, res) => {
         { phone: { $regex: search, $options: "i" } },
       ];
     }
-
-    // 🔹 Sort Stage
     const sortStage = {};
     if (sort.startsWith("-")) {
       sortStage[sort.substring(1)] = -1;
@@ -64,18 +99,50 @@ exports.getUsers = async (req, res) => {
           localField: "_id",
           foreignField: "user",
           as: "profile",
+          pipeline: [
+            {
+              $project: {
+                _id: 0,
+                profileCompletion: 1
+              },
+            },
+          ],
         },
       },
-      { 
-          $lookup: {
-            from: "users", 
-            localField: "assignto", 
-            foreignField: "_id",
-            as: "assignee" 
-          },
-          
+      {
+        $lookup: {
+          from: "users",
+          localField: "assignto",
+          foreignField: "_id",
+          as: "assignee",
+          pipeline: [
+            {
+              $project: {
+                _id: 0,
+                name: 1
+              },
+            },
+          ],
+        },
       },
-        { $unwind: { path: "$assignee", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$assignee", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "referalBy",
+          foreignField: "referalCode",
+          as: "referby",
+          pipeline: [
+            {
+              $project: {
+                _id: 0,
+                name: 1
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: { path: "$referby", preserveNullAndEmptyArrays: true } },
       {
         $addFields: {
           profile: {
@@ -126,84 +193,6 @@ exports.getUserById = async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
-  }
-};
-
-
-
-exports.AssingUsers = async (req, res) => {
-  try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-
-    const code = req.params.code;
-    const id = req.params.id;
-
-    const pipeline = [
-      {
-        $match: {
-          $or: [
-            { referalBy: code }, 
-            { assignto: mongoose.Types.ObjectId.isValid(id) 
-                ? new mongoose.Types.ObjectId(id) 
-                : null 
-            }
-          ],
-        },
-      },
-      {
-        $lookup: {
-          from: "userprofiles",
-          localField: "_id",
-          foreignField: "user",
-          as: "profile",
-        },
-      },
-      {
-        $unwind: {
-          path: "$profile",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      // {
-      //   $lookup: {
-      //     from: "applications",
-      //     localField: "_id",
-      //     foreignField: "student",
-      //     as: "applications",
-      //   },
-      // },
-      { $skip: skip },
-      { $limit: limit },
-    ];
-
-    const users = await User.aggregate(pipeline);
-
-    const total = await User.countDocuments({
-      $or: [
-        { referalBy: code },
-        { assignto: mongoose.Types.ObjectId.isValid(code)
-            ? new mongoose.Types.ObjectId(code)
-            : null
-        }
-      ],
-    });
-
-    res.status(200).json({
-      success: true,
-      data: users,
-      pagination: {
-        currentPage: page,
-        totalPages: Math.ceil(total / limit),
-        totalUsers: total,
-      },
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
   }
 };
 

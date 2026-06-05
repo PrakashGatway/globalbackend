@@ -40,37 +40,37 @@ const applicationSchema = new mongoose.Schema(
       }
     },
     documents:
-    //  {
-    //   type : mongoose.Schema.Types.Mixed,
-    //   default : []
-    // },
-     [
-      {
-        type: {
-          type: String,
-          enum: ['ooshas', 'user'],
-          default: 'user'
-        },
-        name: String,
-        description: String,
-        status: {
-          type: String,
-          enum: ['Pending', 'inreview', 'Approved', 'Rejected'],
-          default: 'Pending',
-        },
-        required: {
-          type: String,
-          enum: ['required', 'optional'],
-        },
-        extra: {
-          type: mongoose.Schema.Types.Mixed
-        },
-        answer: String,
-        rejectReason: String,
-        docUrl: String,
-        docType: String
-      }
-    ],
+      //  {
+      //   type : mongoose.Schema.Types.Mixed,
+      //   default : []
+      // },
+      [
+        {
+          type: {
+            type: String,
+            enum: ['ooshas', 'user'],
+            default: 'user'
+          },
+          name: String,
+          description: String,
+          status: {
+            type: String,
+            enum: ['Pending', 'inreview', 'Approved', 'Rejected'],
+            default: 'Pending',
+          },
+          required: {
+            type: String,
+            enum: ['required', 'optional'],
+          },
+          extra: {
+            type: mongoose.Schema.Types.Mixed
+          },
+          answer: String,
+          rejectReason: String,
+          docUrl: String,
+          docType: String
+        }
+      ],
     extraRequirements: {
       type: mongoose.Schema.Types.Mixed
     },
@@ -119,8 +119,12 @@ const applicationSchema = new mongoose.Schema(
     },
     userNotes: String,
     adminNotes: String,
-    isVisashortlist : {
-      type : Boolean,
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    isVisashortlist: {
+      type: Boolean,
       default: false
     }
   },
