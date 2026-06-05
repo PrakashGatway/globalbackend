@@ -173,7 +173,6 @@ exports.createApplicationWithFiles = async (req, res) => {
   }
 };
 
-
 exports.createApplication = async (req, res) => {
   try {
     const {

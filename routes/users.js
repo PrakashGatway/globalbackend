@@ -23,13 +23,9 @@ router.get("/getToken", getToken);
 router.post('/', protect, authorize('admin', 'manager','counsellor'), createUser)
 router.get('/',protect, authorize('admin'),  getUsers)
 router.get('/:id',protect, authorize('admin', 'manager','counsellor'), getUserById)
-router.get('/code/:code/:id',
-    protect,
-   authorize('admin', 'counsellor'),
-    AssingUsers)
+router.get('/code/:code/:id', protect, authorize('admin', 'counsellor'),AssingUsers)
 router.put('/:id',protect, authorize('admin', 'manager'), updateUser)
 router.delete('/:id',protect, authorize('admin', 'manager'),  deleteUser)
-
 router.get('/analytics/stats',protect, authorize('admin', 'manager'),  userStats)
 router.get('/analytics/monthly',protect, authorize('admin', 'manager'),  monthlyRegistrations)
 

@@ -202,8 +202,8 @@ exports.getMe = async (req, res) => {
       profile = await UserProfile.create({ user: userId })
     }
 
-    const completion = calculateProfileCompletion(profile.toObject())
-    profile.profileCompletion = completion
+    // const completion = calculateProfileCompletion(profile.toObject())
+    // profile.profileCompletion = completion
     await profile.save()
 
     return res.status(200).json({
@@ -211,7 +211,7 @@ exports.getMe = async (req, res) => {
       message: "Profile fetched successfully",
       data: user,
       profile,
-      profileCompletion: completion,
+      // profileCompletion: completion,
     })
   } catch (error) {
     console.error("Get profile error:", error)
@@ -269,7 +269,7 @@ exports.updateProfile = async (req, res) => {
 const calculateProfileCompletion = (profile) => {
   let totalFields = 4
   let completed = 0
-  console.log(profile, "profile", Object.keys(profile?.documents)?.length);
+  // console.log(profile, "profile", Object.keys(profile?.documents)?.length);
   if (
     profile.currentAddress?.addressLine1 &&
     profile.currentAddress?.city &&
@@ -346,8 +346,8 @@ exports.createOrUpdateUserProfile = async (req, res) => {
       user: userId,
     }
 
-    const completion = calculateProfileCompletion(profileData)
-    profileData.profileCompletion = completion
+    // const completion = calculateProfileCompletion(profileData)
+    // profileData.profileCompletion = completion
 
     const profile = await UserProfile.findOneAndUpdate(
       { user: userId },
@@ -414,8 +414,8 @@ exports.createOrUpdateUserProfileById = async (req, res) => {
       user: userId,
     };
 
-    const completion = calculateProfileCompletion(profileData);
-    profileData.profileCompletion = completion;
+    // const completion = calculateProfileCompletion(profileData);
+    // profileData.profileCompletion = completion;
 
     const profile = await UserProfile.findOneAndUpdate(
       { user: userId },
@@ -568,3 +568,68 @@ exports.updateDoc = async (req, res) => {
     });
   }
 };
+
+
+
+exports.updateDocuments = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { documents } = req.body; 
+    
+
+    let profile = await UserProfile.findOne({ user: userId });
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+    }
+
+    
+    let existingDocs = [];
+    try {
+      existingDocs = JSON.parse(profile.documents || '[]');
+    } catch (e) {
+      existingDocs = [];
+    }
+
+    
+    for (const newDoc of documents) {
+      const existingIndex = existingDocs.findIndex(doc => doc.fileName === newDoc.fileName);
+      
+      if (existingIndex !== -1) {
+        
+        existingDocs[existingIndex] = {
+          ...existingDocs[existingIndex],
+          ...newDoc,
+          
+          _id: existingDocs[existingIndex]._id || newDoc._id,
+        };
+      } else {
+        
+        const docToInsert = {
+          ...newDoc,
+          _id: newDoc._id || new mongoose.Types.ObjectId(),
+        };
+        existingDocs.push(docToInsert);
+      }
+    }
+
+    // Store the updated array as a JSON string
+    // profile.documents = JSON.stringify(existingDocs);
+    profile.documents = existingDocs;
+    await profile.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Documents saved successfully",
+      data: existingDocs, 
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+

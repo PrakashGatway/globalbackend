@@ -227,7 +227,18 @@ exports.getSingleVisaProcessing = async (req, res) => {
 exports.getUserVisaProcessing = async (req, res) => {
   try {
     const pipeline = [
+
       { $match: { userId: req.user._id } },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
 
       {
         $lookup: {
@@ -259,7 +270,8 @@ exports.getUserVisaProcessing = async (req, res) => {
           steps: 1,
           createdAt: 1,
           course: 1,
-          application : 1
+          application : 1,
+          user: 1
         },
       },
     ];
@@ -281,6 +293,16 @@ exports.getUserVisaProcessing = async (req, res) => {
 
 exports.updateVisaProcessing = async (req, res) => {
   try {
+    
+// const slugify = (text) =>
+//     text
+//         .toString()
+//         .toLowerCase()
+//         .trim()
+//         .replace(/\s+/g, '-')
+//         .replace(/[^\w\-]+/g, '')
+//         .replace(/\-\-+/g, '-')
+
     const data = await Visa.findByIdAndUpdate(
       req.params.id,
       req.body,

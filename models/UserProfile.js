@@ -4,19 +4,6 @@ const documentSchema = new mongoose.Schema(
   {
     type: {
       type: String,
-      enum: [
-        'passport',
-        'resume',
-        'marksheet',
-        'degree_certificate',
-        'ielts',
-        'toefl',
-        'pte',
-        'lor',
-        'sop',
-        'offer_letter',
-        'visa'
-      ],
       required: true,
     },
     fileUrl: {
@@ -33,7 +20,7 @@ const documentSchema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  { _id: false }
+  { _id: true }
 )
 
 const educationSchema = new mongoose.Schema(
@@ -157,10 +144,23 @@ const userProfileSchema = new mongoose.Schema(
         max: Number,
       },
     },
+    // documents: [documentSchema],
     documents: {
-      type : mongoose.Schema.Types.Mixed,
-      default : []
+    type: String,
+    default: '[]',
+    get: function(value) {
+      // Automatically parse when accessing the field
+      try {
+        return JSON.parse(value);
+      } catch(e) {
+        return [];
+      }
     },
+    set: function(value) {
+      // Automatically stringify when setting
+      return JSON.stringify(value);
+    }
+  },
     profileCompletion: {
       type: Number,
       default: 0,
