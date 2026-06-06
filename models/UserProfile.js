@@ -30,14 +30,13 @@ const educationSchema = new mongoose.Schema(
     },
     institutionName: String,
     gradingScheme: String,
+    percentage: Number,
     startDate: Date,
     endDate: Date,
     degreeName: String,
-    address: String,
     city: String,
     state: String,
-    country: String,
-    postalCode: String
+    country: String
   },
   { _id: false }
 )
@@ -66,12 +65,15 @@ const userProfileSchema = new mongoose.Schema(
     permanentAddress: addressSchema,
     highestAcademic: {
       "countryOfEducation": String,
-      "highestEducationLevel": String,
-      "gradingScheme": String,
-      "gradeAverage": String,
-      "graduated": Boolean,
+      "highestEducationLevel": String
     },
     educationHistory: [educationSchema],
+    workExperience: [{
+      "companyName": String,
+      "designation": String,
+      "from": Date,
+      "to": Date
+    }],
     englishProficiency: String,
     englishProficiencyTest: String,
     englishProficiencyScore: {

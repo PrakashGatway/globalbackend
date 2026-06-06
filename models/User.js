@@ -86,7 +86,11 @@ const userSchema = new mongoose.Schema(
       default: '',
     },
     passportNumber: String,
-    passportExpiry: Date,
+    passportDetail :{
+      issueDate : String,
+      expiryDate : String,
+      issueCountry : String
+    },
     wallet: {
       type: Number,
       default: 0,

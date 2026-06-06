@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const mongoose = require("mongoose");
+const UserProfile = require("../models/UserProfile");
 
 exports.createUser = async (req, res) => {
   try {
@@ -186,10 +187,14 @@ exports.getUserById = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    let profile = await UserProfile.findOne({ user: user._id })
+    if (!profile) {
+      profile = await UserProfile.create({ user: user._id })
+    }
     res.status(200).json({
       success: true,
       data: user,
+      profile
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -199,7 +204,18 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+
+    const {
+      currentAddress,
+      permanentAddress,
+      educationHistory,
+      highestAcademic,
+      workExperience,
+      preferences,
+      ...userData
+    } = req.body;
+
+    const user = await User.findByIdAndUpdate(req.params.id, userData, {
       new: true,
       runValidators: true,
     }).select("-password");
@@ -207,6 +223,38 @@ exports.updateUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    const profileUpdate = {};
+
+    if (currentAddress)
+      profileUpdate.currentAddress = currentAddress;
+
+    if (permanentAddress)
+      profileUpdate.permanentAddress = permanentAddress;
+
+    if (educationHistory)
+      profileUpdate.educationHistory = educationHistory;
+
+    if (highestAcademic)
+      profileUpdate.highestAcademic = highestAcademic;
+
+    if(workExperience)
+      profileUpdate.workExperience = workExperience;
+
+    if (preferences)
+      profileUpdate.preferences = preferences;
+
+    if (Object.keys(profileUpdate).length > 0) {
+      await UserProfile.findOneAndUpdate(
+        { user: req.params.id },
+        { $set: profileUpdate },
+        { new: true, upsert: true }
+      );
+    }
+
+    const updatedProfile = await UserProfile.findOne({
+      user: req.params.id,
+    });
 
     res.status(200).json({
       success: true,

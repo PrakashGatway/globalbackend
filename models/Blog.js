@@ -56,10 +56,6 @@ const blogSchema = new mongoose.Schema(
             type: String,
             required: true, // HTML allowed
         },
-         description2: {
-            type: String,
-            required: true, // HTML allowed
-        },
         category: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'BlogCategory',
