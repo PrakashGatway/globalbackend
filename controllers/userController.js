@@ -384,8 +384,6 @@ exports.getUsersWithProfile = async (req, res) => {
 
     const pipeline = [
       { $match: matchStage },
-
-      // 🔗 Join UserProfile
       {
         $lookup: {
           from: "userprofiles", // collection name (important)
@@ -394,24 +392,18 @@ exports.getUsersWithProfile = async (req, res) => {
           as: "profile",
         },
       },
-
-      // 🧹 Convert array → object
       {
         $unwind: {
           path: "$profile",
           preserveNullAndEmptyArrays: true,
         },
       },
-
-      // ❌ Remove sensitive fields
       {
         $project: {
           password: 0,
           "profile.passportNumber": 0, // optional security
         },
       },
-
-      // 📦 Pagination + count
       {
         $facet: {
           data: [

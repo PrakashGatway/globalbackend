@@ -569,8 +569,6 @@ exports.updateDoc = async (req, res) => {
   }
 };
 
-
-
 exports.updateDocuments = async (req, res) => {
   try {
     const { userId } = req.params;

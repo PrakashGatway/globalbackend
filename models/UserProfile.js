@@ -106,13 +106,6 @@ const userProfileSchema = new mongoose.Schema(
     documents: {
       type: String,
       default: '',
-      get: function (value) {
-        try {
-          return JSON.parse(value);
-        } catch (e) {
-          return [];
-        }
-      },
       set: function (value) {
         return JSON.stringify(value);
       }

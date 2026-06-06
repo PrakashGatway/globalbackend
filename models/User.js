@@ -87,8 +87,8 @@ const userSchema = new mongoose.Schema(
     },
     passportNumber: String,
     passportDetail :{
-      issueDate : String,
-      expiryDate : String,
+      issueDate : Date,
+      expiryDate : Date,
       issueCountry : String
     },
     wallet: {
