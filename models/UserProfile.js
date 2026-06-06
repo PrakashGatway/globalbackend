@@ -1,28 +1,5 @@
 const mongoose = require('mongoose')
 
-const documentSchema = new mongoose.Schema(
-  {
-    type: {
-      type: String,
-      required: true,
-    },
-    fileUrl: {
-      type: String,
-      required: true,
-    },
-    fileName: String,
-    verified: {
-      type: Boolean,
-      default: false,
-    },
-    uploadedAt: {
-      type: Date,
-      default: Date.now,
-    },
-  },
-  { _id: true }
-)
-
 const educationSchema = new mongoose.Schema(
   {
     educationLevel: {
@@ -71,72 +48,52 @@ const userProfileSchema = new mongoose.Schema(
     workExperience: [{
       "companyName": String,
       "designation": String,
+      "location": String,
       "from": Date,
       "to": Date
     }],
-    englishProficiency: String,
-    englishProficiencyTest: String,
-    englishProficiencyScore: {
-      "englishStatus": String,
-      "englishTest": String,
-      "reading": String,
-      "listening": String,
-      "writing": String,
-      "speaking": String,
-      "examDate": Date
+    ielts: {
+      type: String,
+      default: '',
+      set: function (value) {
+        return JSON.stringify(value);
+      }
     },
-    hasGmat: {
-      type: Boolean,
-      default: false
+    toefl: {
+      type: String,
+      default: '',
+      set: function (value) {
+        return JSON.stringify(value);
+      }
     },
-    hasGre: {
-      type: Boolean,
-      default: false
+    gre: {
+      type: String,
+      default: '',
+      set: function (value) {
+        return JSON.stringify(value);
+      }
     },
-    gmatScore: {
-      totalScore: {
-        score: Number,
-        rank: Number
-      },
-      verbal: {
-        score: Number,
-        rank: Number
-      },
-      quantitative: {
-        score: Number,
-        rank: Number
-      },
-      analyticalWriting: {
-        score: Number,
-        rank: Number
-      },
-      examDate: Date
+    sat: {
+      type: String,
+      default: '',
+      set: function (value) {
+        return JSON.stringify(value);
+      }
     },
-    satScore: {
-      totalScore: {
-        score: Number,
-        rank: Number
-      },
-      verbal: {
-        score: Number,
-        rank: Number
-      },
-      quantitative: {
-        score: Number,
-        rank: Number
-      },
-      analyticalWriting: {
-        score: Number,
-        rank: Number
-      },
-      examDate: Date
+    gmat: {
+      type: String,
+      default: '',
+      set: function (value) {
+        return JSON.stringify(value);
+      }
     },
-    visaRefused: {
-      type: Boolean,
-      default: false
+    pte: {
+      type: String,
+      default: '',
+      set: function (value) {
+        return JSON.stringify(value);
+      }
     },
-    validVisas: [String],
-    visaRefusedInfo: String,
     preferences: {
       preferredCountries: [String],
       preferredIntake: [String],
@@ -146,23 +103,20 @@ const userProfileSchema = new mongoose.Schema(
         max: Number,
       },
     },
-    // documents: [documentSchema],
     documents: {
-    type: String,
-    default: '',
-    get: function(value) {
-      // Automatically parse when accessing the field
-      try {
-        return JSON.parse(value);
-      } catch(e) {
-        return [];
+      type: String,
+      default: '',
+      get: function (value) {
+        try {
+          return JSON.parse(value);
+        } catch (e) {
+          return [];
+        }
+      },
+      set: function (value) {
+        return JSON.stringify(value);
       }
     },
-    set: function(value) {
-      // Automatically stringify when setting
-      return JSON.stringify(value);
-    }
-  },
     profileCompletion: {
       type: Number,
       default: 0,

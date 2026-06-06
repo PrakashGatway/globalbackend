@@ -211,6 +211,12 @@ exports.updateUser = async (req, res) => {
       educationHistory,
       highestAcademic,
       workExperience,
+      ielts,
+      toefl,
+      gre,
+      sat,
+      gmat,
+      pte,
       preferences,
       ...userData
     } = req.body;
@@ -240,6 +246,24 @@ exports.updateUser = async (req, res) => {
 
     if(workExperience)
       profileUpdate.workExperience = workExperience;
+
+    if (ielts)
+      profileUpdate.ielts = ielts;
+
+    if (toefl)
+      profileUpdate.toefl = toefl;
+
+    if (gre)
+      profileUpdate.gre = gre;
+
+    if (sat)
+      profileUpdate.sat = sat;
+
+    if (gmat)
+      profileUpdate.gmat = gmat;
+
+    if (pte)
+      profileUpdate.pte = pte;
 
     if (preferences)
       profileUpdate.preferences = preferences;
