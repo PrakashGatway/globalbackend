@@ -615,8 +615,7 @@ exports.updateDocuments = async (req, res) => {
       }
     }
 
-    // Store the updated array as a JSON string
-    // profile.documents = JSON.stringify(existingDocs);
+    
     profile.documents = existingDocs;
     await profile.save();
 

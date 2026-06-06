@@ -501,6 +501,7 @@ exports.deleteApplication = async (req, res) => {
 exports.uploadAndUpdateDocument = async (req, res) => {
   try {
     const { applicationId, documentId } = req.params;
+    
     const userId = req.user?._id || req.user?.id;
 
     const fileUrl = `/uploads/docs/${req?.file?.filename || "nofile"}`;
@@ -510,7 +511,7 @@ exports.uploadAndUpdateDocument = async (req, res) => {
 
 
     const updateFields = {
-      'documents.$.status': 'inreview',
+      'documents.$.status': req.body.status,
       ...additionalUpdates
     };
     if (req.body.docType != 'form') {

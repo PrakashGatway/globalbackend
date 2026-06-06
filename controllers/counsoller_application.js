@@ -370,6 +370,8 @@ exports.getDataByAssignTo = async (req, res) => {
     });
   }
 };
+
+
 exports.getApplicationsByCounsellor = async (req, res) => {
   try {
     const counsellorId = req.user._id;

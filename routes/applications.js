@@ -5,16 +5,12 @@
   const upload = require("../middleware/DocumentUpload");
   const counsellorApplication = require("../controllers/counsoller_application");
 
-  router.post(
-    "/create",
-    protect,
-    counsellorApplication.masterControllerWithTransaction,
-  );
+  router.post("/create", protect, counsellorApplication.masterControllerWithTransaction);
 
   router.get(
     "/getDataByAssignTo",
     protect,
-    counsellorApplication.getDataByAssignTo,
+    counsellorApplication.getDataByAssignTo
   );
 
   router.get('/getApplicationsByCounsellor', protect, counsellorApplication.getApplicationsByCounsellor);
@@ -35,7 +31,7 @@
       { name: "experience", maxCount: 1 },
       { name: "photo", maxCount: 1 },
     ]),
-    counsellorApplication.updateApplication,
+    counsellorApplication.updateApplication
   );
 
   router.post("/", protect, applicationController.createApplication);
