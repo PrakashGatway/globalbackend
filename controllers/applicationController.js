@@ -447,8 +447,8 @@ exports.updateApplication = async (req, res) => {
       await Communication.create({
         application: application._id,
         type: 'activity',
-        action: 'APPLICATION_updated',
-        description: `Application ${application.applicationNumber} was updated with intake ${application.intake}.`,
+        action: 'APPLICATION_UPDATED',
+        description: req.body.description || `Application ${application.applicationNumber} was updated with status ${application.primaryStatus}.`,
         user: req.user._id
       });
       reward = await ScratchCard.create({
