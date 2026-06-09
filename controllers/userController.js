@@ -201,10 +201,86 @@ exports.getUserById = async (req, res) => {
   }
 };
 
+const calculateProfileCompletion = (user, profile) => {
+  let completion = 0;
+
+  // Basic user details
+  if (
+    user?.firstName &&
+    user?.lastName &&
+    user?.email &&
+    user?.phone
+  ) {
+    completion += 20;
+  }
+
+  // Current Address
+  if (
+    profile?.currentAddress?.addressLine1 &&
+    profile?.currentAddress?.city &&
+    profile?.currentAddress?.country
+  ) {
+    completion += 10;
+  }
+
+  // Permanent Address
+  if (
+    profile?.permanentAddress?.addressLine1 &&
+    profile?.permanentAddress?.city &&
+    profile?.permanentAddress?.country
+  ) {
+    completion += 10;
+  }
+
+  // Highest Academic
+  if (
+    profile?.highestAcademic?.countryOfEducation &&
+    profile?.highestAcademic?.highestEducationLevel
+  ) {
+    completion += 10;
+  }
+
+  // Education History
+  if (profile?.educationHistory?.length > 0) {
+    completion += 15;
+  }
+
+  // Work Experience
+  if (profile?.workExperience?.length > 0) {
+    completion += 10;
+  }
+
+  // Tests (if any one exists)
+  const hasTest =
+    profile?.ielts ||
+    profile?.toefl ||
+    profile?.gre ||
+    profile?.sat ||
+    profile?.gmat ||
+    profile?.pte;
+
+  if (hasTest) {
+    completion += 10;
+  }
+
+  // Preferences
+  if (
+    profile?.preferences &&
+    (
+      profile?.preferences?.preferredCountries?.length ||
+      profile?.preferences?.preferredCourse?.length ||
+      profile?.preferences?.preferredIntake?.length
+    )
+  ) {
+    completion += 15;
+  }
+
+  return Math.min(completion, 100);
+};
+
 
 exports.updateUser = async (req, res) => {
   try {
-
     const {
       currentAddress,
       permanentAddress,
@@ -269,17 +345,16 @@ exports.updateUser = async (req, res) => {
       profileUpdate.preferences = preferences;
 
     if (Object.keys(profileUpdate).length > 0) {
-      await UserProfile.findOneAndUpdate(
+      let profile = await UserProfile.findOneAndUpdate(
         { user: req.params.id },
         { $set: profileUpdate },
         { new: true, upsert: true }
       );
+      const profileCompletion = calculateProfileCompletion(user, profile);
+
+      profile.profileCompletion = profileCompletion;
+      await profile.save();
     }
-
-    const updatedProfile = await UserProfile.findOne({
-      user: req.params.id,
-    });
-
     res.status(200).json({
       success: true,
       data: user,
@@ -512,7 +587,7 @@ exports.updateProfileDocumentStatus = async (req, res) => {
 exports.createDocumentRequirement = async (req, res) => {
   try {
     const { student } = req.query;
-    const { docKey, docName, description, applicationId , isMandatory } = req.body;
+    const { docKey, docName, description, applicationId, isMandatory } = req.body;
 
     const profile = await UserProfile.findOne({
       user: new mongoose.Types.ObjectId(student)

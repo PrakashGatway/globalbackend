@@ -642,3 +642,52 @@ exports.updateIntakeAndBackups = async (req, res) => {
     });
   }
 };
+
+exports.getUserDocuments = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { applicationNumber } = req.query;
+
+    let applications;
+
+    if (applicationNumber) {
+      applications = await Application.find({
+        student: userId,
+        applicationNumber,
+      })
+        .select("applicationNumber documents")
+        .lean();
+    } else {
+      applications = await Application.find({
+        student: userId,
+      })
+        .select("applicationNumber documents")
+        .lean();
+    }
+
+    if (!applications.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No applications found",
+      });
+    }
+
+    const documents = applications.flatMap((application) =>
+      (application.documents || []).map((doc) => ({
+        applicationNumber: application.applicationNumber,
+        ...doc,
+      }))
+    );
+
+    return res.status(200).json({
+      success: true,
+      count: documents.length,
+      data: documents,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
