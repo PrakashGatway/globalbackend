@@ -430,11 +430,25 @@ exports.getApplication = async (req, res) => {
 
 exports.updateApplication = async (req, res) => {
   try {
+     const oldApplication = await Application.findById(req.params.id);
+
+    if (!oldApplication) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    // Update application
     const application = await Application.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true }
     );
+
+    // Check if status changed
+    const statusChanged =
+      oldApplication.primaryStatus !== application.primaryStatus;
 
     if (!application) {
       return res.status(404).json({
@@ -447,7 +461,9 @@ exports.updateApplication = async (req, res) => {
       await Communication.create({
         application: application._id,
         type: 'activity',
-        action: 'APPLICATION_UPDATED',
+        action: statusChanged
+        ? "STATUS_CHANGED"
+        : "APPLICATION_UPDATED",
         description: req.body.description || `Application ${application.applicationNumber} was updated with status ${application.primaryStatus}.`,
         user: req.user._id
       });
