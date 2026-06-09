@@ -301,7 +301,7 @@ exports.getApplications = async (req, res) => {
     if (paymentStatus) matchStage.paymentStatus = paymentStatus;
 
     if (primaryStatus) matchStage.primaryStatus = primaryStatus;
-    
+
     if (isVisashortlist) matchStage.isVisashortlist = isVisashortlist;
 
     // Date filter
@@ -430,7 +430,7 @@ exports.getApplication = async (req, res) => {
 
 exports.updateApplication = async (req, res) => {
   try {
-     const oldApplication = await Application.findById(req.params.id);
+    const oldApplication = await Application.findById(req.params.id);
 
     if (!oldApplication) {
       return res.status(404).json({
@@ -457,13 +457,16 @@ exports.updateApplication = async (req, res) => {
       });
     }
 
+
+
     if (application) {
       await Communication.create({
         application: application._id,
         type: 'activity',
+        newValue: application.primaryStatus,
         action: statusChanged
-        ? "STATUS_CHANGED"
-        : "APPLICATION_UPDATED",
+          ? "STATUS_CHANGED"
+          : "APPLICATION_UPDATED",
         description: req.body.description || `Application ${application.applicationNumber} was updated with status ${application.primaryStatus}.`,
         user: req.user._id
       });
@@ -517,7 +520,7 @@ exports.deleteApplication = async (req, res) => {
 exports.uploadAndUpdateDocument = async (req, res) => {
   try {
     const { applicationId, documentId } = req.params;
-    
+
     const userId = req.user?._id || req.user?.id;
 
     const fileUrl = `/uploads/docs/${req?.file?.filename || "nofile"}`;
