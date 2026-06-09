@@ -97,7 +97,6 @@ const applicationSchema = new mongoose.Schema(
     primaryStatus: {
       type: String,
       enum: [
-        'Pending',
         'Started',
         'ReviewbyOoshas',
         'SubmitToSchool',
@@ -105,20 +104,17 @@ const applicationSchema = new mongoose.Schema(
         'AdmissionProcessing',
         'OfferReceived',
         'Refused',
-        'VisaProcessing',
-        'Withdrawn',
-        'PreArrival',
-        'Arrived',
+        'PayEnrollenmentDeposit',
         'Completed',
       ],
-      default: 'Pending',
-    },
-    isWithdrawn: {
-      type: Boolean,
-      default: false,
+      default: 'Started',
     },
     userNotes: String,
     adminNotes: String,
+    statusDetails : {
+      type : mongoose.Schema.Types.Mixed,
+      default : ""
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
