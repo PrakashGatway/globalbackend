@@ -2675,6 +2675,10 @@
                   {
                     "label": "H6",
                     "value": "6"
+                  },
+                  {
+                    "label": "p",
+                    "value": "p"
                   }
                 ],
                 "default": "2"
