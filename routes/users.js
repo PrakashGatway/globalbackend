@@ -9,7 +9,9 @@ const {
   updateUser,
   deleteUser,
   userStats,
-  monthlyRegistrations
+  monthlyRegistrations,
+  updateProfileDocumentStatus,
+  createDocumentRequirement
 } = require('../controllers/userController')
 const { authorize, protect } = require('../middleware/auth')
 
@@ -19,6 +21,8 @@ router.post("/save-token", saveToken);
 router.get("/getToken", getToken);
 
 
+router.patch('/docs',protect, authorize('admin', 'manager','counsellor'),  updateProfileDocumentStatus)
+router.put('/requirement',protect, authorize('admin', 'manager','counsellor'),  createDocumentRequirement)
 router.post('/', protect, authorize('admin', 'manager','counsellor'), createUser)
 router.get('/',protect, authorize('admin',"counsellor"),  getUsers)
 router.get('/:id',protect, authorize('admin', 'manager','counsellor'), getUserById)

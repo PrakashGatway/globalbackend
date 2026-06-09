@@ -244,7 +244,7 @@ exports.updateUser = async (req, res) => {
     if (highestAcademic)
       profileUpdate.highestAcademic = highestAcademic;
 
-    if(workExperience)
+    if (workExperience)
       profileUpdate.workExperience = workExperience;
 
     if (ielts)
@@ -433,5 +433,131 @@ exports.getUsersWithProfile = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateProfileDocumentStatus = async (req, res) => {
+  try {
+    const { student } = req.query;
+    const { docKey, status, remarks } = req.body;
+
+    const allowedStatuses = ["pending", "approved", "rejected"];
+
+    if (!docKey) {
+      return res.status(400).json({
+        success: false,
+        message: "Document key is required",
+      });
+    }
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Status must be one of: ${allowedStatuses.join(", ")}`,
+      });
+    }
+
+    const profile = await UserProfile.findOne({
+      user: student,
+    });
+
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+    }
+
+    let documents = JSON.parse(profile.documents) || {};
+
+    if (!documents[docKey]) {
+      return res.status(404).json({
+        success: false,
+        message: "Document not found",
+      });
+    }
+
+    documents[docKey].status = status;
+    documents[docKey].remarks = remarks || "";
+    documents[docKey].updatedBy = req.user?.name;
+    documents[docKey].updatedAt = new Date();
+
+    profile.documents = documents;
+
+    await profile.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Document status updated successfully",
+      data: documents[docKey],
+    });
+  } catch (error) {
+    console.error(error);
+
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid ID format.",
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update document status.",
+      error: error.message,
+    });
+  }
+};
+
+exports.createDocumentRequirement = async (req, res) => {
+  try {
+    const { student } = req.query;
+    const { docKey, docName, description, applicationId , isMandatory } = req.body;
+
+    const profile = await UserProfile.findOne({
+      user: new mongoose.Types.ObjectId(student)
+    });
+
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+    }
+
+    let documents = JSON.parse(profile.documents || "{}");
+
+    if (documents[docKey]) {
+      return res.status(400).json({
+        success: false,
+        message: "Document already exists",
+      });
+    }
+
+    documents[docKey] = {
+      docKey,
+      docName,
+      description,
+      type: isMandatory ? "mandatory" : "non-mandatory",
+      status: "pending",
+      applicationId: applicationId,
+      requestedBy: req.user?.name,
+      requestedAt: new Date()
+    };
+
+    profile.documents = documents;
+
+    await profile.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Document requirement added successfully",
+      data: documents[docKey],
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

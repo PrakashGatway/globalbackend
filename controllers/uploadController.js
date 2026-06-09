@@ -237,17 +237,20 @@ exports.ProfileDocs = async (req, res) => {
 
     let documents = JSON.parse(profile.documents) || {};
 
+    const existingDoc = documents[docKey] || {};
+
     documents[docKey] = {
+      ...existingDoc,
       docKey,
-      docName,
+      docName: existingDoc.docName || docName,
       originalName: originalName || req.file.originalname,
       url: fileUrl,
       status: "pending",
+      remarks: "",
       uploadedBy: req.user?.name,
       uploadedAt: new Date(),
       mimeType: req.file.mimetype
     };
-
     profile.documents = documents;
 
     await profile.save();
