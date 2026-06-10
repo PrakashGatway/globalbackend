@@ -447,8 +447,7 @@ exports.updateApplication = async (req, res) => {
     );
 
     // Check if status changed
-    const statusChanged =
-      oldApplication.primaryStatus !== application.primaryStatus;
+    const statusChanged = oldApplication.primaryStatus !== application.primaryStatus;
 
     if (!application) {
       return res.status(404).json({
@@ -527,6 +526,8 @@ exports.uploadAndUpdateDocument = async (req, res) => {
 
     const additionalUpdates = {};
     if (req.body.answer) additionalUpdates['documents.$.answer'] = req.body.answer;
+    
+    if (req.body.rejectReason) additionalUpdates['documents.$.rejectReason'] = req.body.rejectReason;
 
 
     const updateFields = {
