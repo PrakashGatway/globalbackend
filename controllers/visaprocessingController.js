@@ -92,10 +92,9 @@ exports.createVisaProcessing = async (req, res) => {
 
     const formattedSteps = countryData.visaSteps.steps || []
 
-    // 5. Construct the payload and insert the new Visa document
+    
     const visaPayload = {
       ...req.body,
-      // application: applicationId, 
       steps: formattedSteps       
     };
 
@@ -110,10 +109,10 @@ exports.createVisaProcessing = async (req, res) => {
     
   } catch (error) {
     if (session.inTransaction()) await session.abortTransaction();
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
   } finally {
     await session.endSession();
   }
@@ -376,6 +375,7 @@ exports.updateVisaProcessing = async (req, res) => {
 //         .replace(/\s+/g, '-')
 //         .replace(/[^\w\-]+/g, '')
 //         .replace(/\-\-+/g, '-')
+
 
     const data = await Visa.findByIdAndUpdate(
       req.params.id,

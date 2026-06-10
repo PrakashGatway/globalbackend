@@ -526,11 +526,6 @@ exports.uploadAndUpdateDocument = async (req, res) => {
 
     const additionalUpdates = {};
     if (req.body.answer) additionalUpdates['documents.$.answer'] = req.body.answer;
-    
-    if (req.body.rejectReason) {
-      additionalUpdates['documents.$.rejectReason'] = req.body.rejectReason;
-      additionalUpdates['primaryStatus'] = "Refused";
-    }
 
 
     const updateFields = {
