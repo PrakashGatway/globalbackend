@@ -12,6 +12,7 @@ const countrySchema = new mongoose.Schema(
       type: String,
       uppercase: true,
       trim: true,
+      unique : true
     },
     
     currency: {

@@ -98,12 +98,14 @@ const visaJourneySchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
-
+    extra : {
+      type : mongoose.Schema.Types.Mixed
+    },
     // steps: [visaJourneyStepSchema],
     
     steps: {
         type : mongoose.Schema.Types.Mixed,
-        default : []
+        // default : []
     },
   },
   {

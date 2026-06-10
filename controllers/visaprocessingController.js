@@ -1,6 +1,54 @@
 const mongoose = require("mongoose");
 const Visa = require("../models/VisaProsesing");
 
+const Countries = require("../models/Country")
+
+// exports.createVisaProcessing = async (req, res) => {
+//   const session = await mongoose.startSession();
+
+//   try {
+//     session.startTransaction();
+
+//     const { userId, applicationId, country, course } = req.body;
+
+//     if (!userId || !applicationId || !country || !course) {
+//       await session.abortTransaction();
+//       return res.status(400).json({
+//         success: false,
+//         message: "userId, applicationId, country, and course are required",
+//       });
+//     }
+
+//     const existing = await Visa.findOne({ applicationId }).session(session);
+
+//     if (existing) {
+//       await session.abortTransaction();
+//       return res.status(400).json({
+//         success: false,
+//         message: "Visa processing already exists for this application",
+//       });
+//     }
+
+//     const [data] = await Visa.create([req.body], { session });
+
+//     await session.commitTransaction();
+
+//     return res.status(201).json({
+//       success: true,
+//       data,
+//     });
+//   } catch (error) {
+//     if (session.inTransaction()) await session.abortTransaction();
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   } finally {
+//     await session.endSession();
+//   }
+// };
+
+
 exports.createVisaProcessing = async (req, res) => {
   const session = await mongoose.startSession();
 
@@ -9,6 +57,7 @@ exports.createVisaProcessing = async (req, res) => {
 
     const { userId, applicationId, country, course } = req.body;
 
+    
     if (!userId || !applicationId || !country || !course) {
       await session.abortTransaction();
       return res.status(400).json({
@@ -17,8 +66,8 @@ exports.createVisaProcessing = async (req, res) => {
       });
     }
 
+    
     const existing = await Visa.findOne({ applicationId }).session(session);
-
     if (existing) {
       await session.abortTransaction();
       return res.status(400).json({
@@ -27,7 +76,30 @@ exports.createVisaProcessing = async (req, res) => {
       });
     }
 
-    const [data] = await Visa.create([req.body], { session });
+    
+    const countryData = await Countries.findOne({
+      $or: [{ _id: mongoose.isValidObjectId(country) ? country : null }, { code: country }]
+    }).session(session);
+
+    if (!countryData) {
+      await session.abortTransaction();
+      return res.status(404).json({
+        success: false,
+        message: "The specified country could not be found",
+      });
+    }
+
+
+    const formattedSteps = countryData.visaSteps.steps || []
+
+    // 5. Construct the payload and insert the new Visa document
+    const visaPayload = {
+      ...req.body,
+      // application: applicationId, 
+      steps: formattedSteps       
+    };
+
+    const [data] = await Visa.create([visaPayload], { session });
 
     await session.commitTransaction();
 
@@ -35,6 +107,7 @@ exports.createVisaProcessing = async (req, res) => {
       success: true,
       data,
     });
+    
   } catch (error) {
     if (session.inTransaction()) await session.abortTransaction();
     return res.status(500).json({
@@ -45,6 +118,7 @@ exports.createVisaProcessing = async (req, res) => {
     await session.endSession();
   }
 };
+
 
 
 exports.getAllVisaProcessing = async (req, res) => {
