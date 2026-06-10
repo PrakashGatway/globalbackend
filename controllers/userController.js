@@ -4,18 +4,39 @@ const UserProfile = require("../models/UserProfile");
 
 exports.createUser = async (req, res) => {
   try {
+    const { preferences, ...userData } = req.body;
 
-    if (req.user.role === "counsellor") {
-      req.body.assignto = req.user._id;
-      req.body.referalBy = req.user.referalCode;
+    if (req.user.role == "counsellor") {
+      userData.assignto = req.user._id;
+      userData.referalBy = req.user.referalCode;
     }
-    const user = await User.create(req.body);
+    const user = await User.create(userData);
+
+    if (
+      preferences &&
+      (
+        preferences.preferredCountries?.length ||
+        preferences.preferredIntake?.length ||
+        preferences.preferredCourse?.length ||
+        preferences.level ||
+        preferences.budgetRange?.min ||
+        preferences.budgetRange?.max
+      )
+    ) {
+      console.log(preferences)
+      await UserProfile.create({
+        user: user._id,
+        preferences ,
+      });
+    }
 
     res.status(201).json({
       success: true,
       data: user,
     });
   } catch (error) {
+
+    console.log(error)
     res.status(400).json({ message: error.message });
   }
 };
@@ -203,8 +224,6 @@ exports.getUserById = async (req, res) => {
 
 const calculateProfileCompletion = (user, profile) => {
   let completion = 0;
-
-  // Basic user details
   if (
     user?.firstName &&
     user?.lastName &&
@@ -213,8 +232,6 @@ const calculateProfileCompletion = (user, profile) => {
   ) {
     completion += 20;
   }
-
-  // Current Address
   if (
     profile?.currentAddress?.addressLine1 &&
     profile?.currentAddress?.city &&
@@ -222,8 +239,6 @@ const calculateProfileCompletion = (user, profile) => {
   ) {
     completion += 10;
   }
-
-  // Permanent Address
   if (
     profile?.permanentAddress?.addressLine1 &&
     profile?.permanentAddress?.city &&
@@ -231,26 +246,18 @@ const calculateProfileCompletion = (user, profile) => {
   ) {
     completion += 10;
   }
-
-  // Highest Academic
   if (
     profile?.highestAcademic?.countryOfEducation &&
     profile?.highestAcademic?.highestEducationLevel
   ) {
     completion += 10;
   }
-
-  // Education History
   if (profile?.educationHistory?.length > 0) {
     completion += 15;
   }
-
-  // Work Experience
   if (profile?.workExperience?.length > 0) {
     completion += 10;
   }
-
-  // Tests (if any one exists)
   const hasTest =
     profile?.ielts ||
     profile?.toefl ||
@@ -262,8 +269,6 @@ const calculateProfileCompletion = (user, profile) => {
   if (hasTest) {
     completion += 10;
   }
-
-  // Preferences
   if (
     profile?.preferences &&
     (
@@ -278,6 +283,9 @@ const calculateProfileCompletion = (user, profile) => {
   return Math.min(completion, 100);
 };
 
+exports.calculateProfile = {
+  calculateProfileCompletion
+};
 
 exports.updateUser = async (req, res) => {
   try {

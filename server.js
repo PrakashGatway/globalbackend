@@ -20,7 +20,6 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(morgan('dev'))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Routes
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api/users', require('./routes/users'))
 app.use('/api/universities', require('./routes/universities'))

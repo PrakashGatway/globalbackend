@@ -4,12 +4,39 @@ const OTP = require('../models/OTP')
 const UserProfile = require('../models/UserProfile')
 const { default: mongoose } = require('mongoose')
 const { sendOTPEmail } = require('../utils/emailService')
+const { calculateProfile } = require('../controllers/userController')
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'your-secret-key', {
     expiresIn: process.env.JWT_EXPIRE || '7d',
   })
 }
+
+const checkUserPreference = async (userId) => {
+  const profile = await UserProfile.findOne({ user: userId });
+
+  if (!profile || !profile.preferences) {
+    return false;
+  }
+
+  const {
+    preferredCountries,
+    preferredIntake,
+    preferredCourse,
+    budgetRange,
+    level,
+  } = profile.preferences;
+
+  let filledFields = 0;
+
+  if (preferredCountries?.length > 0) filledFields++;
+  if (preferredIntake?.length > 0) filledFields++;
+  if (preferredCourse?.length > 0) filledFields++;
+  if (budgetRange?.min != null || budgetRange?.max != null) filledFields++;
+  if (level) filledFields++;
+
+  return filledFields >= 3;
+};
 
 exports.login = async (req, res) => {
   try {
@@ -39,6 +66,7 @@ exports.login = async (req, res) => {
       otp: otpCode,
       expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
     })
+
     try {
       // await sendOTPEmail({ email, otp: otpCode })
       res.json({
@@ -96,9 +124,8 @@ exports.sendOTP = async (req, res) => {
     const otp = await OTP.create({
       email,
       otp: otpCode,
-      expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     })
-    // Send OTP email
     try {
       await sendOTPEmail({ email, otp: otpCode })
       res.json({
@@ -134,10 +161,13 @@ exports.verifyOTP = async (req, res) => {
 
     if (otp == '987456') {
       const user = await User.findOne({ email, status: 'Active' })
+      const hasPreference = await checkUserPreference(user._id);
+
       const token = generateToken(user._id)
       return res.json({
         success: true,
-        token
+        token,
+        hasPreference: user.role == "user" ? hasPreference : false
       })
     }
 
@@ -149,6 +179,9 @@ exports.verifyOTP = async (req, res) => {
     await otpRecord.save()
 
     const user = await User.findOne({ email, status: 'Active' })
+
+    const hasPreference = await checkUserPreference(user._id);
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -160,6 +193,7 @@ exports.verifyOTP = async (req, res) => {
 
     res.json({
       success: true,
+      hasPreference: user.role == "user" ? hasPreference : false,
       token
     })
   } catch (error) {
@@ -225,9 +259,7 @@ exports.getMe = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const { name, phone, profileImage, dateOfBirth, nationality, gender, firstLanguage, maritalStatus,
-      passportNumber, passportExpiry,
-      intake,
-      tuitionfee,
+      passportNumber, passportExpiry, preferences
     } = req.body
 
     // Build update object
@@ -241,9 +273,6 @@ exports.updateProfile = async (req, res) => {
     if (firstLanguage) updateData.firstLanguage = firstLanguage
     if (maritalStatus) updateData.maritalStatus = maritalStatus
     if (passportNumber) updateData.passportNumber = passportNumber
-    if (passportExpiry) updateData.passportExpiry = passportExpiry
-    if (intake) updateData.intake = intake
-    if (tuitionfee) updateData.tuitionfee = tuitionfee
 
     const user = await User.findByIdAndUpdate(
       req.user._id,
@@ -253,6 +282,22 @@ exports.updateProfile = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' })
+    }
+
+    const profileUpdate = {};
+
+    if (preferences)
+      profileUpdate.preferences = preferences;
+
+    if (Object.keys(profileUpdate).length > 0) {
+      let profile = await UserProfile.findOneAndUpdate(
+        { user: req.user._id },
+        { $set: profileUpdate },
+        { new: true, upsert: true }
+      );
+      const profileCompletion = calculateProfile?.calculateProfileCompletion(user, profile);
+      profile.profileCompletion = profileCompletion;
+      await profile.save();
     }
 
     res.json({
@@ -572,8 +617,8 @@ exports.updateDoc = async (req, res) => {
 exports.updateDocuments = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { documents } = req.body; 
-    
+    const { documents } = req.body;
+
 
     let profile = await UserProfile.findOne({ user: userId });
     if (!profile) {
@@ -583,7 +628,7 @@ exports.updateDocuments = async (req, res) => {
       });
     }
 
-    
+
     let existingDocs = [];
     try {
       existingDocs = JSON.parse(profile.documents || '[]');
@@ -591,20 +636,20 @@ exports.updateDocuments = async (req, res) => {
       existingDocs = [];
     }
 
-    
+
     for (const newDoc of documents) {
       const existingIndex = existingDocs.findIndex(doc => doc.fileName === newDoc.fileName);
-      
+
       if (existingIndex !== -1) {
-        
+
         existingDocs[existingIndex] = {
           ...existingDocs[existingIndex],
           ...newDoc,
-          
+
           _id: existingDocs[existingIndex]._id || newDoc._id,
         };
       } else {
-        
+
         const docToInsert = {
           ...newDoc,
           _id: newDoc._id || new mongoose.Types.ObjectId(),
@@ -613,14 +658,14 @@ exports.updateDocuments = async (req, res) => {
       }
     }
 
-    
+
     profile.documents = existingDocs;
     await profile.save();
 
     return res.status(200).json({
       success: true,
       message: "Documents saved successfully",
-      data: existingDocs, 
+      data: existingDocs,
     });
   } catch (error) {
     return res.status(400).json({

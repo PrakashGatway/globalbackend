@@ -593,43 +593,36 @@ exports.createApplication = async (req, res) => {
   try {
     const {
       student,
-      university,
-      destinationcourse: course, // Renamed for model consistency
+      destinationcourse: course,
       intake,
       destinationCountry: country,
       backups
     } = req.body;
 
-    // 1. Better Validation (400 instead of 401)
-    if (!student || !university || !course) {
+    if (!student || !course) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields: student, university, or course.'
+        message: 'Missing required fields: student, course.'
       });
     }
-
-    // 2. Safer ID generation (OS + Timestamp + 4 random chars)
     const applicationNumber = `OS${Date.now()}`;
 
     const application = await Application.create({
-      documents: defaultDocuments,
       applicationNumber,
       student,
-      university,
       course,
       intake,
       country,
       backups,
-      rejectionReason: [{ course, reason: "" }]
+      createdBy: req.user._id
     });
 
-    // 3. Activity Logging
     if (application) {
       await Communication.create({
         application: application._id,
         type: 'activity',
         action: 'APPLICATION_CREATED',
-        description: `Application ${application.applicationNumber} created for intake ${intake}.`,
+        description: `Application ${application.applicationNumber} created for intake ${intake} .`,
         user: student
       });
     }

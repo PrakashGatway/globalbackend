@@ -17,8 +17,6 @@ exports.createCategory = async (req, res) => {
     }
 };
 
-
-// ✅ Get All Categories (with pagination)
 exports.getAllCategories = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
@@ -28,8 +26,6 @@ exports.getAllCategories = async (req, res) => {
     const userId = req.user?._id;
 
     const filter = {};
-
-    // Search by name
     if (req.query.name) {
       filter.name = {
         $regex: req.query.name,
@@ -37,12 +33,9 @@ exports.getAllCategories = async (req, res) => {
       };
     }
 
-    // Active filter
     if (req.query.isActive !== undefined) {
       filter.isActive = req.query.isActive === "true";
     }
-
-    // Sorting
     let sort = {};
 
     if (req.query.sort) {
@@ -54,16 +47,12 @@ exports.getAllCategories = async (req, res) => {
     } else {
       sort.order = 1;
     }
-
-    // Aggregation pipeline
     const dataPipeline = [
       { $match: filter },
       { $sort: sort },
       { $skip: skip },
       { $limit: limit },
     ];
-
-    // User shortlist lookup
     if (userId) {
       dataPipeline.push({
         $lookup: {
@@ -84,8 +73,6 @@ exports.getAllCategories = async (req, res) => {
           as: "shortList",
         },
       });
-
-      // selected true/false
       dataPipeline.push({
         $addFields: {
           selected: {
@@ -113,8 +100,6 @@ exports.getAllCategories = async (req, res) => {
           },
         },
       });
-
-      // Hide shortlist
       dataPipeline.push({
         $project: {
           shortList: 0,
@@ -188,7 +173,6 @@ exports.getCategoryById = async (req, res) => {
     }
 };
 
-// ✅ Update Category
 exports.updateCategory = async (req, res) => {
     try {
         const category = await CourseCategory.findByIdAndUpdate(

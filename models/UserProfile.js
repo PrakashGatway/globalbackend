@@ -102,6 +102,7 @@ const userProfileSchema = new mongoose.Schema(
         min: Number,
         max: Number,
       },
+      level: String
     },
     documents: {
       type: String,

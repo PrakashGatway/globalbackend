@@ -202,9 +202,9 @@ exports.createApplication = async (req, res) => {
       course,
       intake,
       expectations,
-      documents: [], // defaultDocuments,
-      // extraRequirements,
+      documents: [],
       backups,
+      createdBy: req.user._id
     });
 
 
