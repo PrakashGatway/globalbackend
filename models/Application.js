@@ -119,10 +119,21 @@ const applicationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
-    isVisashortlist: {
+   
+    isVisa: {
       type: Boolean,
       default: false
+    },
+    visaDetails: {
+      visaType: { type: String },
+      visaNumber: { type: String },
+      passportNumber: { type: String },
+      countryOfIssue: { type: String },
+      visaIssuedOn: { type: String },
+      visaValidUntil: { type: String }
     }
+
+
   },
   {
     timestamps: true,
