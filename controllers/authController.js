@@ -109,7 +109,7 @@ exports.sendOTP = async (req, res) => {
         phone,
         referalBy: referralUser ? referalby : null,
         wallet: referralUser ? 50 : 0,
-        assignto: referralUser.role == 'counsellor' ? new mongoose.Types.ObjectId(referralUser._id) : null
+        assignto: referralUser?.role == 'counsellor' ? new mongoose.Types.ObjectId(referralUser._id) : null
       }
       user = await User.create(userData);
       if (user) {
@@ -167,7 +167,8 @@ exports.verifyOTP = async (req, res) => {
       return res.json({
         success: true,
         token,
-        hasPreference: user.role == "user" ? hasPreference : false
+        hasPreference: user.role == "user" ? hasPreference : false,
+        role : user.role
       })
     }
 

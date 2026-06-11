@@ -110,78 +110,177 @@ exports.getUsers = async (req, res) => {
 
     const total = await User.countDocuments(matchStage);
 
-    const users = await User.aggregate([
-      { $match: matchStage },
-      { $sort: sortStage },
-      { $skip: skip },
-      { $limit: limitNumber },
-      {
-        $lookup: {
-          from: "userprofiles",
-          localField: "_id",
-          foreignField: "user",
-          as: "profile",
-          pipeline: [
-            {
-              $project: {
-                _id: 0,
-                profileCompletion: 1
-              },
-            },
-          ],
-        },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "assignto",
-          foreignField: "_id",
-          as: "assignee",
-          pipeline: [
-            {
-              $project: {
-                _id: 0,
-                name: 1
-              },
-            },
-          ],
-        },
-      },
-      { $unwind: { path: "$assignee", preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: "users",
-          localField: "referalBy",
-          foreignField: "referalCode",
-          as: "referby",
-          pipeline: [
-            {
-              $project: {
-                _id: 0,
-                name: 1
-              },
-            },
-          ],
-        },
-      },
-      { $unwind: { path: "$referby", preserveNullAndEmptyArrays: true } },
-      {
-        $addFields: {
-          profile: {
-            $cond: [
-              { $gt: [{ $size: "$profile" }, 0] },
-              { $arrayElemAt: ["$profile", 0] },
-              {},
-            ],
+const users = await User.aggregate([
+  { $match: matchStage },
+
+  // Optional Sorting
+  // { $sort: sortStage },
+
+  { $skip: skip },
+  { $limit: limitNumber },
+
+  // User Profile
+  {
+    $lookup: {
+      from: "userprofiles",
+      localField: "_id",
+      foreignField: "user",
+      as: "profile",
+      pipeline: [
+        {
+          $project: {
+            _id: 0,
+            profileCompletion: 1,
           },
         },
-      },
-      {
-        $project: {
-          password: 0,
+      ],
+    },
+  },
+
+  // Assigned User
+  {
+    $lookup: {
+      from: "users",
+      localField: "assignto",
+      foreignField: "_id",
+      as: "assignee",
+      pipeline: [
+        {
+          $project: {
+            _id: 0,
+            name: 1,
+          },
         },
+      ],
+    },
+  },
+
+  // Referral User
+  {
+    $lookup: {
+      from: "users",
+      localField: "referalBy",
+      foreignField: "referalCode",
+      as: "referby",
+      pipeline: [
+        {
+          $project: {
+            _id: 0,
+            name: 1,
+          },
+        },
+      ],
+    },
+  },
+
+  // Convert arrays to single objects
+  {
+    $addFields: {
+      profile: {
+        $ifNull: [{ $arrayElemAt: ["$profile", 0] }, {}],
       },
-    ]);
+      assignee: {
+        $ifNull: [{ $arrayElemAt: ["$assignee", 0] }, {}],
+      },
+      referby: {
+        $ifNull: [{ $arrayElemAt: ["$referby", 0] }, {}],
+      },
+    },
+  },
+
+  // Remove duplicate users if any lookup created duplicates
+  {
+    $group: {
+      _id: "$_id",
+      doc: { $first: "$$ROOT" },
+    },
+  },
+  {
+    $replaceRoot: {
+      newRoot: "$doc",
+    },
+  },
+
+  // Hide password
+  {
+    $project: {
+      password: 0,
+    },
+  },
+]);
+
+    // const users = await User.aggregate([
+    //   { $match: matchStage },
+    //   // { $sort: sortStage },
+    //   { $skip: skip },
+    //   { $limit: limitNumber },
+    //   {
+    //     $lookup: {
+    //       from: "userprofiles",
+    //       localField: "_id",
+    //       foreignField: "user",
+    //       as: "profile",
+    //       pipeline: [
+    //         {
+    //           $project: {
+    //             _id: 0,
+    //             profileCompletion: 1
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "users",
+    //       localField: "assignto",
+    //       foreignField: "_id",
+    //       as: "assignee",
+    //       pipeline: [
+    //         {
+    //           $project: {
+    //             _id: 0,
+    //             name: 1
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   { $unwind: { path: "$assignee", preserveNullAndEmptyArrays: true } },
+    //   {
+    //     $lookup: {
+    //       from: "users",
+    //       localField: "referalBy",
+    //       foreignField: "referalCode",
+    //       as: "referby",
+    //       pipeline: [
+    //         {
+    //           $project: {
+    //             _id: 0,
+    //             name: 1
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   { $unwind: { path: "$referby", preserveNullAndEmptyArrays: true } },
+    //   {
+    //     $addFields: {
+    //       profile: {
+    //         $cond: [
+    //           { $gt: [{ $size: "$profile" }, 0] },
+    //           { $arrayElemAt: ["$profile", 0] },
+    //           {},
+    //         ],
+    //       },
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       password: 0,
+    //     },
+    //   },
+    // ]);
 
     res.status(200).json({
       success: true,
