@@ -65,6 +65,8 @@ exports.getAllCourses = async (req, res) => {
       limit = 10,
       isExtra = "true",
       sort = '-createdAt',
+      key,
+      keyValue
     } = req.query
 
     page = Number(page)

@@ -527,6 +527,14 @@ exports.uploadAndUpdateDocument = async (req, res) => {
     const additionalUpdates = {};
     if (req.body.answer) additionalUpdates['documents.$.answer'] = req.body.answer;
 
+    if(req.body.status === "Approved"){
+      additionalUpdates['primaryStatus'] = "PayEnrollenmentDeposit"
+    }
+    
+    if(req.body.status === "Rejected"){
+      additionalUpdates['primaryStatus'] = "Refused"
+    }
+
 
     const updateFields = {
       'documents.$.status': req.body.status,
