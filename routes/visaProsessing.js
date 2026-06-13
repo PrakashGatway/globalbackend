@@ -7,6 +7,7 @@ router.post("/",protect, visaController.createVisaProcessing);
 router.get("/", visaController.getAllVisaProcessing);
 
 router.get("/my",protect, visaController.getUserVisaProcessing);
+router.get("/counsellor",protect, visaController.getcounsellorVisaProcessing);
 
 router.get("/:id", visaController.getSingleVisaProcessing);
 

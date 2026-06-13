@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const Visa = require("../models/VisaProsesing");
 
-const Countries = require("../models/Country")
+const Countries = require("../models/Country");
+const User = require("../models/User");
 
 // exports.createVisaProcessing = async (req, res) => {
 //   const session = await mongoose.startSession();
@@ -285,6 +286,67 @@ exports.getSingleVisaProcessing = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: result[0],
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getcounsellorVisaProcessing = async (req, res) => {
+  try {
+    
+    const users = await User.find({ "assignto": req.user._id });
+    const userIds = users.map(user => user._id);
+
+    const pipeline = [
+      
+      { 
+        $match: { 
+          userId: { $in: userIds } 
+        } 
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "course",
+        },
+      },
+      { $unwind: { path: "$course", preserveNullAndEmptyArrays: true } },
+
+      {
+        $lookup: {
+          from: "applications",
+          localField: "applicationId",
+          foreignField: "applicationNumber",
+          as: "application",
+        },
+      },
+      { $unwind: { path: "$application", preserveNullAndEmptyArrays: true } },
+
+      { $sort: { createdAt: -1 } },
+    ];
+
+    const data = await Visa.aggregate(pipeline);
+
+    return res.status(200).json({
+      success: true,
+      data,
     });
   } catch (error) {
     return res.status(500).json({
