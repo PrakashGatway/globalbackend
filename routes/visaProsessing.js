@@ -24,6 +24,6 @@ router.post(
 );
 router.post("/upload", upload.single('file'), visaController.uploadDocument);
 router.get("/:id/documents", visaController.getDocuments);
-router.delete("/:id/documents/:documentType", visaController.deleteDocument);
+router.delete("/:id/documents/:documentId", visaController.deleteDocument);
 
 module.exports = router;

@@ -578,7 +578,7 @@ exports.uploadDocument = async (req, res) => {
       documentType,
       fileName: req.file.filename,
       originalName: req.file.originalname,
-      fileUrl: `/uploads/documents/${req.file.filename}`,
+      fileUrl: `/uploads/docs/${req.file.filename}`,
       fileSize: req.file.size,
       mimeType: req.file.mimetype,
       uploadedAt: new Date(),
@@ -683,7 +683,7 @@ exports.getDocuments = async (req, res) => {
 
 exports.deleteDocument = async (req, res) => {
   try {
-    const { id, documentType } = req.params;
+    const { id, documentId } = req.params;
 
     const visa = await Visa.findById(id);
 
@@ -698,7 +698,7 @@ exports.deleteDocument = async (req, res) => {
     visa.documents = visa.documents || [];
 
     const documentIndex = visa.documents.findIndex(
-      (doc) => doc.documentType === documentType
+      (doc) => doc._id.equals(documentId)
     );
 
     if (documentIndex === -1) {
@@ -713,7 +713,7 @@ exports.deleteDocument = async (req, res) => {
     visa.documents.splice(documentIndex, 1);
 
     const requirement = visa.documents.find(
-      (doc) => doc.documentType === documentType
+      (doc) => doc._id.equals(documentId)
     );
 
     if (requirement) {
