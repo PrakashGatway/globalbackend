@@ -269,7 +269,8 @@ exports.getSingleVisaProcessing = async (req, res) => {
           updatedAt: 1,
           user: { name: 1, email: 1, _id: 1 },
           course: { name: 1, _id: 1 }, 
-          application: 1
+          application: 1,
+          documents : 1
         },
       },
     ];
@@ -406,7 +407,8 @@ exports.getUserVisaProcessing = async (req, res) => {
           createdAt: 1,
           course: 1,
           application : 1,
-          user: 1
+          user: 1,
+          documents: 1
         },
       },
     ];
@@ -464,33 +466,6 @@ exports.updateVisaProcessing = async (req, res) => {
   }
 };
 
-exports.updateCurrentStep = async (req, res) => {
-  try {
-    const { currentStep } = req.body;
-
-    const visa = await Visa.findById(req.params.id);
-
-    if (!visa) {
-      return res.status(404).json({
-        success: false,
-        message: "Visa processing not found",
-      });
-    }
-
-    visa.currentStep = currentStep;
-    await visa.save();
-
-    return res.status(200).json({
-      success: true,
-      data: visa,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
 
 
 exports.deleteVisaProcessing = async (req, res) => {
@@ -515,3 +490,249 @@ exports.deleteVisaProcessing = async (req, res) => {
     });
   }
 };
+
+
+exports.createDocumentRequirement = async (req, res) => {
+  try {
+    const {
+      visaId,
+      documentType,
+      description,
+      isRequired = true,
+    } = req.body;
+
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({
+        success: false,
+        message: "Visa processing not found",
+      });
+    }
+
+    if (!visa.documents) {
+      visa.documents = [];
+    }
+
+    const exists = visa.documents.some(
+      (doc) =>
+        doc.documentType.toLowerCase() === documentType.toLowerCase()
+    );
+
+    if (exists) {
+      return res.status(400).json({
+        success: false,
+        message: "Document requirement already exists",
+      });
+    }
+
+    const requirement = {
+      documentType,
+      description,
+      isRequired,
+      // status,
+      createdAt: new Date(),
+    };
+
+    visa.documents.push(requirement);
+
+    await visa.save();
+
+    return res.status(201).json({
+      success: true,
+      data: requirement,
+      message: "Document requirement created successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.uploadDocument = async (req, res) => {
+  try {
+    const { visaId, documentType } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded",
+      });
+    }
+
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({
+        success: false,
+        message: "Visa processing not found",
+      });
+    }
+
+    visa.documents = visa.documents || [];
+    visa.documents = visa.documents || [];
+
+    const documentData = {
+      documentType,
+      fileName: req.file.filename,
+      originalName: req.file.originalname,
+      fileUrl: `/uploads/documents/${req.file.filename}`,
+      fileSize: req.file.size,
+      mimeType: req.file.mimetype,
+      uploadedAt: new Date(),
+      status: "uploaded",
+    };
+
+    const existingDocIndex = visa.documents.findIndex(
+      (doc) => doc.documentType === documentType
+    );
+
+    if (existingDocIndex > -1) {
+      visa.documents[existingDocIndex] = documentData;
+    } else {
+      visa.documents.push(documentData);
+    }
+
+    const requirement = visa.documents.find(
+      (doc) => doc.documentType === documentType
+    );
+
+    if (requirement) {
+      requirement.status = "uploaded";
+      requirement.uploadedAt = new Date();
+    } else {
+      visa.documents.push({
+        documentType,
+        description: "",
+        isRequired: false,
+        status: "uploaded",
+        uploadedAt: new Date(),
+      });
+    }
+
+    await visa.save();
+
+    return res.status(200).json({
+      success: true,
+      data: documentData,
+      message: "Document uploaded successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getDocuments = async (req, res) => {
+  try {
+    const visa = await Visa.findById(req.params.id);
+
+    if (!visa) {
+      return res.status(404).json({
+        success: false,
+        message: "Visa processing not found",
+      });
+    }
+
+    const requirements = (visa.documents || []).map(
+      (requirement) => {
+        const uploadedDoc = (visa.documents || []).find(
+          (doc) => doc.documentType === requirement.documentType
+        );
+
+        return {
+          ...requirement.toObject(),
+          uploaded: !!uploadedDoc,
+          document: uploadedDoc || null,
+        };
+      }
+    );
+
+    const uploadedCount = requirements.filter(
+      (item) => item.uploaded
+    ).length;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        requirements,
+        documents: visa.documents || [],
+        totalRequirements: requirements.length,
+        uploadedCount,
+        pendingCount: requirements.length - uploadedCount,
+        completionPercentage:
+          requirements.length > 0
+            ? Math.round(
+                (uploadedCount / requirements.length) * 100
+              )
+            : 0,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+exports.deleteDocument = async (req, res) => {
+  try {
+    const { id, documentType } = req.params;
+
+    const visa = await Visa.findById(id);
+
+    if (!visa) {
+      return res.status(404).json({
+        success: false,
+        message: "Visa processing not found",
+      });
+    }
+
+    visa.documents = visa.documents || [];
+    visa.documents = visa.documents || [];
+
+    const documentIndex = visa.documents.findIndex(
+      (doc) => doc.documentType === documentType
+    );
+
+    if (documentIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: "Document not found",
+      });
+    }
+
+    const deletedDocument = visa.documents[documentIndex];
+
+    visa.documents.splice(documentIndex, 1);
+
+    const requirement = visa.documents.find(
+      (doc) => doc.documentType === documentType
+    );
+
+    if (requirement) {
+      requirement.status = "pending";
+      requirement.uploadedAt = null;
+    }
+
+    await visa.save();
+
+    return res.status(200).json({
+      success: true,
+      data: deletedDocument,
+      message: "Document deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+

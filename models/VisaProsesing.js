@@ -107,6 +107,25 @@ const visaJourneySchema = new mongoose.Schema(
         type : mongoose.Schema.Types.Mixed,
         // default : []
     },
+       documents: [
+      {
+        documentType: String,
+        description:String,
+        fileName: String,
+        fileUrl: String,
+        fileSize: Number,
+        mimeType: String,
+        uploadedAt: Date,
+        isRequired: Boolean,
+        status: {
+          type: String,
+          enum: ["pending","uploaded", "verified", "rejected"],
+          default: "pending"
+        },
+        verifiedAt: Date,
+        rejectionReason: String
+      }
+    ]
   },
   {
     timestamps: true,
