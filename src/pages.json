@@ -463,10 +463,12 @@
         "fields": [
           {
             "name": "title",
-            "type": "text"
+            "type": "text",
+            "label" : "Title"
           },
           {
             "name": "services",
+            "label": "Services",
             "type": "repeater",
             "fields": [
               {
@@ -476,11 +478,14 @@
               },
               {
                 "name": "title",
-                "type": "text"
+                "type": "text",
+                "label": "Title"
               },
               {
                 "name": "subTitle",
-                "type": "richtext"
+                "type": "richtext",
+                "label": "Sub title"
+                
               }
             ]
           }
@@ -2810,41 +2815,7 @@
             "type": "text",
             "default": "Why Choose Us"
           },
-          {
-            "name": "tag",
-            "label": "Tag",
-            "type": "select",
-            "options": [
-              {
-                "label": "H1",
-                "value": "1"
-              },
-              {
-                "label": "H2",
-                "value": "2"
-              },
-              {
-                "label": "H3",
-                "value": "3"
-              },
-              {
-                "label": "H4",
-                "value": "4"
-              },
-              {
-                "label": "H5",
-                "value": "5"
-              },
-              {
-                "label": "H6",
-                "value": "6"
-              },{
-                "label": "p",
-                "value": "p"
-              }
-            ],
-            "default": "2"
-          },
+   
           {
             "name": "subTitle",
             "label": "Section subTitle",
@@ -3324,6 +3295,11 @@
               {
                 "name": "title",
                 "label": "Title",
+                "type": "richtext2"
+              },
+               {
+                "name": "extraDetail",
+                "label": "Extra Detail",
                 "type": "richtext2"
               }
             ]

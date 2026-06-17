@@ -14,10 +14,18 @@ const logActivity = async (data) => {
 
 // ============ ACTIVITY CONTROLLERS ============
 const getActivities = async (req, res) => {
+
+  const { status } = req.query
   try {
+
+    let match = {}
+    if (status) {
+      match.action = status
+    }
     const activities = await Communication.find({
       application: req.params.id,
-      type: 'activity'
+      type: 'activity', ...match
+
     })
       .sort({ createdAt: -1 })
       .limit(parseInt(req.query.limit) || 50)
@@ -78,38 +86,38 @@ const sendMessage = async (req, res) => {
       extra_content: req.body.extra_content,
       userType:
         req.user.role === "user"
-          ?  'student': 'ooshas',
-          isRead: false,
-        });
+          ? 'student' : 'ooshas',
+      isRead: false,
+    });
 
 
-        if (req.body.userId) {
-    const attachments = req.body.extra_content?.attachments;
+    if (req.body.userId) {
+      const attachments = req.body.extra_content?.attachments;
 
-    if (attachments && attachments.length > 0) {
+      if (attachments && attachments.length > 0) {
         const updateFields = {};
 
         attachments.forEach((attachment, index) => {
-          
-            const uniqueId = `doc_${Date.now()}_${index}`;
-            
-            updateFields[`documents.${uniqueId}`] = {
-                url: attachment?.url,
-                status: false
-            };
+
+          const uniqueId = `doc_${Date.now()}_${index}`;
+
+          updateFields[`documents.${uniqueId}`] = {
+            url: attachment?.url,
+            status: false
+          };
         });
 
         const updatedProfile = await UserProfile.findOneAndUpdate(
-            { user: req.body.userId },
-            { $set: updateFields }, 
-            {
-                new: true,
-                runValidators: true,
-                upsert: true,
-            }
+          { user: req.body.userId },
+          { $set: updateFields },
+          {
+            new: true,
+            runValidators: true,
+            upsert: true,
+          }
         );
+      }
     }
-}
 
 
     await message.save();

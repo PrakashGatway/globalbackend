@@ -390,6 +390,7 @@ exports.updateUser = async (req, res) => {
   try {
     const {
       currentAddress,
+      familyDetails,
       permanentAddress,
       educationHistory,
       highestAcademic,
@@ -403,6 +404,10 @@ exports.updateUser = async (req, res) => {
       preferences,
       ...userData
     } = req.body;
+
+    if (familyDetails) {
+  userData.familyDetails = familyDetails;
+}
 
     const user = await User.findByIdAndUpdate(req.params.id, userData, {
       new: true,

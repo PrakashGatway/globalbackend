@@ -97,7 +97,15 @@ const userSchema = new mongoose.Schema(
     lastLogin: {
       type: Date,
       default: Date.now,
-    }
+    },
+     familyDetails: {
+      motherName: String,
+      motherPhone: String,
+      motherOccupation: String,
+      fatherName: String,
+      fatherPhone: String,
+      fatherOccupation: String
+    },
   },
   {
     timestamps: true,
