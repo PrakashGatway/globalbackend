@@ -102,6 +102,7 @@ const getAllUniversities = async (req, res) => {
 
     const uniMatch = {};
 
+
     if (name) uniMatch.name = { $regex: name, $options: 'i' };
 
     
@@ -116,10 +117,9 @@ const getAllUniversities = async (req, res) => {
           uniMatch.country = { $regex: countryVal, $options: 'i' };
       }
 
-
-
     if (city) uniMatch.city = { $regex: city, $options: 'i' };
     if (uniStatus) uniMatch.status = uniStatus;
+    if(!uniStatus) uniMatch.status = "Active"
     if (intake) {
       uniMatch.intakes = { $exists: true, $ne: null, $not: { $size: 0 } }
     }

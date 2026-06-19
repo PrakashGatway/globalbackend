@@ -333,7 +333,8 @@ exports.getAllBlogs = async (req, res) => {
                                 createdAt: 1,
                                 category: 1,
                                 extraMetadata: 1,
-                                faq: 1
+                                faq: 1,
+                                author:1
                             },
                         }
                     ]

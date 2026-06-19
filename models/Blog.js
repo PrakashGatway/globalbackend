@@ -101,6 +101,9 @@ const blogSchema = new mongoose.Schema(
 
         extraMetadata: {
             type: mongoose.Schema.Types.Mixed,
+        },
+        author: {
+            type: String
         }
     },
     { timestamps: true }
