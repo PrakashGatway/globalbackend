@@ -46,6 +46,15 @@ const getUniversitie = async (req, res) => {
 
     const data = await University.aggregate([
       {
+        $match: {
+          status: 'Active',
+          $or: [
+            { isWeb: true },
+            { isWeb: { $exists: false } }
+          ]
+        }
+      },
+      {
         $lookup: {
           from: "countries",           // The name of the collection to join with
           localField: "country",      // The field in University collection
@@ -92,6 +101,7 @@ const getAllUniversities = async (req, res) => {
       populateExtra,
       intake,
       type,
+      isWeb,
       page = 1,
       limit = 10
     } = req.query;
@@ -102,24 +112,35 @@ const getAllUniversities = async (req, res) => {
 
     const uniMatch = {};
 
+    if (isWeb) {
+      uniMatch.$or = [
+        { isWeb: isWeb ? false : true },
+        { isWeb: { $exists: false } }
+      ];
+    } else {
+      uniMatch.$or = [
+        { isWeb: true },
+        { isWeb: { $exists: false } }
+      ];
+    }
 
     if (name) uniMatch.name = { $regex: name, $options: 'i' };
 
-    
+
     // if (country && country.trim() !== "") uniMatch.country = { $regex: country, $options: 'i' };
 
-      const countryVal = country ? country.trim() : "";
-      const countryArray = countryVal ? countryVal.split(",").map(c => c.trim()).filter(c => c !== "") : [];
+    const countryVal = country ? country.trim() : "";
+    const countryArray = countryVal ? countryVal.split(",").map(c => c.trim()).filter(c => c !== "") : [];
 
-      if (countryArray.length > 0) {
-          uniMatch.country = { $in: countryArray };
-      } else if (countryVal !== "") {
-          uniMatch.country = { $regex: countryVal, $options: 'i' };
-      }
+    if (countryArray.length > 0) {
+      uniMatch.country = { $in: countryArray };
+    } else if (countryVal !== "") {
+      uniMatch.country = { $regex: countryVal, $options: 'i' };
+    }
 
     if (city) uniMatch.city = { $regex: city, $options: 'i' };
     if (uniStatus) uniMatch.status = uniStatus;
-    if(!uniStatus) uniMatch.status = "Active"
+    if (!uniStatus) uniMatch.status = "Active"
     if (intake) {
       uniMatch.intakes = { $exists: true, $ne: null, $not: { $size: 0 } }
     }
