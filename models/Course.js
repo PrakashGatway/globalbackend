@@ -27,8 +27,8 @@ const courseSchema = new mongoose.Schema(
     subject: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Subject',
-      required: true,
       trim: true,
+      default: null,
     },
     studyMode: {
       type: String,
@@ -87,9 +87,9 @@ const courseSchema = new mongoose.Schema(
       ref: 'extraContent',
       required: true,
     },
-    country: {
-      type: String,
-      required: true,
+    metaInfo:{
+      type: mongoose.Schema.Types.Mixed,
+      trim: true
     },
     seoData: {
       type: mongoose.Schema.Types.Mixed,

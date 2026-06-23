@@ -33,12 +33,10 @@ const universitySchema = new mongoose.Schema(
     },
     code: {
       type: String,
-      required: [true, 'Please provide university code'],
       trim: true,
     },
     address: {
       type: String,
-      required: [true, 'Please provide address'],
       trim: true,
     },
     country: {
@@ -48,7 +46,6 @@ const universitySchema = new mongoose.Schema(
     },
     city: {
       type: String,
-      required: [true, 'Please provide city'],
       trim: true,
     },
     social_links: {
@@ -102,6 +99,10 @@ const universitySchema = new mongoose.Schema(
       enum: ['Active', 'Inactive'],
       default: 'Active',
     },
+    isWeb: {
+      type: Boolean,
+      default: false,
+    },
     financials: {
       type: mongoose.Schema.Types.Mixed,
       default: {},
@@ -121,8 +122,7 @@ const universitySchema = new mongoose.Schema(
     extra_content: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'extraContent',
-      required: true,
-      unique: true,
+      default: null
     },
     seo_metadata: {
       type: mongoose.Schema.Types.Mixed,

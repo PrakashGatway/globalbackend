@@ -269,10 +269,6 @@ exports.getAllCourses = async (req, res) => {
       ]
     }
 
-
-
-
-
     // 🎓 FILTERS
     if (university) matchStage.university = new mongoose.Types.ObjectId(university)
     if (category) matchStage.category = new mongoose.Types.ObjectId(category)
@@ -312,11 +308,8 @@ exports.getAllCourses = async (req, res) => {
       lookupStages = []
     }
 
-    console.log("GRE:", gre)
-console.log(JSON.stringify(matchStage, null, 2))
 
 const test = await Course.find(matchStage).limit(5)
-console.log("TEST COUNT:", test.length)
 
     const pipeline = [
       { $match: matchStage },
@@ -340,16 +333,16 @@ console.log("TEST COUNT:", test.length)
         },
       },
       { $unwind: '$category' },
-      {
-        $lookup: {
-          from: 'subjects',
-          localField: 'subject',
-          foreignField: '_id',
-          as: 'subject',
-          pipeline: [{ $project: { name: 1 } }],
-        },
-      },
-      { $unwind: '$subject' },
+      // {
+      //   $lookup: {
+      //     from: 'subjects',
+      //     localField: 'subject',
+      //     foreignField: '_id',
+      //     as: 'subject',
+      //     pipeline: [{ $project: { name: 1 } }],
+      //   },
+      // },
+      // { $unwind: '$subject' },
       ...lookupStages,
 
       // {

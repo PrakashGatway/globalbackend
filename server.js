@@ -27,6 +27,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
+// require("./cronjobs/insertUni");
+
+// require("./cronjobs/insertCourse");
+
+
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(morgan('dev'))
