@@ -100,6 +100,7 @@ exports.getScholarships = async (req, res) => {
                     isPublished: 1,
                     createdAt: 1,
                     description: 1,
+                    shortDescription: 1,
                     level: 1,
                     studyMode: 1,
                     deliveryMode: 1,

@@ -8,6 +8,18 @@ const fs = require("fs");
 
 const app = express()
 
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
+app.use(
+  '/api/accommodation',
+  createProxyMiddleware({
+    target: 'http://localhost:4000',
+    changeOrigin: true,
+    pathRewrite: {
+      '^/api/accommodation': '/api'
+    }
+  })
+);
 // Middleware
 app.use(cors({
   origin: '*',
