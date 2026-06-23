@@ -306,7 +306,7 @@ IMPORTANT: Only return valid JSON. Do not include any markdown formatting or add
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
-                Authorization: `Bearer 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`,
+                Authorization: `Bearer `,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
@@ -322,8 +322,6 @@ IMPORTANT: Only return valid JSON. Do not include any markdown formatting or add
 
         const result = await response.json();
         let content = result?.choices?.[0]?.message?.content || "[]";
-
-
         content = content
             .replace(/```json/g, "")
             .replace(/```/g, "")
@@ -341,7 +339,6 @@ async function kcmain() {
     console.log("🚀 Course Import Process Started");
     console.log("=================================");
     try {
-        console.log(D.data[0])
 
         // const courseData = D.data[0];
         for (const courseData of D.data) {
@@ -364,7 +361,7 @@ async function kcmain() {
                         { slug: makeSlug(courseData.universityName) }
                     ]
                 });
-                if(!university) {
+                if (!university) {
                     console.log(`❌ University not found: ${courseData.universityName}`);
                     continue;
                 }
@@ -405,7 +402,17 @@ async function kcmain() {
             }
 
 
-            let aiData = await generateCoursebyai(courseData.universityName, courseData.Name)
+            let aiData;
+            aiData = await generateCoursebyai(courseData.universityName, courseData.Name)
+
+            if (aiData.length === 0) {
+                aiData = await generateCoursebyai(courseData.universityName, courseData.Name)
+            }
+
+            if (aiData.length === 0) {
+                console.log(`❌ Course not found: ${courseData.Name}`);
+                return;
+            }
 
 
             function getInitials(name) {

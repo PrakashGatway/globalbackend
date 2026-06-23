@@ -80,7 +80,7 @@ and give me authnticated data.search for ${universityName} and ${country} or the
             {
                 method: "POST",
                 headers: {
-                    Authorization: `Bearer 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`,
+                    Authorization: `Bearer `,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
@@ -158,7 +158,7 @@ async function createUniversity(universityName) {
         const university = new University({
             name: universityName,
             extra_content: extraContent._id,
-            slug: makeSlug(aiData.name),
+            slug: makeSlug(universityName),
             slogan: aiData.slogan || "",
             uni_type: aiData.uni_type || "Public",
             short_description:
