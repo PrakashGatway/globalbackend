@@ -168,7 +168,7 @@ exports.verifyOTP = async (req, res) => {
         success: true,
         token,
         hasPreference: user.role == "user" ? hasPreference : false,
-        role : user.role
+        role: user.role
       })
     }
 

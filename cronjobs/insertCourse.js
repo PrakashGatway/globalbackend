@@ -9,7 +9,7 @@ const D = require("../src/italy.json");
 const { createUniversity } = require('./insertUni');
 
 
-const country = "Italy";
+const country = "United Arab Emirates";
 
 const universities = [
     "John Cabot University"]
@@ -340,10 +340,14 @@ async function kcmain() {
     console.log("=================================");
     try {
 
+        let count = 0
         // const courseData = D.data[0];
         for (const courseData of D.data) {
             console.log(`📚 Processing university: ${courseData.Name}`);
             let university;
+
+            count++
+            console.log(count)
 
             university = await University.findOne({
                 $or: [
@@ -390,14 +394,56 @@ async function kcmain() {
             }
 
             const isCourseExists = await Course.findOne({
-                $or: [
-                    { name: courseData.Name },
-                    { slug: makeSlug(courseData.Name) }
-                ]
+                name: courseData.Name, university: new mongoose.Types.ObjectId(university._id)
             });
 
             if (isCourseExists) {
                 console.log(`⚠️ Course already exists: ${courseData.Name} at ${university.name}`);
+                isCourseExists.metaInfo = {
+                    initialDeposit: courseData.DepositSortAmount,
+                    campus: courseData.Campus,
+                    backlog: courseData.backlog,
+                    deadline: courseData.ApplicationDeadline,
+                    Intakes: courseData.Intakes,
+                    UpcomingIntakeDeadLines: courseData.UpcomingIntakeDeadLines,
+                    intakeDeadline: courseData.IntakesAndDeadlines,
+                    IntakesClosed: courseData.IntakesClosed,
+                    applicationFeeWaiver: courseData.AppFeeWaiverAvailable,
+                    WithoutEnglishProficiency: courseData.WithoutEnglishProficiency,
+                    ScholarshipAvailable: courseData.ScholarshipAvailable,
+                    ScholarshipDeatil: courseData.ScholarshipDetail,
+                    AverageScholarship: courseData.AverageScholarship,
+                    AverageScholarshipRemarks: courseData.AverageScholarshipRemarks,
+                    InternshipAvailable: courseData.InternshipAvailable,
+                    WithoutMaths: courseData.WithoutMaths,
+                    IsStemCourse: courseData.IsStemCourse,
+                    EntryRequirement: courseData.EntryRequirement,
+                    Remarks: courseData.Remarks,
+                    highlight: courseData.Highlights,
+                    IsMOIWaiver: courseData.IsMOIWaiver,
+                    EnglishMarks12Score: courseData.EnglishMarks12Score
+                }
+                isCourseExists.requirements={
+                    ...(courseData.PteScore && { PteScore: courseData.PteScore }),
+                    ...(courseData.PteNoSectionLessThan && { PteNoSectionLessThan: courseData.PteNoSectionLessThan }),
+                    ...(courseData.ToeflScore && { ToeflScore: courseData.ToeflScore }),
+                    ...(courseData.ToeflNoSectionLessThan && { ToeflNoSectionLessThan: courseData.ToeflNoSectionLessThan }),
+                    ...(courseData.IeltsOverall && { Ielts: courseData.IeltsOverall }),
+                    ...(courseData.IeltsNoBandLessThan && { IeltsNoBandLessThan: courseData.IeltsNoBandLessThan }),
+                    ...(courseData.DETScore && { DETScore: courseData.DETScore }),
+                    ...(courseData.GreScore && { GreScore: courseData.GreScore }),
+                    ...(courseData.GmatScore && { GmatScore: courseData.GmatScore }),
+                    ...(courseData.ActScore && { ActScore: courseData.ActScore }),
+                    ...(courseData.SatScore && { SatScore: courseData.SatScore }),
+                    ...(courseData.EntryRequirementTwelfth && { EntryRequirementTwelfth: courseData.EntryRequirementTwelfth }),
+                    ...(courseData.EntryRequirementUG && { EntryRequirementUG: courseData.EntryRequirementUG }),
+                    ...(courseData.WorkExp && { WorkExp: courseData.WorkExp })
+                }
+
+                console.log(isCourseExists._id)
+
+                // await isCourseExists.save();
+
                 continue;
             }
 
@@ -435,9 +481,11 @@ async function kcmain() {
                     }]
             });
 
+            console.log(university.code)
+
             const course = new Course({
                 name: courseData.Name,
-                slug: makeSlug(courseData.Name),
+                slug: makeSlug(`${courseData.Name}-${university.name.toLowerCase()}`),
                 extra_content: extraContent._id,
                 university: university._id,
                 category: category._id,
@@ -452,74 +500,52 @@ async function kcmain() {
                     campus: courseData.Campus,
                     backlog: courseData.backlog,
                     deadline: courseData.ApplicationDeadline,
-                    intake: courseData.Intake,
+                    Intakes: courseData.Intakes,
+                    UpcomingIntakeDeadLines: courseData.UpcomingIntakeDeadLines,
                     intakeDeadline: courseData.IntakesAndDeadlines,
+                    IntakesClosed: courseData.IntakesClosed,
+                    applicationFeeWaiver: courseData.AppFeeWaiverAvailable,
                     WithoutEnglishProficiency: courseData.WithoutEnglishProficiency,
+                    ScholarshipAvailable: courseData.ScholarshipAvailable,
+                    ScholarshipDeatil: courseData.ScholarshipDetail,
+                    AverageScholarship: courseData.AverageScholarship,
+                    AverageScholarshipRemarks: courseData.AverageScholarshipRemarks,
+                    InternshipAvailable: courseData.InternshipAvailable,
                     WithoutMaths: courseData.WithoutMaths,
                     IsStemCourse: courseData.IsStemCourse,
                     EntryRequirement: courseData.EntryRequirement,
-                    Remarks: courseData.Remarks
+                    Remarks: courseData.Remarks,
+                    highlight: courseData.Highlights,
+                    IsMOIWaiver: courseData.IsMOIWaiver,
+                    EnglishMarks12Score: courseData.EnglishMarks12Score
                 },
                 duration: `${courseData.Duration} Month` || "Not specified",
                 tags: aiData[0].tags || [],
                 description: aiData[0].description || "",
                 requirements: {
-                    ...(courseData.GreScore && {
-                        gre: {
-                            value: courseData.GreScore,
-                        },
-                    }),
-
-                    ...(courseData.PteScore && {
-                        pte: {
-                            value: courseData.PteScore,
-                        },
-                    }),
-
-                    ...(courseData.GmatScore && {
-                        gmat: {
-                            value: courseData.GmatScore,
-                        },
-                    }),
-
-                    ...(courseData.IeltsOverall && {
-                        ielts: {
-                            value: courseData.IeltsOverall,
-                        },
-                    }),
-
-                    ...(courseData.EntryRequirementUG && {
-                        undergraduate: {
-                            value: courseData.EntryRequirementUG,
-                        },
-                    }),
-
-                    ...(courseData.EntryRequirementTwelfth && {
-                        secondary: {
-                            value: courseData.EntryRequirementTwelfth,
-                        },
-                    }),
-
-                    ...(courseData.SatScore && {
-                        sat: {
-                            value: courseData.SatScore,
-                        },
-                    }),
-
-                    ...(courseData.WorkExp && {
-                        work_experience: {
-                            value: courseData.WorkExp,
-                        },
-                    }),
+                    ...(courseData.PteScore && { PteScore: courseData.PteScore }),
+                    ...(courseData.PteNoSectionLessThan && { PteNoSectionLessThan: courseData.PteNoSectionLessThan }),
+                    ...(courseData.ToeflScore && { ToeflScore: courseData.ToeflScore }),
+                    ...(courseData.ToeflNoSectionLessThan && { ToeflNoSectionLessThan: courseData.ToeflNoSectionLessThan }),
+                    ...(courseData.IeltsOverall && { Ielts: courseData.IeltsOverall }),
+                    ...(courseData.IeltsNoBandLessThan && { IeltsNoBandLessThan: courseData.IeltsNoBandLessThan }),
+                    ...(courseData.DETScore && { DETScore: courseData.DETScore }),
+                    ...(courseData.GreScore && { GreScore: courseData.GreScore }),
+                    ...(courseData.GmatScore && { GmatScore: courseData.GmatScore }),
+                    ...(courseData.ActScore && { ActScore: courseData.ActScore }),
+                    ...(courseData.SatScore && { SatScore: courseData.SatScore }),
+                    ...(courseData.EntryRequirementTwelfth && { EntryRequirementTwelfth: courseData.EntryRequirementTwelfth }),
+                    ...(courseData.EntryRequirementUG && { EntryRequirementUG: courseData.EntryRequirementUG }),
+                    ...(courseData.WorkExp && { WorkExp: courseData.WorkExp })
                 },
-                docsRequired: aiData[0].docsRequired,
-                overview: aiData[0].overview
+                docsRequired: aiData[0].docsRequired
             });
 
             await course.save();
 
             console.log(`📊 Inserting course: ${course.name} at ${university.name} `);
         }
+
 
         console.log("\n✅ Course Import Process Completed");
         console.log("=================================");
