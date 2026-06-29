@@ -493,10 +493,7 @@ exports.updateDoc = async (req, res) => {
   try {
 
     const {
-      documents,
-      userId,
-      countries_shortlist,
-      categorie_shortlist
+      countries_shortlist
     } = req.body;
 
     let updateData = {};
@@ -508,8 +505,8 @@ exports.updateDoc = async (req, res) => {
           user: user._id,
         });
       const existingCountries =
-        profile?.otherDetails
-          ?.countries_shortlist || [];
+        profile?.preferences
+          ?.preferredCountries || [];
       const alreadyExists =
         existingCountries.includes(
           countries_shortlist
@@ -531,61 +528,16 @@ exports.updateDoc = async (req, res) => {
           ...existingCountries,
           countries_shortlist,
         ];
-
       }
       updateData = {
-        "otherDetails.countries_shortlist":
+        "preferences.preferredCountries":
           updatedCountries,
       };
-
     }
-    else if (categorie_shortlist) {
-      const profile =
-        await UserProfile.findOne({
-          user: user._id,
-        });
-      const existingCategorie =
-        profile?.otherDetails?.categorie_shortlist || [];
-      const alreadyExists =
-        existingCategorie.includes(categorie_shortlist);
-
-      let data = [];
-
-      if (alreadyExists) {
-        data =
-          existingCategorie.filter(
-            (id) =>
-              id.toString() !=
-              categorie_shortlist
-          );
-      }
-
-      else {
-        data = [
-          ...existingCategorie,
-          categorie_shortlist,
-        ];
-
-      }
-      updateData = {
-        "otherDetails.categorie_shortlist":
-          data,
-      };
-
-    }
-    else {
-      updateData = {
-        "documents":
-          documents,
-      };
-
-    }
-
-
 
     const updatedProfile =
       await UserProfile.findOneAndUpdate(
-        { user: userId || user._id },
+        { user: user._id },
         {
           $set: updateData,
         },

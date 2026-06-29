@@ -264,6 +264,7 @@ exports.createApplication = async (req, res) => {
 };
 
 exports.getApplications = async (req, res) => {
+console.log("application recived")
   try {
     const {
       page = 1,
@@ -323,8 +324,6 @@ exports.getApplications = async (req, res) => {
 
     const total = await Application.countDocuments(matchStage);
 
-    console.log(matchStage);
-
     const pipeline = [
       { $match: matchStage },
       { $sort: { createdAt: -1 } },
@@ -347,7 +346,6 @@ exports.getApplications = async (req, res) => {
                   as: "assignee" // Renamed 'users' to 'assignee' for clarity
                 }
               },
-              // Unwind the assignee array if there is only 1 assignee
               { $unwind: { path: "$assignee", preserveNullAndEmptyArrays: true } }
             ]
           }

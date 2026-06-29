@@ -678,4 +678,5 @@ router.get('/counsellor', authorize('counsellor', 'admin'), getCounsellorDashboa
 
 router.get('/user-stats', getUserStats);
 
+
 module.exports = router;
