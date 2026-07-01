@@ -141,8 +141,13 @@ const getAllUniversities = async (req, res) => {
     if (city) uniMatch.city = { $regex: city, $options: 'i' };
     if (uniStatus) uniMatch.status = uniStatus;
     if (!uniStatus) uniMatch.status = "Active"
+
     if (intake) {
-      uniMatch.intakes = { $exists: true, $ne: null, $not: { $size: 0 } }
+      const intakeRegex = intake.split(",").map(item => new RegExp(`^${item.trim()}$`, "i"));
+
+      uniMatch.intakes = {
+        $in: intakeRegex,
+      };
     }
     if (location_alias) uniMatch.location_alias = { $regex: location_alias, $options: 'i' };
     if (code) uniMatch.code = { $regex: code, $options: 'i' };
