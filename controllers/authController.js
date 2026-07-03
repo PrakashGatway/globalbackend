@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
     })
 
     try {
-      // await sendOTPEmail({ email, otp: otpCode })
+      await sendOTPEmail({ email, otp: otpCode })
       res.json({
         success: true,
         isExist: true,
@@ -272,7 +272,7 @@ exports.sendOTP = async (req, res) => {
         }
       }
     }
-    const otpCode = "987456" || Math.floor(100000 + Math.random() * 900000).toString()
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString()
     await OTP.deleteMany({ email, isUsed: false })
     const otp = await OTP.create({
       email,
@@ -370,8 +370,7 @@ exports.verifyOTP = async (req, res) => {
       return res.json({
         success: true,
         token,
-        hasPreference: user.role == "user" ? hasPreference : false,
-        role: user.role
+        hasPreference: user.role == "user" ? hasPreference : false
       })
     }
 

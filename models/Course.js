@@ -44,6 +44,10 @@ const courseSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
+    country: {
+      type: String,
+      trim: true,
+    },
     currency: {
       type: String,
       required: true,
@@ -87,7 +91,7 @@ const courseSchema = new mongoose.Schema(
       ref: 'extraContent',
       required: true,
     },
-    metaInfo:{
+    metaInfo: {
       type: mongoose.Schema.Types.Mixed,
       trim: true
     },
