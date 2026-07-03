@@ -9,7 +9,7 @@ const D = require("../src/italy.json");
 const { createUniversity } = require('./insertUni');
 
 
-const country = "United Arab Emirates";
+const country = "United Kingdom";
 
 const universities = [
     "John Cabot University"]
@@ -109,7 +109,7 @@ IMPORTANT: Only return valid JSON. Do not include any markdown formatting or add
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
-                Authorization: `Bearer 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`,
+                Authorization: `Bearer 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`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
@@ -203,7 +203,6 @@ async function insertCourse(courseData, university, category, subject) {
             requirements: courseData.requirements || {},
             docsRequired: courseData.docsRequired || [],
             extra_content: extraContent._id,
-            country: "IT",
             seoData: courseData.seoData || {}
         });
 
@@ -269,183 +268,30 @@ async function main() {
             await new Promise(resolve => setTimeout(resolve, 2000));
         }
 
-        console.log("\n✅ Course Import Process Completed");
+        console.log("\n✅ Course Import Process Completed", universities.length );
         console.log("=================================");
     } catch (err) {
         console.error("❌ Fatal error:", err.message);
     }
 }
-//// openrouter
-// async function generateCoursebyai(university, course) {
-//     try {
-//         const prompt = `
-// You are an AI assistant that provides authentic university course data. 
-// make authenticated data in my format this is for the ${country} for ${university} for the ${course}.
 
-// i will provoide course name ${course}  and university name ${university} 
-
-// provide me course data in the json format that i will provide you so please give that data
-
-// Return ONLY a valid JSON array of course objects in this format:
-//   {
-//     "name": "Bachelor of Science in Computer Science",
-//     "shortName": "BSc CS",
-//     "tags": ["Engineering", "Computer Science", "Technology"],
-//     "description": "Comprehensive description of the course (100-200 words)",
-//     "overview": "Overview of the course like what you will learn and what you will do in the course and what is future scope (300-500 words)",
-//     "docsRequired": [
-//       "Academic transcripts",
-//       "English proficiency test scores",
-//       "CV/Resume",
-//       "Statement of Purpose",
-//       "Letters of Recommendation"
-//     ]
-//   }
-
-// IMPORTANT: Only return valid JSON. Do not include any markdown formatting or additional text.
-// `;
-
-//         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-//             method: "POST",
-//             headers: {
-//                 Authorization: `Bearer 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`,
-//                 "Content-Type": "application/json"
-//             },
-//             body: JSON.stringify({
-//                 model: "openai/gpt-oss-120b:free",
-//                 messages: [
-//                     {
-//                         role: "user",
-//                         content: prompt
-//                     }
-//                 ]
-//             })
-//         });
-
-//         const result = await response.json();
-//         let content = result?.choices?.[0]?.message?.content || "[]";
-//         // console.log(result?.choices?.[0]?.message)
-//         content = content
-//             .replace(/```json/g, "")
-//             .replace(/```/g, "")
-//             .trim();
-
-//         // console.log(JSON.parse(content));
-//         return JSON.parse(content);
-//     } catch (err) {
-//         console.error(`Failed to generate courses for ${university}:`, err.message);
-//         return [];
-//     }
-// }
-
-// //// hugiface
-// async function generateCoursebyai(university, course) {
-//     try {
-//         const prompt = `
-// You are an AI assistant that provides authentic university course data.
-
-// Generate authentic data for the course "${course}" at "${university}" in ${country}.
-
-// Return ONLY a valid JSON array.
-
-// [
-//   {
-//     "name": "Bachelor of Science in Computer Science",
-//     "shortName": "BSc CS",
-//     "tags": [
-//       "Engineering",
-//       "Computer Science",
-//       "Technology"
-//     ],
-//     "description": "100-200 words",
-//     "overview": "300-500 words",
-//     "docsRequired": [
-//       "Academic transcripts",
-//       "English proficiency test scores",
-//       "CV/Resume",
-//       "Statement of Purpose",
-//       "Letters of Recommendation"
-//     ]
-//   }
-// ]
-
-// Do not use markdown.
-// Do not use \`\`\`json.
-// Return ONLY JSON.
-// `;
-
-//         const response = await fetch(
-//             "https://router.huggingface.co/v1/chat/completions",
-//             {
-//                 method: "POST",
-//                 headers: {
-//                     Authorization: `Bearer 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`,
-//                     "Content-Type": "application/json",
-//                 },
-//                 body: JSON.stringify({
-//                     model: "deepseek-ai/DeepSeek-V3",
-
-//                     messages: [
-//                         {
-//                             role: "system",
-//                             content:
-//                                 "You are an expert study abroad content writer. Always return only valid JSON.",
-//                         },
-//                         {
-//                             role: "user",
-//                             content: prompt,
-//                         },
-//                     ],
-
-//                     temperature: 0.7,
-//                     max_tokens: 2500
-//                 }),
-//             }
-//         );
-
-//         const result = await response.json();
-
-//         console.log(result);
-
-//         if (!response.ok) {
-//             throw new Error(result.error?.message || "HF API Error");
-//         }
-
-//         let content = result.choices?.[0]?.message?.content || "[]";
-
-//         content = content
-//             .replace(/```json/g, "")
-//             .replace(/```/g, "")
-//             .trim();
-
-//         return JSON.parse(content);
-//     } catch (err) {
-//         console.error(err);
-//         return [];
-//     }
-// }
-
-// //// nvidia
-async function generateCoursebyai(country, university, course) {
+async function generateCoursebyai(university, course) {
     try {
         const prompt = `
-You are an AI assistant that provides authentic university course data.
+You are an AI assistant that provides authentic university course data. 
+make authenticated data in my format this is for the  ${country} for ${university} for the ${course}.
 
-Generate authentic data for the country "${country}", university "${university}", and course "${course}".
+i will provide course name ${country} for ${university} 
 
-Return ONLY a valid JSON array in the following format:
+provide me course datta in the json format that i will provide you so please give that data and also give me authenticated data 
 
-[
+Return ONLY a valid JSON array of course objects in this format:
   {
     "name": "Bachelor of Science in Computer Science",
     "shortName": "BSc CS",
-    "tags": [
-      "Engineering",
-      "Computer Science",
-      "Technology"
-    ],
-    "description": "Comprehensive description of the course (100-200 words).",
-    "overview": "Detailed overview of the course, curriculum, learning outcomes, career opportunities, and future scope (300-500 words).",
+    "tags": ["Engineering", "Computer Science", "Technology"],
+    "description": "Comprehensive description of the course (100-200 words)",
+    "overview": "Overview of the course like what you will learn and what you will do in the course and what is future scope (300-500 words)",
     "docsRequired": [
       "Academic transcripts",
       "English proficiency test scores",
@@ -454,65 +300,38 @@ Return ONLY a valid JSON array in the following format:
       "Letters of Recommendation"
     ]
   }
-]
 
-IMPORTANT:
-- Return ONLY valid JSON.
-- Do not use markdown.
-- Do not wrap the JSON in \`\`\`.
-- Do not include explanations.
+IMPORTANT: Only return valid JSON. Do not include any markdown formatting or additional text.
 `;
 
-        const response = await fetch(
-            "https://integrate.api.nvidia.com/v1/chat/completions",
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer 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`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    model: "openai/gpt-oss-120b",
-                    messages: [
-                        {
-                            role: "system",
-                            content:
-                                "You are a JSON generator. Always return valid JSON only. Never use markdown or explanations.",
-                        },
-                        {
-                            role: "user",
-                            content: prompt,
-                        },
-                    ],
-                    temperature: 0.2,
-                    max_tokens: 4096,
-                }),
-            }
-        );
-
-        if (!response.ok) {
-            const error = await response.text();
-            console.error("NVIDIA API Error:", error);
-            return [];
-        }
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer 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`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "openai/gpt-oss-120b:free",
+                messages: [
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ]
+            })
+        });
 
         const result = await response.json();
-
-        // console.log(result);
-
         let content = result?.choices?.[0]?.message?.content || "[]";
-
         content = content
             .replace(/```json/g, "")
             .replace(/```/g, "")
             .trim();
 
+        // console.log(JSON.parse(content));
         return JSON.parse(content);
     } catch (err) {
-        console.error(
-            `Failed to generate courses for ${university}:`,
-            err.message
-        );
+        console.error(`Failed to generate courses for ${university}:`, err.message);
         return [];
     }
 }
@@ -605,7 +424,7 @@ async function kcmain() {
                     IsMOIWaiver: courseData.IsMOIWaiver,
                     EnglishMarks12Score: courseData.EnglishMarks12Score
                 }
-                isCourseExists.requirements = {
+                isCourseExists.requirements={
                     ...(courseData.PteScore && { PteScore: courseData.PteScore }),
                     ...(courseData.PteNoSectionLessThan && { PteNoSectionLessThan: courseData.PteNoSectionLessThan }),
                     ...(courseData.ToeflScore && { ToeflScore: courseData.ToeflScore }),
@@ -641,7 +460,6 @@ async function kcmain() {
                 console.log(`❌ Course not found: ${courseData.Name}`);
                 return;
             }
-
 
             function getInitials(name) {
                 if (!name) return "";
@@ -736,251 +554,4 @@ async function kcmain() {
     }
 }
 
-async function processCourse(courseData, count, workerId) {
-    console.log("=================================");
-    try {
-
-        console.log(`📚 Processing university: ${courseData.Name}`);
-        let university;
-
-        console.log(count, workerId)
-
-        university = await University.findOne({
-            $or: [
-                { name: courseData.universityName },
-                { slug: makeSlug(courseData.universityName) }
-            ]
-        });
-
-        if (!university) {
-            console.log(`❌ University not found: ${courseData.universityName}`);
-            await createUniversity(courseData.universityName);
-            university = await University.findOne({
-                $or: [
-                    { name: courseData.universityName },
-                    { slug: makeSlug(courseData.universityName) }
-                ]
-            });
-            if (!university) {
-                console.log(`❌ University not found: ${courseData.universityName}`);
-                return;
-            }
-        }
-
-        const firstCategoryId = String(courseData.CategoryId)
-            .split(",")[0]
-            .trim();
-
-        const cate = D["study-area"].find(
-            (i) => String(i.value) === firstCategoryId
-        );
-
-        console.log(cate);
-
-        const category = await CourseCategory.findOne({
-            $or: [
-                { name: cate?.label }
-                // { slug: makeSlug(courseData.categoryName) }
-            ]
-        });
-
-        if (!category) {
-            console.log(`❌ Category not found: ${cate?.label}`);
-            return;
-        }
-
-        const isCourseExists = await Course.findOne({
-            name: courseData.Name, university: new mongoose.Types.ObjectId(university._id)
-        });
-
-        if (isCourseExists) {
-            console.log(`⚠️ Course already exists: ${courseData.Name} at ${university.name}`);
-            isCourseExists.metaInfo = {
-                initialDeposit: courseData.DepositSortAmount,
-                campus: courseData.Campus,
-                backlog: courseData.backlog,
-                deadline: courseData.ApplicationDeadline,
-                Intakes: courseData.Intakes,
-                UpcomingIntakeDeadLines: courseData.UpcomingIntakeDeadLines,
-                intakeDeadline: courseData.IntakesAndDeadlines,
-                IntakesClosed: courseData.IntakesClosed,
-                applicationFeeWaiver: courseData.AppFeeWaiverAvailable,
-                WithoutEnglishProficiency: courseData.WithoutEnglishProficiency,
-                ScholarshipAvailable: courseData.ScholarshipAvailable,
-                ScholarshipDeatil: courseData.ScholarshipDetail,
-                AverageScholarship: courseData.AverageScholarship,
-                AverageScholarshipRemarks: courseData.AverageScholarshipRemarks,
-                InternshipAvailable: courseData.InternshipAvailable,
-                WithoutMaths: courseData.WithoutMaths,
-                IsStemCourse: courseData.IsStemCourse,
-                EntryRequirement: courseData.EntryRequirement,
-                Remarks: courseData.Remarks,
-                highlight: courseData.Highlights,
-                IsMOIWaiver: courseData.IsMOIWaiver,
-                EnglishMarks12Score: courseData.EnglishMarks12Score
-            }
-            isCourseExists.requirements = {
-                ...(courseData.PteScore && { PteScore: courseData.PteScore }),
-                ...(courseData.PteNoSectionLessThan && { PteNoSectionLessThan: courseData.PteNoSectionLessThan }),
-                ...(courseData.ToeflScore && { ToeflScore: courseData.ToeflScore }),
-                ...(courseData.ToeflNoSectionLessThan && { ToeflNoSectionLessThan: courseData.ToeflNoSectionLessThan }),
-                ...(courseData.IeltsOverall && { Ielts: courseData.IeltsOverall }),
-                ...(courseData.IeltsNoBandLessThan && { IeltsNoBandLessThan: courseData.IeltsNoBandLessThan }),
-                ...(courseData.DETScore && { DETScore: courseData.DETScore }),
-                ...(courseData.GreScore && { GreScore: courseData.GreScore }),
-                ...(courseData.GmatScore && { GmatScore: courseData.GmatScore }),
-                ...(courseData.ActScore && { ActScore: courseData.ActScore }),
-                ...(courseData.SatScore && { SatScore: courseData.SatScore }),
-                ...(courseData.EntryRequirementTwelfth && { EntryRequirementTwelfth: courseData.EntryRequirementTwelfth }),
-                ...(courseData.EntryRequirementUG && { EntryRequirementUG: courseData.EntryRequirementUG }),
-                ...(courseData.WorkExp && { WorkExp: courseData.WorkExp })
-            }
-
-            console.log(isCourseExists._id)
-
-            // await isCourseExists.save();
-
-            return;
-        }
-
-
-        let aiData;
-        aiData = await generateCoursebyai(courseData.universityName, courseData.Name)
-
-        if (aiData.length === 0) {
-            aiData = await generateCoursebyai(courseData.universityName, courseData.Name)
-        }
-
-        if (aiData.length === 0) {
-            console.log(`❌ Course not found: ${courseData.Name}`);
-            return;
-        }
-
-
-        function getInitials(name) {
-            if (!name) return "";
-
-            return name
-                .split(" ")
-                .map(word => word.charAt(0))
-                .join("")
-                .toUpperCase();
-        }
-
-        const extraContent = await ExtraContent.create({
-            "sections": [
-                {
-                    "section_key": "overview",
-                    "heading": "Overview",
-                    "content": aiData[0].overview || "",
-                    "order": 1
-                }]
-        });
-
-        console.log(university.code)
-
-        const course = new Course({
-            name: courseData.Name,
-            slug: makeSlug(`${courseData.Name}-${university.name.toLowerCase()}`),
-            extra_content: extraContent._id,
-            university: university._id,
-            category: category._id,
-            tuitionFee: courseData.Amount || 0,
-            currency: courseData.Currency || "EUR",
-            level: courseData.Studylvl || "Undergraduate",
-            studyMode: courseData.IsOnlineCourse ? "Online" : "Full-time",
-            shortName: aiData[0].shortName || "",
-            applicationFee: courseData.ApplicationFeeAmt || 0,
-            metaInfo: {
-                initialDeposit: courseData.DepositSortAmount,
-                campus: courseData.Campus,
-                backlog: courseData.backlog,
-                deadline: courseData.ApplicationDeadline,
-                Intakes: courseData.Intakes,
-                UpcomingIntakeDeadLines: courseData.UpcomingIntakeDeadLines,
-                intakeDeadline: courseData.IntakesAndDeadlines,
-                IntakesClosed: courseData.IntakesClosed,
-                applicationFeeWaiver: courseData.AppFeeWaiverAvailable,
-                WithoutEnglishProficiency: courseData.WithoutEnglishProficiency,
-                ScholarshipAvailable: courseData.ScholarshipAvailable,
-                ScholarshipDeatil: courseData.ScholarshipDetail,
-                AverageScholarship: courseData.AverageScholarship,
-                AverageScholarshipRemarks: courseData.AverageScholarshipRemarks,
-                InternshipAvailable: courseData.InternshipAvailable,
-                WithoutMaths: courseData.WithoutMaths,
-                IsStemCourse: courseData.IsStemCourse,
-                EntryRequirement: courseData.EntryRequirement,
-                Remarks: courseData.Remarks,
-                highlight: courseData.Highlights,
-                IsMOIWaiver: courseData.IsMOIWaiver,
-                EnglishMarks12Score: courseData.EnglishMarks12Score
-            },
-            duration: `${courseData.Duration} Month` || "Not specified",
-            tags: aiData[0].tags || [],
-            description: aiData[0].description || "",
-            requirements: {
-                ...(courseData.PteScore && { PteScore: courseData.PteScore }),
-                ...(courseData.PteNoSectionLessThan && { PteNoSectionLessThan: courseData.PteNoSectionLessThan }),
-                ...(courseData.ToeflScore && { ToeflScore: courseData.ToeflScore }),
-                ...(courseData.ToeflNoSectionLessThan && { ToeflNoSectionLessThan: courseData.ToeflNoSectionLessThan }),
-                ...(courseData.IeltsOverall && { Ielts: courseData.IeltsOverall }),
-                ...(courseData.IeltsNoBandLessThan && { IeltsNoBandLessThan: courseData.IeltsNoBandLessThan }),
-                ...(courseData.DETScore && { DETScore: courseData.DETScore }),
-                ...(courseData.GreScore && { GreScore: courseData.GreScore }),
-                ...(courseData.GmatScore && { GmatScore: courseData.GmatScore }),
-                ...(courseData.ActScore && { ActScore: courseData.ActScore }),
-                ...(courseData.SatScore && { SatScore: courseData.SatScore }),
-                ...(courseData.EntryRequirementTwelfth && { EntryRequirementTwelfth: courseData.EntryRequirementTwelfth }),
-                ...(courseData.EntryRequirementUG && { EntryRequirementUG: courseData.EntryRequirementUG }),
-                ...(courseData.WorkExp && { WorkExp: courseData.WorkExp })
-            },
-            docsRequired: aiData[0].docsRequired
-        });
-
-        await course.save();
-
-        console.log(`📊 Inserting course: ${course.name} at ${university.name} `);
-    } catch (err) {``
-        console.error("❌ Fatal error:", err);
-    }
-}
-
-
-async function worker(data, workerId) {
-    console.log(`🚀 Worker ${workerId} started`);
-    let count = 0
-
-    for (const course of data) {
-        // console.log(course)
-        count++
-
-        try {
-            await processCourse(course, count, workerId);
-        } catch (err) {
-            console.error(`Worker ${workerId}:`, err);
-        }
-    }
-
-    console.log(`✅ Worker ${workerId} finished`);
-}
-
-
-async function kcma() {
-    const workers = 4;
-
-    const chunkSize = Math.ceil(D.data.length / workers);
-
-    const chunks = Array.from({ length: workers }, (_, i) =>
-        D.data.slice(i * chunkSize, (i + 1) * chunkSize)
-    );
-
-    await Promise.all(
-        chunks.map((chunk, index) => worker(chunk, index + 1))
-    );
-
-    console.log("🎉 All workers completed");
-}
-
-kcma();
-
-// kcmain();
+kcmain();

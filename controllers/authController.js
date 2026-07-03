@@ -5,6 +5,7 @@ const UserProfile = require('../models/UserProfile')
 const { default: mongoose } = require('mongoose')
 const { sendOTPEmail } = require('../utils/emailService')
 const { calculateProfile } = require('../controllers/userController')
+const { LiveNotification } = require('../middleware/notificaion')
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'your-secret-key', {
@@ -88,6 +89,158 @@ exports.login = async (req, res) => {
   }
 }
 
+
+// exports.sendOTP = async (req, res) => {
+//   try {
+//     const { name, phone, email, referalby } = req.body;
+
+//     if (!email) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Please provide email",
+//       });
+//     }
+
+//     let user = await User.findOne({
+//       email,
+//       status: "Active",
+//     });
+
+//     // Create user if not exists
+//     if (!user) {
+//       if (!phone) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Please provide email and phone for registration",
+//         });
+//       }
+
+//       let referralUser = null;
+
+//       if (referalby) {
+//         referralUser = await User.findOne({
+//           referalCode: referalby,
+//           status: "Active",
+//         });
+//       }
+
+//       const userData = {
+//         name: name || email.split("@")[0],
+//         email,
+//         phone,
+//         referalBy: referralUser ? referalby : null,
+//         wallet: referralUser ? 50 : 0,
+//         assignto:
+//           referralUser?.role === "counsellor"
+//             ? referralUser._id
+//             : null,
+//       };
+
+//       // Create new user
+//       user = await User.create(userData);
+
+//       // Reward referral user
+//       if (referralUser) {
+//         referralUser.wallet += 50;
+//         await referralUser.save();
+//       }
+
+//       // Send notification to assigned admins
+//       try {
+//         if (user.assignto) {
+//           console.log("User assigned to counsellor:", user.assignto);
+
+//           const admins = await User.find({
+//             role: "admin",
+//             assignto: user.assignto,
+//             status: "Active",
+//           }).select("_id");
+
+//           console.log("Admins query result:", admins);
+
+//           if (admins.length > 0) {
+//             console.log("Sending live notifications to admins:", admins.length);
+
+//             await Promise.all(
+//               admins.map((admin) =>
+//                 LiveNotification({
+//                   userId: admin._id,
+//                   sender: user._id,
+//                   title: "New User Registered",
+//                   body: `${user.name} has registered successfully.`,
+//                   type: "admin",
+//                   entityId: user._id,
+//                   entityType: "User",
+//                   redirectUrl: `/users/${user._id}`,
+//                   data: {
+//                     userId: user._id,
+//                     email: user.email,
+//                   },
+//                 })
+//               )
+//             );
+
+//             console.log("Live notifications sent successfully.");
+//           } else {
+//             console.log("No admins found for this counsellor.");
+//           }
+//         } else {
+//           console.log("No counsellor assigned to user; skipping admin notifications.",user);
+//         }
+//       } catch (notificationError) {
+//         console.error(
+//           "Notification Error:",
+//           notificationError.message
+//         );
+//       }
+//     }
+
+//     // Generate OTP
+//     const otpCode =
+//       process.env.NODE_ENV === "development"
+//         ? "987456"
+//         : Math.floor(100000 + Math.random() * 900000).toString();
+
+//     await OTP.deleteMany({
+//       email,
+//       isUsed: false,
+//     });
+
+//     await OTP.create({
+//       email,
+//       otp: otpCode,
+//       expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+//     });
+
+//     try {
+//       await sendOTPEmail({
+//         email,
+//         otp: otpCode,
+//       });
+
+//       return res.json({
+//         success: true,
+//         message: "OTP sent to your email",
+//       });
+//     } catch (emailError) {
+//       console.error(emailError);
+
+//       return res.status(500).json({
+//         success: false,
+//         message: "Failed to send OTP email. Please contact support.",
+//       });
+//     }
+//   } catch (error) {
+//     console.error(error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
+
 exports.sendOTP = async (req, res) => {
   try {
     const { name, phone, email, referalby } = req.body
@@ -132,6 +285,56 @@ exports.sendOTP = async (req, res) => {
         success: true,
         message: 'OTP sent to your email',
       })
+
+       if (user.assignto) {
+          console.log("User assigned to counsellor:", user.assignto);
+
+          
+          const admins = await User.find({
+            $or: [
+              { role: "admin" },
+              {
+                role: "counsellor",
+                referalCode: referalby, // or _id: user.assignto (see below)
+              },
+            ],
+          }).select("_id");
+
+        //  const admins = await User.find({ role: { $in: ["admin", "counsellor"] } }).select("_id");
+          
+
+          console.log("Admins query result:", admins);
+
+          if (admins.length > 0) {
+            console.log("Sending live notifications to admins:", admins.length);
+
+            await Promise.all(
+              admins.map((admin) =>
+                LiveNotification({
+                  userId: admin._id,
+                  sender: user._id,
+                  title: "New User Registered",
+                  body: `${user.name} has registered successfully.`,
+                  type: "admin",
+                  entityId: user._id,
+                  entityType: "User",
+                  redirectUrl: `/users/${user._id}`,
+                  data: {
+                    userId: user._id,
+                    email: user.email,
+                  },
+                })
+              )
+            );
+
+            console.log("Live notifications sent successfully.");
+          } else {
+            console.log("No admins found for this counsellor.");
+          }
+        } else {
+          console.log("No counsellor assigned to user; skipping admin notifications.",user);
+        }
+
     } catch (emailError) {
       res.status(500).json({
         success: false,

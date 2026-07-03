@@ -225,7 +225,9 @@ exports.createApplication = async (req, res) => {
 
 
     // 🔥 Get all admins
-    const admins = await User.find({ role: "admin" }).select("_id");
+    // const admins = await User.find({ role: "admin" }).select("_id");
+    const admins = await User.find({ role: { $in: ["admin", "counsellor"] } }).select("_id");
+
 
     console.log("amdin data on the ", admins, application);
 

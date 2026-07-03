@@ -6,6 +6,7 @@ const {
   NotificationRecipient,
 } = require("../models/Notification");
 
+
 const sendNotification = async ({
   userId,
   sender = null,
@@ -20,63 +21,56 @@ const sendNotification = async ({
   data = {},
 }) => {
   try {
-
-    // FIND USER
-    const user = await User.findOne({
-      userId: userId,
-    });
-
-    console.log("user data : ", userId,sender)
+    // Find User
+    const user = await User.findOne({ userId });
 
     if (!user) {
-      console.log("User not found");
-      return;
+      return {
+        success: false,
+        error: "User not found",
+      };
     }
 
+    // Save Notification
+    const notification = await Notification.create({
+      sender,
+      title,
+      message: body,
+      type,
+      entityId,
+      entityType,
+      redirectUrl,
+      coverImage,
+      priority,
+      channels: {
+        inApp: true,
+        push: true,
+      },
+      metadata: {
+        ...data,
+      },
+    });
 
-    // CREATE NOTIFICATION
-    const notification = 
-    await Notification.create({
-        sender,
-        title,
-        message: body,
-        type,
-        entityId,
-        entityType,
-        redirectUrl,
-        coverImage,
-        priority,
-        channels: {
-          inApp: true,
-          push: true,
-        },
-        metadata: {
-          ...data,
-        },
-      });
-
-    // CREATE RECIPIENT
+    // Save Recipient
     await NotificationRecipient.create({
       notification: notification._id,
-      user: userId,
+      user: user.userId,
       isRead: false,
     });
 
-    console.log(
-      "Notification stored in DB" + userId
-    );
+    console.log(`Notification saved for ${user.userId}`);
 
-
+    // No FCM Token
     if (!user.fcmToken) {
-
-      console.log(
-        "FCM token missing"
-      );
-
-      return notification;
+      return {
+        success: true,
+        notification,
+        pushSent: false,
+        message: "Notification stored, FCM token missing.",
+      };
     }
 
-    // FIREBASE MESSAGE
+    // Firebase Payload
     const message = {
       token: user.fcmToken,
 
@@ -86,20 +80,12 @@ const sendNotification = async ({
       },
 
       data: {
-        notificationId:
-          notification._id.toString(),
-
+        notificationId: notification._id.toString(),
         type,
-
-        ...Object.keys(data).reduce(
-          (acc, key) => {
-            acc[key] =
-              String(data[key]);
-
-            return acc;
-          },
-          {}
-        ),
+        ...Object.entries(data).reduce((acc, [key, value]) => {
+          acc[key] = String(value);
+          return acc;
+        }, {}),
       },
 
       android: {
@@ -116,31 +102,23 @@ const sendNotification = async ({
 
       webpush: {
         notification: {
-          icon: "/images/logo.png",
+          icon: "/images/newlogo3.png",
         },
       },
     };
 
-    // SEND PUSH
-    const response =  await admin.messaging().send(message);
+    const response = await admin.messaging().send(message);
 
-    console.log(
-      "Notification sent:",
-      response
-    );
+    console.log("Push Notification Sent:", response);
 
     return {
       success: true,
       notification,
+      pushSent: true,
       firebaseResponse: response,
     };
-
   } catch (error) {
-
-    console.log(
-      "Notification Error:",
-      error.message
-    );
+    console.error("sendNotification Error:", error);
 
     return {
       success: false,
@@ -149,35 +127,174 @@ const sendNotification = async ({
   }
 };
 
-module.exports = sendNotification;
+
+const LiveNotification = async ({
+  userId,
+  title,
+  body,
+  type = "system",
+  data = {},
+}) => {
+  try {
+    // Find User
+    const user = await User.findOne({ userId });
+
+    if (!user) {
+      return {
+        success: false,
+        error: "User not found",
+      };
+    }
+
+    if (!user.fcmToken) {
+      return {
+        success: false,
+        error: "FCM token missing",
+      };
+    }
+
+    const message = {
+      token: user.fcmToken,
+
+      notification: {
+        title,
+        body,
+      },
+
+      data: {
+        type,
+        ...Object.entries(data).reduce((acc, [key, value]) => {
+          acc[key] = String(value);
+          return acc;
+        }, {}),
+      },
+
+      android: {
+        priority: "high",
+      },
+
+      apns: {
+        payload: {
+          aps: {
+            sound: "default",
+          },
+        },
+      },
+
+      webpush: {
+        notification: {
+          icon: "/images/newlogo3.png",
+        },
+      },
+    };
+
+    const response = await admin.messaging().send(message);
+
+    console.log("Live Notification Sent:", response);
+
+    return {
+      success: true,
+      firebaseResponse: response,
+    };
+  } catch (error) {
+    console.error("LiveNotification Error:", error);
+
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+module.exports = {
+  sendNotification,
+  LiveNotification,
+};
 
 
 
+
+
+// // old code 
 // const admin = require("../config/firebaseAdmin");
 // const User = require("../models/firebase");
-// const Notificaion = require("../models/Notification");
+
+// const {
+//   Notification,
+//   NotificationRecipient,
+// } = require("../models/Notification");
 
 // const sendNotification = async ({
 //   userId,
+//   sender = null,
 //   title,
 //   body,
+//   type = "system",
+//   entityId = null,
+//   entityType = null,
+//   redirectUrl = null,
+//   coverImage = null,
+//   priority = "medium",
 //   data = {},
 // }) => {
 //   try {
 
-//     const user = await User.findOne({userId: userId});
+//     // FIND USER
+//     const user = await User.findOne({
+//       userId: userId,
+//     });
+
+//     console.log("user data : ", userId,sender)
 
 //     if (!user) {
 //       console.log("User not found");
 //       return;
 //     }
-    
+
+
+//     // CREATE NOTIFICATION
+//     const notification = 
+//     await Notification.create({
+//         sender,
+//         title,
+//         message: body,
+//         type,
+//         entityId,
+//         entityType,
+//         redirectUrl,
+//         coverImage,
+//         priority,
+//         channels: {
+//           inApp: true,
+//           push: true,
+//         },
+//         metadata: {
+//           ...data,
+//         },
+//       });
+
+//     // CREATE RECIPIENT
+//     await NotificationRecipient.create({
+//       notification: notification._id,
+//       user: userId,
+//       isRead: false,
+//     });
+
+//     console.log(
+//       "Notification stored in DB" + userId
+//     );
+
+
 //     if (!user.fcmToken) {
-//       console.log("FCM token missing");
-//       return;
+
+//       console.log(
+//         "FCM token missing"
+//       );
+
+//       return notification;
 //     }
 
-//     // MESSAGE OBJECT
+//     // FIREBASE MESSAGE
 //     const message = {
 //       token: user.fcmToken,
 
@@ -187,7 +304,20 @@ module.exports = sendNotification;
 //       },
 
 //       data: {
-//         ...data,
+//         notificationId:
+//           notification._id.toString(),
+
+//         type,
+
+//         ...Object.keys(data).reduce(
+//           (acc, key) => {
+//             acc[key] =
+//               String(data[key]);
+
+//             return acc;
+//           },
+//           {}
+//         ),
 //       },
 
 //       android: {
@@ -204,22 +334,24 @@ module.exports = sendNotification;
 
 //       webpush: {
 //         notification: {
-//           icon: "/images/logo.png",
+//           icon: "/images/newlogo3.png",
 //         },
 //       },
 //     };
 
-//     // SEND
-//     const response = await admin
-//       .messaging()
-//       .send(message);
+//     // SEND PUSH
+//     const response =  await admin.messaging().send(message);
 
 //     console.log(
 //       "Notification sent:",
 //       response
 //     );
 
-//     return response;
+//     return {
+//       success: true,
+//       notification,
+//       firebaseResponse: response,
+//     };
 
 //   } catch (error) {
 
@@ -227,96 +359,13 @@ module.exports = sendNotification;
 //       "Notification Error:",
 //       error.message
 //     );
-//   }
-// };
 
-// module.exports = sendNotification;
-
-
-
-
-
-
-
-// const admin = require("../config/firebaseAdmin");
-// const User = require("../models/firebase");
-// const Notificaion = require("../models/Notification");
-
-// const sendNotification = async ({
-//   userId,
-//   title,
-//   body,
-//   data = {},
-// }) => {
-//   try {
-
-//     const user = await User.findOne({userId: userId});
-
-//     if (!user) {
-//       console.log("User not found");
-//       return;
-//     }
-    
-//     if (!user.fcmToken) {
-//       console.log("FCM token missing");
-//       return;
-//     }
-
-//     // MESSAGE OBJECT
-//     const message = {
-//       token: user.fcmToken,
-
-//       notification: {
-//         title,
-//         body,
-//       },
-
-//       data: {
-//         ...data,
-//       },
-
-//       android: {
-//         priority: "high",
-//       },
-
-//       apns: {
-//         payload: {
-//           aps: {
-//             sound: "default",
-//           },
-//         },
-//       },
-
-//       webpush: {
-//         notification: {
-//           icon: "/images/logo.png",
-//         },
-//       },
+//     return {
+//       success: false,
+//       error: error.message,
 //     };
-
-//     // SEND
-//     const response = await admin
-//       .messaging()
-//       .send(message);
-
-//     console.log(
-//       "Notification sent:",
-//       response
-//     );
-
-//     return response;
-
-//   } catch (error) {
-
-//     console.log(
-//       "Notification Error:",
-//       error.message
-//     );
 //   }
 // };
 
 // module.exports = sendNotification;
-
-
-
 

@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const mongoose = require("mongoose");
 const UserProfile = require("../models/UserProfile");
+const { LiveNotification } = require("../middleware/notificaion");
 
 exports.createUser = async (req, res) => {
   try {
@@ -23,7 +24,7 @@ exports.createUser = async (req, res) => {
         preferences.budgetRange?.max
       )
     ) {
-      console.log(preferences)
+      
       await UserProfile.create({
         user: user._id,
         preferences ,
@@ -34,6 +35,31 @@ exports.createUser = async (req, res) => {
       success: true,
       data: user,
     });
+
+       const admins = await User.find({ role: { $in: ["admin", "counsellor"] } }).select("_id");
+      // referalCode
+
+        // 🔔 Send notification to each admin
+        if (admins.length > 0) {
+          for (const admin of admins) {
+            await LiveNotification({
+              userId: admin._id,
+              sender: req.user._id,
+              title: "New Application Created",
+              body: `Application ${application.applicationNumber} has been created.`,
+              type: "admin",
+              entityId: application._id,
+              entityType: "Application",
+              redirectUrl: `/applications/${application._id}`,
+              data: {
+                applicationId: application._id,
+              },
+            });
+          }
+        }
+    
+    
+
   } catch (error) {
 
     console.log(error)

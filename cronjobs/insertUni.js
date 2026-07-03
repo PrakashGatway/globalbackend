@@ -7,7 +7,7 @@ const universities = [
   "JOHN CABOT UNIVERSITY"
 ];
 
-const country = "Italy";
+const country = "United Kingdom";
 
 async function generateUniversityData(universityName) {
     try {
@@ -80,7 +80,7 @@ and give me authnticated data.search for ${universityName} and ${country} or the
             {
                 method: "POST",
                 headers: {
-                    Authorization: `Bearer `,
+                    Authorization: `Bearer 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`,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
@@ -95,6 +95,7 @@ and give me authnticated data.search for ${universityName} and ${country} or the
             }
         );
 
+        
         const result = await response.json();
         let content =
             result?.choices?.[0]?.message?.content || "{}";
@@ -113,6 +114,7 @@ and give me authnticated data.search for ${universityName} and ${country} or the
         return null;
     }
 }
+
 async function createUniversity(universityName) {
     try {
 
@@ -165,7 +167,7 @@ async function createUniversity(universityName) {
                 aiData.short_description || "",
             code: aiData.code || "",
             address: aiData.address || "",
-            country: "IT",
+            country: "GB",
             city: aiData.city || "",
             social_links: aiData.social_links || {},
             uni_web: aiData.uni_web || "",
