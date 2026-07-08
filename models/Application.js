@@ -111,15 +111,15 @@ const applicationSchema = new mongoose.Schema(
     },
     userNotes: String,
     adminNotes: String,
-    statusDetails : {
-      type : mongoose.Schema.Types.Mixed,
-      default : ""
+    statusDetails: {
+      type: mongoose.Schema.Types.Mixed,
+      default: ""
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
-   
+
     isVisa: {
       type: Boolean,
       default: false
@@ -132,8 +132,6 @@ const applicationSchema = new mongoose.Schema(
       visaIssuedOn: { type: String },
       visaValidUntil: { type: String }
     }
-
-
   },
   {
     timestamps: true,
@@ -142,6 +140,11 @@ const applicationSchema = new mongoose.Schema(
 
 applicationSchema.index({ student: 1 })
 applicationSchema.index({ applicationNumber: 1 })
+
+applicationSchema.index(
+  { student: 1, course: 1 },
+  { unique: true }
+);
 
 applicationSchema.path('backups').validate(function (value) {
   const seen = new Set();

@@ -106,6 +106,9 @@ const getAllUniversities = async (req, res) => {
       limit = 10
     } = req.query;
 
+
+    console.log('req.query : ', req.query);
+
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
     const limitNum = Math.max(1, Math.min(parseInt(limit, 10) || 10, 100)); // max 100 per page
     const skip = (pageNum - 1) * limitNum;
@@ -218,6 +221,8 @@ const getAllUniversities = async (req, res) => {
       University.aggregate(pipeline),
       University.aggregate(countPipeline)
     ]);
+
+    console.log(countResult);
 
     const total = countResult.length > 0 ? countResult[0].total : 0;
     const totalPages = Math.ceil(total / limitNum);
