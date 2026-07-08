@@ -1,5 +1,5 @@
 const Communication = require('../models/Communication');
-const sendNotification = require('../middleware/notificaion');
+const { sendNotification } = require('../middleware/notificaion');
 const UserProfile = require('../models/UserProfile');
 
 // ============ HELPER FUNCTIONS ============

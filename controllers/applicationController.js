@@ -5,7 +5,7 @@ const path = require('path');
 const multer = require('multer');
 const Communication = require('../models/Communication');
 const { ScratchCard } = require('../models/Coupon');
-const sendNotification = require('../middleware/notificaion');
+const { sendNotification } = require('../middleware/notificaion');
 const User = require('../models/User');
 
 

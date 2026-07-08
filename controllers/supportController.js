@@ -1,4 +1,4 @@
-const sendNotification = require('../middleware/notificaion')
+const {sendNotification} = require('../middleware/notificaion')
 const Support = require('../models/Support')
 
 
