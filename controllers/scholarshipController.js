@@ -1,15 +1,129 @@
+const CountryExtradetails = require('../models/CountryExtradetails');
 const Scholarship = require('../models/Scholarship');
+const mongoose = require('mongoose');
 
 
 exports.createScholarship = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
-        const scholarship = await Scholarship.create(req.body);
+        const {sections, ...alldata} = req.body;
+
+        // const scholarship = await Scholarship.create(req.body);
+
+        
+            // Create extra details (handle empty case)
+            let extraDetails = null;
+            if (sections && Object.keys(sections).length > 0) {
+              extraDetails = await CountryExtradetails.create(
+                [sections || {}],
+                { session }
+              );
+            }
+        
+            // Create country with reference to extra details
+            const country = await Scholarship.create(
+              [{
+                ...alldata,
+                extra_content: extraDetails ? extraDetails[0]._id : null
+              }],
+              { session }
+            );
+        
+            await session.commitTransaction();
+            session.endSession();
 
         res.status(201).json({
             success: true
         });
+
     } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+
         res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+exports.updateScholarship = async (req, res) => {
+    const session = await mongoose.startSession();
+
+    try {
+        await session.startTransaction();
+
+        const { sections, ...alldata } = req.body;
+
+        const [id, extraDetailsId] = req.params.id.split(",");
+
+        let updatedExtraDetails = null;
+
+        if (sections && sections.length > 0) {
+            const extraDetailsData = {
+                sections,
+            };
+
+            if (extraDetailsId && extraDetailsId !== "null") {
+                
+                updatedExtraDetails = await CountryExtradetails.findByIdAndUpdate(
+                    extraDetailsId,
+                    extraDetailsData,
+                    {
+                        new: true,
+                        runValidators: true,
+                        session,
+                    }
+                );
+            } else {
+                
+                const createdExtraDetails = await CountryExtradetails.create(
+                    [extraDetailsData],
+                    { session }
+                );
+
+                updatedExtraDetails = createdExtraDetails[0];
+            }
+        }
+
+        // Update scholarship
+        const scholarship = await Scholarship.findByIdAndUpdate(
+            id,
+            {
+                ...alldata,
+                extra_content: updatedExtraDetails
+                    ? updatedExtraDetails._id
+                    : null,
+            },
+            {
+                session,
+            }
+        );
+
+        if (!scholarship) {
+            await session.abortTransaction();
+            session.endSession();
+
+            return res.status(404).json({
+                success: false,
+                message: "Scholarship not found",
+            });
+        }
+
+        await session.commitTransaction();
+        session.endSession();
+
+        return res.status(200).json({
+            success: true,
+            data: scholarship,
+        });
+
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+
+        return res.status(400).json({
             success: false,
             message: error.message,
         });
@@ -77,15 +191,22 @@ exports.getScholarships = async (req, res) => {
                 }
             },
 
-            //   {
-            //     $lookup: {
-            //       from: 'subjects',
-            //       localField: 'subject',
-            //       foreignField: '_id',
-            //       as: 'subject',
-            //     },
-            //   },
-            //   { $unwind: '$subject' },
+            {
+                $lookup: {
+                    from: 'countryextradetails',
+                    localField: 'extra_content',
+                    foreignField: '_id',
+                    as: 'extra_content',
+                },
+            },
+              
+            {
+                $unwind: {
+                    path: "$extra_content",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            //   { $unwind: '$extra_content' },
 
             { $sort: { createdAt: -1 } },
 
@@ -113,6 +234,7 @@ exports.getScholarships = async (req, res) => {
                     isPublished: 1,
                     intake: 1,
                     subjects: 1,
+                    extra_content:1,
                     howToApply: 1,
                     metaData: 1,
                     country: { name: 1, code: 1, _id: 1 },
@@ -156,7 +278,6 @@ exports.getScholarships = async (req, res) => {
 };
 
 
-
 exports.getScholarshipById = async (req, res) => {
     try {
         const scholarships = await Scholarship.aggregate([
@@ -195,6 +316,22 @@ exports.getScholarshipById = async (req, res) => {
                 },
             },
             { $unwind: '$subject' },
+            
+            {
+                $lookup: {
+                    from: 'countryextradetails',
+                    localField: 'extra_content',
+                    foreignField: '_id',
+                    as: 'extra_content',
+                },
+            },
+              
+            {
+                $unwind: {
+                    path: "$extra_content",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
         ]);
 
         if (!scholarships.length) {
@@ -218,6 +355,8 @@ exports.getScholarshipById = async (req, res) => {
 
 exports.getScholarshipBySlug = async (req, res) => {
     try {
+        console.log(req.params.slug,"slug")
+
         const scholarships = await Scholarship.aggregate([
             {
                 $match: {
@@ -254,7 +393,23 @@ exports.getScholarshipBySlug = async (req, res) => {
                     foreignField: '_id',
                     as: 'subject',
                 },
+            },
+
+            {
+                $lookup: {
+                    from: 'countryextradetails',
+                    localField: 'extra_content',
+                    foreignField: '_id',
+                    as: 'extra_content',
+                },
+            },
+            {
+                $unwind: {
+                    path: "$extra_content",
+                    preserveNullAndEmptyArrays: true
+                }
             }
+
         ]);
 
         if (!scholarships.length) {
@@ -276,32 +431,7 @@ exports.getScholarshipBySlug = async (req, res) => {
     }
 };
 
-exports.updateScholarship = async (req, res) => {
-    try {
-        const scholarship = await Scholarship.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true }
-        );
 
-        if (!scholarship) {
-            return res.status(404).json({
-                success: false,
-                message: 'Scholarship not found',
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            data: scholarship,
-        });
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
 
 exports.deleteScholarship = async (req, res) => {
     try {
@@ -326,7 +456,6 @@ exports.deleteScholarship = async (req, res) => {
     }
 };
 
-const mongoose = require('mongoose');
 
 exports.getPublicScholarships = async (req, res) => {
     try {

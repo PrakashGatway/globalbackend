@@ -38,6 +38,12 @@ const scholarshipSchema = new mongoose.Schema(
       ref: 'Country',
       required: true,
     },
+    extra_content: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CountryExtradetails',
+      required: true,
+      unique: true,
+    },
     university: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'University',
