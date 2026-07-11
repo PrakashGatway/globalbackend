@@ -3583,5 +3583,159 @@
         ]
       }
     ]
+  },
+  "university": {
+    "name": "Find university Page",
+    "description": "Main landing page configuration for university search and discovery",
+    "sections": [
+      {
+        "name": "hero",
+        "label": "Hero Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Hero Title",
+            "type": "text",
+            "placeholder": "Find top universities",
+            "default": "Find top || universities"
+          },
+          {
+            "name": "tag",
+            "label": "Hero Tag",
+            "type": "select",
+            "options": [
+              {"label": "H1", "value": "1"},
+              {"label": "H2", "value": "2"},
+              {"label": "H3", "value": "3"},
+              {"label": "H4", "value": "4"},
+              {"label": "H5", "value": "5"},
+              {"label": "H6", "value": "6"},
+              {"label": "p", "value": "p"}
+            ],
+            "default": "1"
+          },
+          {
+            "name": "subtitle",
+            "label": "Hero Subtitle",
+            "type": "richtext",
+            "required": false,
+            "placeholder": "Discover 900+ top universities worldwide. World-class education, low tuition fees, and exciting career opportunities await you.",
+            "default": "Discover 900+ top universities worldwide. World-class education, low tuition fees, and exciting career opportunities await you."
+          },
+          {
+            "name": "heroImage",
+            "label": "Hero Background Image",
+            "type": "file",
+            "accept": "image/*",
+            "description": "Background image for the hero section"
+          }
+          
+        ]
+      },
+      {
+        "name": "stats",
+        "label": "Stats Section",
+        "fields": [
+          {
+            "name": "items",
+            "label": "Statistics Items",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Stat Label",
+                "type": "text",
+                "placeholder": "Universities"
+              },
+              {
+                "name": "description",
+                "label": "Stat description ",
+                "type": "text",
+                "placeholder": "Universities"
+              },
+              {
+                "name": "stats",
+                "label": "Stat Value",
+                "type": "text",
+                "placeholder": "900+"
+              },
+              {
+                "name": "icon",
+                "label": "Icon",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      },
+   
+      {
+        "name": "universityOverview",
+        "label": "University Overview Section",
+        "fields": [
+          {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {"label": "No", "value": "no"},
+              {"label": "Yes", "value": "yes"}
+            ],
+            "default": "no"
+          },
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "University Overview",
+            "placeholder": "University Overview"
+          },
+          {
+            "name": "tag",
+            "label": "Heading Tag",
+            "type": "select",
+            "options": [
+              {"label": "H1", "value": "1"},
+              {"label": "H2", "value": "2"},
+              {"label": "H3", "value": "3"},
+              {"label": "H4", "value": "4"},
+              {"label": "H5", "value": "5"},
+              {"label": "H6", "value": "6"},
+              {"label": "p", "value": "p"}
+            ],
+            "default": "2"
+          },
+          {
+            "name": "description",
+            "label": "Description",
+            "type": "richtext",
+            "required": false,
+            "placeholder": "Overview description"
+          },
+          {
+            "name": "features",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "Icon",
+                "type": "text"
+              },
+              {
+                "name": "title",
+                "label": "Feature Title",
+                "type": "text"
+              },
+              {
+                "name": "description",
+                "label": "Feature Description",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

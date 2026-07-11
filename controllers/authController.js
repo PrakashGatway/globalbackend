@@ -370,7 +370,8 @@ exports.verifyOTP = async (req, res) => {
       return res.json({
         success: true,
         token,
-        hasPreference: user.role == "user" ? hasPreference : false
+        hasPreference: user.role == "user" ? hasPreference : false,
+        role: user.role
       })
     }
 
@@ -384,7 +385,7 @@ exports.verifyOTP = async (req, res) => {
     const user = await User.findOne({ email, status: 'Active' })
 
     const hasPreference = await checkUserPreference(user._id);
-
+    
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -397,6 +398,7 @@ exports.verifyOTP = async (req, res) => {
     res.json({
       success: true,
       hasPreference: user.role == "user" ? hasPreference : false,
+      role: user.role,
       token
     })
   } catch (error) {

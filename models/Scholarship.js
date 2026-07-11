@@ -9,15 +9,29 @@ const scholarshipSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      trim: true,
-      minlength: [10, "Description must be at least 10 characters"],
-      maxlength: [1000, "Description cannot exceed 1000 characters"]
+      
     },
     shortDescription: {
       type: String,
       trim: true,
       minlength: [10, "Description must be at least 10 characters"],
       maxlength: [150, "Description cannot exceed 150 characters"]
+    },
+    
+    seoTitle: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    
+    seoDescription: {
+      type: String,
+      required: true,
+    },
+    
+    seoKeyword: {
+      type: String,
+      required: true,
     },
     subjects: [
       {

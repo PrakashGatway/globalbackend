@@ -92,9 +92,7 @@ exports.updateScholarship = async (req, res) => {
             id,
             {
                 ...alldata,
-                extra_content: updatedExtraDetails
-                    ? updatedExtraDetails._id
-                    : null,
+                extra_content: updatedExtraDetails? updatedExtraDetails._id : null,
             },
             {
                 session,
@@ -239,6 +237,9 @@ exports.getScholarships = async (req, res) => {
                     metaData: 1,
                     country: { name: 1, code: 1, _id: 1 },
                     university: { name: 1, slug: 1, _id: 1 },
+                    seoiTitle: 1,
+                    seoDescription: 1,
+                    seoKeyword: 1
                 },
             },
 
