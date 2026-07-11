@@ -3626,8 +3626,8 @@
             "name": "heroImage",
             "label": "Hero Background Image",
             "type": "file",
-            "accept": "image/*",
-            "description": "Background image for the hero section"
+            "accept": "image/webp, .webp",
+            "description": "Background image for the hero section in webp"
           }
           
         ]
@@ -3668,7 +3668,42 @@
           }
         ]
       },
-   
+      
+      {
+        "name": "city",
+        "label": "City Section",
+        "fields": [
+              {
+            "name": "title",
+            "label": "Title",
+            "type": "text",
+            "placeholder": "Find top universities",
+            "default": "Find top || universities"
+          },
+          {
+            
+            "name": "items",
+            "label": "City Items",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "City Label",
+                "type": "text",
+                "placeholder": "Universities"
+              },
+              {
+                "name": "Images",
+                "label": "Images",
+                "type": "file",
+                "accept": "image/webp, .webp",
+                "description": "image in webp"
+              }
+              
+            ]
+          }
+        ]
+      },
       {
         "name": "universityOverview",
         "label": "University Overview Section",

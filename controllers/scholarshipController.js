@@ -5,46 +5,61 @@ const mongoose = require('mongoose');
 
 exports.createScholarship = async (req, res) => {
     const session = await mongoose.startSession();
-    session.startTransaction();
+
     try {
-        const {sections, ...alldata} = req.body;
+        await session.startTransaction();
 
-        // const scholarship = await Scholarship.create(req.body);
+        const { sections, ...scholarshipData } = req.body;
 
-        
-            // Create extra details (handle empty case)
-            let extraDetails = null;
-            if (sections && Object.keys(sections).length > 0) {
-              extraDetails = await CountryExtradetails.create(
-                [sections || {}],
+        let extraDetails = null;
+
+        // Create Extra Details
+        if (sections && sections.length > 0) {
+            const createdExtraDetails = await CountryExtradetails.create(
+                [
+                    {
+                        sections,
+                    },
+                ],
                 { session }
-              );
-            }
-        
-            // Create country with reference to extra details
-            const country = await Scholarship.create(
-              [{
-                ...alldata,
-                extra_content: extraDetails ? extraDetails[0]._id : null
-              }],
-              { session }
             );
-        
-            await session.commitTransaction();
-            session.endSession();
 
-        res.status(201).json({
-            success: true
+            extraDetails = createdExtraDetails[0];
+        }
+
+        // Create Scholarship
+        const createdScholarship = await Scholarship.create(
+            [
+                {
+                    ...scholarshipData,
+                    extra_content: extraDetails ? extraDetails._id : null,
+                },
+            ],
+            { session }
+        );
+
+        await session.commitTransaction();
+
+        const scholarship = await Scholarship.findById(
+            createdScholarship[0]._id
+        ).populate("extra_content");
+
+        return res.status(201).json({
+            success: true,
+            message: "Scholarship created successfully.",
+            data: scholarship,
         });
 
     } catch (error) {
         await session.abortTransaction();
-        session.endSession();
 
-        res.status(400).json({
+        return res.status(500).json({
             success: false,
             message: error.message,
         });
+
+    } finally {
+        session.endSession();
     }
 };
 
@@ -66,7 +81,7 @@ exports.updateScholarship = async (req, res) => {
             };
 
             if (extraDetailsId && extraDetailsId !== "null") {
-                
+
                 updatedExtraDetails = await CountryExtradetails.findByIdAndUpdate(
                     extraDetailsId,
                     extraDetailsData,
@@ -77,7 +92,7 @@ exports.updateScholarship = async (req, res) => {
                     }
                 );
             } else {
-                
+
                 const createdExtraDetails = await CountryExtradetails.create(
                     [extraDetailsData],
                     { session }
@@ -92,7 +107,7 @@ exports.updateScholarship = async (req, res) => {
             id,
             {
                 ...alldata,
-                extra_content: updatedExtraDetails? updatedExtraDetails._id : null,
+                extra_content: updatedExtraDetails ? updatedExtraDetails._id : null,
             },
             {
                 session,
@@ -197,7 +212,7 @@ exports.getScholarships = async (req, res) => {
                     as: 'extra_content',
                 },
             },
-              
+
             {
                 $unwind: {
                     path: "$extra_content",
@@ -232,7 +247,7 @@ exports.getScholarships = async (req, res) => {
                     isPublished: 1,
                     intake: 1,
                     subjects: 1,
-                    extra_content:1,
+                    extra_content: 1,
                     howToApply: 1,
                     metaData: 1,
                     country: { name: 1, code: 1, _id: 1 },
@@ -317,7 +332,7 @@ exports.getScholarshipById = async (req, res) => {
                 },
             },
             { $unwind: '$subject' },
-            
+
             {
                 $lookup: {
                     from: 'countryextradetails',
@@ -326,7 +341,7 @@ exports.getScholarshipById = async (req, res) => {
                     as: 'extra_content',
                 },
             },
-              
+
             {
                 $unwind: {
                     path: "$extra_content",
@@ -356,7 +371,7 @@ exports.getScholarshipById = async (req, res) => {
 
 exports.getScholarshipBySlug = async (req, res) => {
     try {
-        console.log(req.params.slug,"slug")
+        console.log(req.params.slug, "slug")
 
         const scholarships = await Scholarship.aggregate([
             {
@@ -486,14 +501,14 @@ exports.getPublicScholarships = async (req, res) => {
         if (subject) match.subject = new mongoose.Types.ObjectId(subject);
         if (fundingType) match.fundingType = fundingType;
         if (level) match.level = { $in: level.split(',') };
-        if(deliveryMode) match.deliveryMode = deliveryMode
+        if (deliveryMode) match.deliveryMode = deliveryMode
 
-     if(search) match.$or =  [
-        { title: { $regex: search, $options: "i" } }, 
-        { "university.name": { $regex: search, $options: "i" } },
-        { "subject.name": { $regex: search, $options: "i" } }
-      ]
-    
+        if (search) match.$or = [
+            { title: { $regex: search, $options: "i" } },
+            { "university.name": { $regex: search, $options: "i" } },
+            { "subject.name": { $regex: search, $options: "i" } }
+        ]
+
 
         console.log(match)
 
