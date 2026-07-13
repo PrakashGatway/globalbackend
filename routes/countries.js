@@ -7,10 +7,12 @@ const {
   createCountry,
   updateCountry,
   deleteCountry,
+  getCountries1
 } = require('../controllers/countryController')
 
 // Routes
 router.get('/',protect, getCountries)
+router.get('/public', getCountries1);
 router.get('/:id', protect, getCountry)
 router.post('/', protect, createCountry)
 router.put('/:id', protect, updateCountry)

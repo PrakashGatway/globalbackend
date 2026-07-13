@@ -352,6 +352,84 @@ exports.getCountries = async (req, res) => {
   }
 };
 
+exports.getCountries1 = async (req, res) => {
+  try {
+    let {
+      search,
+      page = 1,
+      limit = 10,
+      
+    } = req.query;
+
+    page = Number(page);
+    limit = Number(limit);
+
+    const userId = req.user?._id;
+
+    const matchStage = {};
+
+    // Search filter
+    if (search && search.trim()) {
+      matchStage.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { code: { $regex: search, $options: "i" } },
+        { currency: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Status filter
+    // if (status) {
+    //   matchStage.status = "Active";
+    // }
+
+   
+
+    const dataPipeline = [
+      { $match: matchStage },
+      { $skip: (page - 1) * limit },
+      { $limit: limit },
+    ];
+
+    
+
+
+    const pipeline = [
+      {
+        $facet: {
+          data: dataPipeline,
+          totalCount: [
+            { $match: matchStage },
+            { $count: "count" },
+          ],
+        },
+      },
+    ];
+
+    const result = await Country.aggregate(pipeline);
+
+    const data = result[0]?.data || [];
+    const total = result[0]?.totalCount?.[0]?.count || 0;
+
+    res.status(200).json({
+      success: true,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      limit,
+      data,
+    });
+
+  } catch (error) {
+    console.error("Get Countries Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
 exports.getCountry = async (req, res) => {
   try {
     const country = await Country.findById(req.params.id)
