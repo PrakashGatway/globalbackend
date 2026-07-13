@@ -146,10 +146,12 @@ const getAllUniversities = async (req, res) => {
     if (!uniStatus) uniMatch.status = "Active"
 
     if (intake) {
-      const intakeRegex = intake.split(",").map(item => new RegExp(`^${item.trim()}$`, "i"));
+      // const intakeRegex = intake.split(",").map(item => new RegExp(`^${item.trim()}$`, "i"));
+      const intakearr = Array.isArray(intake) ? intake : intake.split(',');
 
       uniMatch.intakes = {
-        $in: intakeRegex,
+        // $in: intakeRegex,
+        $in : intakearr.map(t => new RegExp(t.trim(), 'i')) 
       };
     }
     if (location_alias) uniMatch.location_alias = { $regex: location_alias, $options: 'i' };
@@ -161,7 +163,18 @@ const getAllUniversities = async (req, res) => {
     if (on_compus_accommodation !== undefined) {
       uniMatch.on_compus_accommodation = on_compus_accommodation === 'true';
     }
-    if (type) uniMatch.uni_type = type;
+
+    // if (type) uniMatch.uni_type = type;
+    
+    if (type) {
+      
+      const typeArray = Array.isArray(type) ? type : type.split(',');
+      
+      uniMatch.uni_type = { 
+        $in: typeArray.map(t => new RegExp(t.trim(), 'i')) 
+      };
+    }
+
 
     const pipeline = [];
 
