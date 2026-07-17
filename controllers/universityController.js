@@ -90,6 +90,7 @@ const getAllUniversities = async (req, res) => {
     const {
       name,
       country,
+      withCountry,
       city,
       status: uniStatus,
       code,
@@ -220,6 +221,39 @@ const getAllUniversities = async (req, res) => {
       });
     } else {
       pipeline.push({ $project: { __v: 0 } });
+    }
+
+    if (withCountry) {
+      pipeline.push({
+        $lookup: {
+          from: 'countries', // Mongoose default collection name
+          localField: 'country',
+          foreignField: 'code',
+          as: 'country',
+          pipeline: [
+            {
+              $project: {
+                name: 1,
+                flg: 1
+              }
+            }
+          ]
+        }
+      });
+
+      pipeline.push({
+        $unwind: {
+          path: '$country',
+          preserveNullAndEmptyArrays: true
+        }
+      });
+
+      pipeline.push({
+        $project: {
+          __v: 0,
+          'country.__v': 0
+        }
+      });
     }
 
     const countPipeline = [...pipeline];

@@ -25,6 +25,6 @@ router.post("/profile_info", protect, createOrUpdateUserProfile)
 router.post("/referral" , createOrUpdateUserProfileById)
 router.get("/my-referrals", protect, getMyReferrals)
 router.patch("/edit-doc",protect, updateDoc)
-router.put('/updateDocuments/:userId/doc',updateDocuments);
+router.put('/updateDocuments/:userId/doc',protect,updateDocuments);
 
 module.exports = router

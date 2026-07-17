@@ -400,6 +400,7 @@ exports.getAllCourses = async (req, res) => {
       backlogs,
       requirement,
       level,
+      iswithCountry,
       ugScore,
       twelfthScore,
       englishScores,
@@ -728,6 +729,25 @@ exports.getAllCourses = async (req, res) => {
         {
           $unwind: {
             path: "$extra_content",
+            preserveNullAndEmptyArrays: true,
+          },
+        }
+      );
+    }
+    if (iswithCountry === "true") {
+      pipeline.push(
+        {
+          $lookup: {
+            from: "countries",
+            localField: "country",
+            foreignField: "code",
+            as: "country",
+            pipeline: [{ $project: { name: 1, code: 1 ,flg: 1} }],
+          },
+        },
+        {
+          $unwind: {
+            path: "$country",
             preserveNullAndEmptyArrays: true,
           },
         }

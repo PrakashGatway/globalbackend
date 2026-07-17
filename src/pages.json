@@ -522,9 +522,10 @@
       },
       {
         "name": "visa",
-        "label": "Visa Section",
+        "label": "Visa Title",
         "fields": [
           {
+            "label" : "label",
             "name": "title",
             "type": "text"
           },
@@ -563,6 +564,7 @@
             "default": "2"
           },
           {
+            "label" : "Visa Sub Title",
             "name": "subtitle",
             "type": "text"
           }
