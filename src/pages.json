@@ -41,7 +41,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -149,7 +150,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -240,7 +242,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -404,7 +407,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -448,7 +452,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -464,7 +469,7 @@
           {
             "name": "title",
             "type": "text",
-            "label" : "Title"
+            "label": "Title"
           },
           {
             "name": "services",
@@ -485,7 +490,6 @@
                 "name": "subTitle",
                 "type": "richtext",
                 "label": "Sub title"
-                
               }
             ]
           }
@@ -525,7 +529,7 @@
         "label": "Visa Title",
         "fields": [
           {
-            "label" : "label",
+            "label": "label",
             "name": "title",
             "type": "text"
           },
@@ -556,7 +560,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -564,7 +569,7 @@
             "default": "2"
           },
           {
-            "label" : "Visa Sub Title",
+            "label": "Visa Sub Title",
             "name": "subtitle",
             "type": "text"
           }
@@ -605,7 +610,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -1839,11 +1845,11 @@
           }
         ]
       },
-        {
+      {
         "name": "eligibilityCriteria",
         "label": "Eligibility Criteria",
         "fields": [
-           {
+          {
             "name": "tag",
             "label": "Tag",
             "type": "select",
@@ -1871,7 +1877,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -1899,7 +1906,6 @@
             "label": "Eligibility Title",
             "type": "text"
           },
-         
           {
             "name": "subtitle",
             "label": "Sub title",
@@ -1949,18 +1955,15 @@
           }
         ]
       },
-       {
+      {
         "name": "servicesection",
         "label": "Service Section",
         "fields": [
-        
           {
             "name": "servicetitle",
             "label": "Service Title",
             "type": "richtext"
           },
-
-           
           {
             "name": "servicesubtitle",
             "label": "Service Sub Title",
@@ -2095,27 +2098,26 @@
         ]
       },
       {
-        "name" :"scholarshipOffers",
+        "name": "scholarshipOffers",
         "label": "scholarshipOffers",
-        "fields" : [
+        "fields": [
           {
-            "name" : "title",
-            "label" : "Section Title",
-            "type" : "richtext"
+            "name": "title",
+            "label": "Section Title",
+            "type": "richtext"
           },
           {
-            "name" : "subtitle",
-            "label" : "Section Subtitle",
-            "type" : "richtext"
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "richtext"
           }
-
         ]
       },
-        {
+      {
         "name": "videoTestimonials",
         "label": "Video Testimonials",
         "fields": [
-           {
+          {
             "name": "tag",
             "label": "Tag",
             "type": "select",
@@ -2143,21 +2145,20 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
             ],
             "default": "2"
           },
-         
           {
             "name": "title",
             "label": "Section Title",
             "type": "text",
             "default": "Video Testimonials"
           },
-        
           {
             "name": "subtitle",
             "label": "Section Subtitle",
@@ -2170,7 +2171,7 @@
         "name": "imageTestimonials",
         "label": "image Testimonials",
         "fields": [
-           {
+          {
             "name": "tag",
             "label": "Tag",
             "type": "select",
@@ -2198,21 +2199,20 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
             ],
             "default": "2"
           },
-        
           {
             "name": "title",
             "label": "Section Title",
             "type": "text",
             "default": "Image Testimonials"
           },
-          
           {
             "name": "subtitle",
             "label": "Section Subtitle",
@@ -2225,7 +2225,7 @@
         "name": "visastories",
         "label": "visa Stories",
         "fields": [
-           {
+          {
             "name": "tag",
             "label": "Tag",
             "type": "select",
@@ -2253,21 +2253,20 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
             ],
             "default": "2"
           },
-        
           {
             "name": "title",
             "label": "Section Title",
             "type": "text",
             "default": "Image Testimonials"
           },
-        
           {
             "name": "subtitle",
             "label": "Section Subtitle",
@@ -2337,7 +2336,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -2450,7 +2450,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -2535,7 +2536,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -2619,7 +2621,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -2753,7 +2756,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -2817,7 +2821,6 @@
             "type": "text",
             "default": "Why Choose Us"
           },
-   
           {
             "name": "subTitle",
             "label": "Section subTitle",
@@ -2943,7 +2946,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -3018,7 +3022,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -3152,8 +3157,7 @@
             "label": "Service Title",
             "type": "text"
           },
-
-            {
+          {
             "name": "tag",
             "label": "Hero Tag",
             "type": "select",
@@ -3181,7 +3185,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -3271,7 +3276,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -3299,7 +3305,7 @@
                 "label": "Title",
                 "type": "richtext2"
               },
-               {
+              {
                 "name": "extraDetail",
                 "label": "Extra Detail",
                 "type": "richtext2"
@@ -3362,7 +3368,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -3431,7 +3438,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -3500,7 +3508,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -3569,7 +3578,8 @@
               {
                 "label": "H6",
                 "value": "6"
-              },{
+              },
+              {
                 "label": "p",
                 "value": "p"
               }
@@ -3606,13 +3616,34 @@
             "label": "Hero Tag",
             "type": "select",
             "options": [
-              {"label": "H1", "value": "1"},
-              {"label": "H2", "value": "2"},
-              {"label": "H3", "value": "3"},
-              {"label": "H4", "value": "4"},
-              {"label": "H5", "value": "5"},
-              {"label": "H6", "value": "6"},
-              {"label": "p", "value": "p"}
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              },
+              {
+                "label": "p",
+                "value": "p"
+              }
             ],
             "default": "1"
           },
@@ -3631,7 +3662,6 @@
             "accept": "image/webp, .webp",
             "description": "Background image for the hero section in webp"
           }
-          
         ]
       },
       {
@@ -3670,12 +3700,303 @@
           }
         ]
       },
-      
+      {
+        "name": "whyStudy",
+        "label": "whyStudy Section",
+        "fields": [
+          {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Why Choose Us"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              },
+              {
+                "label": "p",
+                "value": "p"
+              }
+            ],
+            "default": "2"
+          },
+          {
+            "name": "subTitle",
+            "label": "Section subTitle",
+            "type": "richtext2",
+            "default": ""
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "Icon Class",
+                "type": "text",
+                "placeholder": "cil-award"
+              },
+              {
+                "name": "title",
+                "label": "Feature Title",
+                "type": "text"
+              },
+              {
+                "name": "tag",
+                "label": "Tag",
+                "type": "select",
+                "options": [
+                  {
+                    "label": "H1",
+                    "value": "1"
+                  },
+                  {
+                    "label": "H2",
+                    "value": "2"
+                  },
+                  {
+                    "label": "H3",
+                    "value": "3"
+                  },
+                  {
+                    "label": "H4",
+                    "value": "4"
+                  },
+                  {
+                    "label": "H5",
+                    "value": "5"
+                  },
+                  {
+                    "label": "H6",
+                    "value": "6"
+                  },
+                  {
+                    "label": "p",
+                    "value": "p"
+                  }
+                ],
+                "default": "2"
+              },
+              {
+                "name": "description",
+                "label": "Feature Description",
+                "type": "richtext2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "eligibilityCriteria",
+        "label": "Eligibility Criteria",
+        "fields": [
+          {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
+          {
+            "name": "title",
+            "label": "Eligibility Title",
+            "type": "text"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              },
+              {
+                "label": "p",
+                "value": "p"
+              }
+            ],
+            "default": "2"
+          },
+          {
+            "name": "subtitle",
+            "label": "Sub title",
+            "type": "richtext"
+          },
+          {
+            "name": "eligibilityItem",
+            "label": "Eligibilty Item",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "itemname",
+                "label": "Eligibility Item Name",
+                "type": "text"
+              },
+              {
+                "name": "subItems",
+                "label": "sub Items",
+                "type": "repeater",
+                "fields": [
+                  {
+                    "name": "subItems",
+                    "label": "Sub Items Name",
+                    "type": "text"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "contentSection",
+        "label": "Content Section",
+        "fields": [
+          {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
+          {
+            "name": "items",
+            "label": "Features",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "type": "text"
+              },
+              {
+                "name": "tag",
+                "label": "Tag",
+                "type": "select",
+                "options": [
+                  {
+                    "label": "H1",
+                    "value": "1"
+                  },
+                  {
+                    "label": "H2",
+                    "value": "2"
+                  },
+                  {
+                    "label": "H3",
+                    "value": "3"
+                  },
+                  {
+                    "label": "H4",
+                    "value": "4"
+                  },
+                  {
+                    "label": "H5",
+                    "value": "5"
+                  },
+                  {
+                    "label": "H6",
+                    "value": "6"
+                  }
+                ],
+                "default": "2"
+              },
+              {
+                "name": "description",
+                "label": "Feature Description",
+                "type": "richtext"
+              }
+            ]
+          }
+        ]
+      },
       {
         "name": "city",
         "label": "City Section",
         "fields": [
-              {
+          {
             "name": "title",
             "label": "Title",
             "type": "text",
@@ -3683,7 +4004,6 @@
             "default": "Find top || universities"
           },
           {
-            
             "name": "items",
             "label": "City Items",
             "type": "repeater",
@@ -3701,7 +4021,6 @@
                 "accept": "image/webp, .webp",
                 "description": "image in webp"
               }
-              
             ]
           }
         ]
@@ -3715,8 +4034,14 @@
             "label": "Hide Section",
             "type": "select",
             "options": [
-              {"label": "No", "value": "no"},
-              {"label": "Yes", "value": "yes"}
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
             ],
             "default": "no"
           },
@@ -3732,13 +4057,34 @@
             "label": "Heading Tag",
             "type": "select",
             "options": [
-              {"label": "H1", "value": "1"},
-              {"label": "H2", "value": "2"},
-              {"label": "H3", "value": "3"},
-              {"label": "H4", "value": "4"},
-              {"label": "H5", "value": "5"},
-              {"label": "H6", "value": "6"},
-              {"label": "p", "value": "p"}
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              },
+              {
+                "label": "p",
+                "value": "p"
+              }
             ],
             "default": "2"
           },
