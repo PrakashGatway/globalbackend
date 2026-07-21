@@ -15,9 +15,18 @@ function generateReferralCode(length = 6) {
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    Firstname: {
       type: String,
-      required: [true, 'Please provide a name'],
+      required: [true, 'Please provide a first name'],
+      trim: true,
+    },
+     Middlename: {
+      type: String,
+     
+    },
+     Lastname: {
+      type: String,
+      required: [true, 'Please provide a last name'],
       trim: true,
     },
     email: {
