@@ -5,9 +5,11 @@ const CountryExtradetails = new mongoose.Schema(
     sections: [
       {
         section_key: { type: String, required: true },
+        section_type: { type: String },
         heading: { type: String, default: '', trim: true },
         content: { type: String, default: '', trim: true },
-        order: { type: Number, default: 0 }
+        order: { type: Number, default: 0 },
+        data: { type: mongoose.Schema.Types.Mixed, default: {} }
       }
     ],
     faq: [
@@ -22,19 +24,19 @@ const CountryExtradetails = new mongoose.Schema(
       default: 'Active'
     },
     visa_details: {
-      type : mongoose.Schema.Types.Mixed,
+      type: mongoose.Schema.Types.Mixed,
       default: {}
     },
-    rating : String,
-    tuitionfee : String,
-    psw : String,
-    keyHightlights : {
-      type : mongoose.Schema.Types.Mixed,
-      default : []
+    rating: String,
+    tuitionfee: String,
+    psw: String,
+    keyHightlights: {
+      type: mongoose.Schema.Types.Mixed,
+      default: []
     },
-    topcourse : {
-      type : mongoose.Schema.Types.Mixed,
-      default : []
+    topcourse: {
+      type: mongoose.Schema.Types.Mixed,
+      default: []
     }
   },
   { timestamps: true }

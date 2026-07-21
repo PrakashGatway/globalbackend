@@ -252,7 +252,7 @@ exports.getScholarships = async (req, res) => {
                     metaData: 1,
                     country: { name: 1, code: 1, _id: 1 },
                     university: { name: 1, slug: 1, _id: 1 },
-                    seoiTitle: 1,
+                    seoTitle: 1,
                     seoDescription: 1,
                     seoKeyword: 1
                 },

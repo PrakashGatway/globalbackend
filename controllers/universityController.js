@@ -504,7 +504,7 @@ const getFlatUniversities = async (req, res) => {
     const universities = await University.find(query)
       .select('_id name slug cover_photo uni_logo address short_description acceptanceRate')   // only required fields
       .sort({ name: 1 })    // optional sorting
-      .limit(Math.min(parseInt(limit) || 100, 500))
+      .limit(Math.min(parseInt(limit) || 100))
       .lean();
 
     res.status(200).json({
