@@ -206,83 +206,13 @@ exports.uploadDocument = async (req, res) => {
 };
 
 
-// exports.ProfileDocs = async (req, res) => {
-//   try {
-//     if (!req.file) {
-//       return res.status(400).json({ success: false, message: "No file uploaded." });
-//     }
-
-//     const userId = req.user?._id || req.user?.id;
-
-//     const fileUrl = `/uploads/docs/${req.file.filename}`;
-
-//     const {
-//       docKey,
-//       docName,
-//       originalName,
-//     } = req.body;
-
-//     const { student } = req.query
-
-//     const profile = await UserProfile.findOne({
-//       user: student,
-//     });
-
-//     if (!profile) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Profile not found",
-//       });
-//     }
-
-//     let documents = JSON.parse(profile.documents) || {};
-
-//     const existingDoc = documents[docKey] || {};
-
-//     documents[docKey] = {
-//       ...existingDoc,
-//       docKey,
-//       docName: existingDoc.docName || docName,
-//       originalName: originalName || req.file.originalname,
-//       url: fileUrl,
-//       status: "pending",
-//       remarks: "",
-//       uploadedBy: req.user?.name,
-//       uploadedAt: new Date(),
-//       mimeType: req.file.mimetype
-//     };
-//     profile.documents = documents;
-
-//     await profile.save();
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Document uploaded successfully",
-//       data: documents[docKey],
-//     });
-//   } catch (error) {
-//     console.log(error);
-
-//     if (error.name === 'CastError') {
-//       return res.status(400).json({ success: false, message: 'Invalid ID format.' });
-//     }
-//     res.status(500).json({
-//       success: false,
-//       message: 'Upload failed.',
-//       error: error.message
-//     });
-//   }
-// };
-
-
 exports.ProfileDocs = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: "No file uploaded.",
-      });
+      return res.status(400).json({ success: false, message: "No file uploaded." });
     }
+
+    const userId = req.user?._id || req.user?.id;
 
     const fileUrl = `/uploads/docs/${req.file.filename}`;
 
@@ -292,7 +222,7 @@ exports.ProfileDocs = async (req, res) => {
       originalName,
     } = req.body;
 
-    const { student } = req.query;
+    const { student } = req.query
 
     const profile = await UserProfile.findOne({
       user: student,
@@ -305,23 +235,7 @@ exports.ProfileDocs = async (req, res) => {
       });
     }
 
-    let documents = profile.documents || {};
-
-    // Delete previous file if exists
-    if (documents[docKey]?.url) {
-      const oldFilePath = path.join(
-        process.cwd(),
-        documents[docKey].url.replace(/^\//, "")
-      );
-
-      if (fs.existsSync(oldFilePath)) {
-        try {
-          fs.unlinkSync(oldFilePath);
-        } catch (err) {
-          console.error("Failed to delete old file:", err.message);
-        }
-      }
-    }
+    let documents = profile.documents ? JSON.parse(profile.documents) || {} : {};
 
     const existingDoc = documents[docKey] || {};
 
@@ -335,10 +249,8 @@ exports.ProfileDocs = async (req, res) => {
       remarks: "",
       uploadedBy: req.user?.name,
       uploadedAt: new Date(),
-      mimeType: req.file.mimetype,
+      mimeType: req.file.mimetype
     };
-
-    profile.markModified("documents");
     profile.documents = documents;
 
     await profile.save();
@@ -351,20 +263,108 @@ exports.ProfileDocs = async (req, res) => {
   } catch (error) {
     console.log(error);
 
-    if (error.name === "CastError") {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid ID format.",
-      });
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'Invalid ID format.' });
     }
-
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: "Upload failed.",
-      error: error.message,
+      message: 'Upload failed.',
+      error: error.message
     });
   }
 };
+
+
+// exports.ProfileDocs = async (req, res) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "No file uploaded.",
+//       });
+//     }
+
+//     const fileUrl = `/uploads/docs/${req.file.filename}`;
+
+//     const {
+//       docKey,
+//       docName,
+//       originalName,
+//     } = req.body;
+
+//     const { student } = req.query;
+
+//     const profile = await UserProfile.findOne({
+//       user: student,
+//     });
+
+//     if (!profile) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Profile not found",
+//       });
+//     }
+
+//     let documents = profile.documents || {};
+
+//     // Delete previous file if exists
+//     if (documents[docKey]?.url) {
+//       const oldFilePath = path.join(
+//         process.cwd(),
+//         documents[docKey].url.replace(/^\//, "")
+//       );
+
+//       if (fs.existsSync(oldFilePath)) {
+//         try {
+//           fs.unlinkSync(oldFilePath);
+//         } catch (err) {
+//           console.error("Failed to delete old file:", err.message);
+//         }
+//       }
+//     }
+
+//     const existingDoc = documents[docKey] || {};
+
+//     documents[docKey] = {
+//       ...existingDoc,
+//       docKey,
+//       docName: existingDoc.docName || docName,
+//       originalName: originalName || req.file.originalname,
+//       url: fileUrl,
+//       status: "pending",
+//       remarks: "",
+//       uploadedBy: req.user?.name,
+//       uploadedAt: new Date(),
+//       mimeType: req.file.mimetype,
+//     };
+
+//     profile.markModified("documents");
+//     profile.documents = documents;
+
+//     await profile.save();
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Document uploaded successfully",
+//       data: documents[docKey],
+//     });
+//   } catch (error) {
+//     console.log(error);
+
+//     if (error.name === "CastError") {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid ID format.",
+//       });
+//     }
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Upload failed.",
+//       error: error.message,
+//     });
+//   }
+// };
 
 exports.deleteProfileDoc = async (req, res) => {
   try {
