@@ -58,11 +58,11 @@ const scholarshipSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    university: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'University',
-      default: null
-    },
+    // university: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: 'University',
+    //   default: null
+    // },
     level: {
       type: [String], // e.g., ['Undergraduate', 'Postgraduate']
       required: true,
