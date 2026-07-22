@@ -189,20 +189,20 @@ exports.getScholarships = async (req, res) => {
                 }
             },
 
-            {
-                $lookup: {
-                    from: 'universities',
-                    localField: 'university',
-                    foreignField: '_id',
-                    as: 'university',
-                },
-            },
-            {
-                $unwind: {
-                    path: "$university",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
+            // {
+            //     $lookup: {
+            //         from: 'universities',
+            //         localField: 'university',
+            //         foreignField: '_id',
+            //         as: 'university',
+            //     },
+            // },
+            // {
+            //     $unwind: {
+            //         path: "$university",
+            //         preserveNullAndEmptyArrays: true
+            //     }
+            // },
 
             {
                 $lookup: {
@@ -313,15 +313,15 @@ exports.getScholarshipById = async (req, res) => {
             },
             { $unwind: '$country' },
 
-            {
-                $lookup: {
-                    from: 'universities',
-                    localField: 'university',
-                    foreignField: '_id',
-                    as: 'university',
-                },
-            },
-            { $unwind: '$university' },
+            // {
+            //     $lookup: {
+            //         from: 'universities',
+            //         localField: 'university',
+            //         foreignField: '_id',
+            //         as: 'university',
+            //     },
+            // },
+            // { $unwind: '$university' },
 
             {
                 $lookup: {
@@ -392,15 +392,15 @@ exports.getScholarshipBySlug = async (req, res) => {
             },
             { $unwind: '$country' },
 
-            {
-                $lookup: {
-                    from: 'universities',
-                    localField: 'university',
-                    foreignField: '_id',
-                    as: 'university',
-                },
-            },
-            { $unwind: '$university' },
+            // {
+            //     $lookup: {
+            //         from: 'universities',
+            //         localField: 'university',
+            //         foreignField: '_id',
+            //         as: 'university',
+            //     },
+            // },
+            // { $unwind: '$university' },
 
             {
                 $lookup: {
