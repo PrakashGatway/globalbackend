@@ -12,6 +12,10 @@ const CountryExtradetails = new mongoose.Schema(
         data: { type: mongoose.Schema.Types.Mixed, default: {} }
       }
     ],
+    cta: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {}
+    },
     faq: [
       {
         question: { type: String, trim: true },

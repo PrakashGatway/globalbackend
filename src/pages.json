@@ -4118,6 +4118,76 @@
             ]
           }
         ]
+      },
+      {
+        "name": "cta",
+        "label": "cta Section",
+        "fields": [
+          {
+            "name": "isHidden",
+            "label": "Hide Section",
+            "type": "select",
+            "options": [
+              {
+                "label": "No",
+                "value": "no"
+              },
+              {
+                "label": "Yes",
+                "value": "yes"
+              }
+            ],
+            "default": "no"
+          },
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": "Image Testimonials"
+          },
+          {
+            "name": "tag",
+            "label": "Tag",
+            "type": "select",
+            "options": [
+              {
+                "label": "H1",
+                "value": "1"
+              },
+              {
+                "label": "H2",
+                "value": "2"
+              },
+              {
+                "label": "H3",
+                "value": "3"
+              },
+              {
+                "label": "H4",
+                "value": "4"
+              },
+              {
+                "label": "H5",
+                "value": "5"
+              },
+              {
+                "label": "H6",
+                "value": "6"
+              },
+              {
+                "label": "p",
+                "value": "p"
+              }
+            ],
+            "default": "2"
+          },
+          {
+            "name": "subtitle",
+            "label": "Section Subtitle",
+            "type": "richtext",
+            "default": ""
+          }
+        ]
       }
     ]
   }

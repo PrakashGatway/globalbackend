@@ -164,6 +164,7 @@ exports.getPageById = async (req, res) => {
 exports.getPageBySlug = async (req, res) => {
   try {
     const page = await PageInformation.findOne({
+      pageType: req.query.type,
       slug: req.params.slug,
       status: 'Published',
     }).populate('country', 'name code flg')

@@ -33,6 +33,10 @@ const scholarshipSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    cover_photo: {
+      type: String,
+      trim: true,
+    },
     subjects: [
       {
         type: mongoose.Schema.Types.ObjectId,

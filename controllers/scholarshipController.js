@@ -9,7 +9,7 @@ exports.createScholarship = async (req, res) => {
     try {
         await session.startTransaction();
 
-        const { sections, ...scholarshipData } = req.body;
+        const { sections,cta, ...scholarshipData } = req.body;
 
         let extraDetails = null;
 
@@ -19,6 +19,7 @@ exports.createScholarship = async (req, res) => {
                 [
                     {
                         sections,
+                        cta
                     },
                 ],
                 { session }
@@ -69,7 +70,7 @@ exports.updateScholarship = async (req, res) => {
     try {
         await session.startTransaction();
 
-        const { sections, ...alldata } = req.body;
+        const { sections, cta ,...alldata } = req.body;
 
         const [id, extraDetailsId] = req.params.id.split(",");
 
@@ -78,6 +79,7 @@ exports.updateScholarship = async (req, res) => {
         if (sections && sections.length > 0) {
             const extraDetailsData = {
                 sections,
+                cta
             };
 
             if (extraDetailsId && extraDetailsId !== "null") {
@@ -254,7 +256,8 @@ exports.getScholarships = async (req, res) => {
                     university: { name: 1, slug: 1, _id: 1 },
                     seoTitle: 1,
                     seoDescription: 1,
-                    seoKeyword: 1
+                    seoKeyword: 1,
+                    cover_photo: 1
                 },
             },
 
@@ -371,8 +374,6 @@ exports.getScholarshipById = async (req, res) => {
 
 exports.getScholarshipBySlug = async (req, res) => {
     try {
-        console.log(req.params.slug, "slug")
-
         const scholarships = await Scholarship.aggregate([
             {
                 $match: {
