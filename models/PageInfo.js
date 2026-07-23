@@ -51,6 +51,10 @@ const pageInformationSchema = new mongoose.Schema(
     state : {
       type : String
     },
+    isCity: {
+      type : String,
+      default: "No"
+    },
     sections: {
       type: mongoose.Schema.Types.Mixed,
       default: {},

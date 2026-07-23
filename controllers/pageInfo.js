@@ -25,6 +25,7 @@ exports.getAllPages = async (req, res) => {
       isNavbar,
       isFooter,
       slug,
+      isCity,
       fromDate,
       toDate,
       sort = '-createdAt',
@@ -197,8 +198,7 @@ exports.getPageBySlug = async (req, res) => {
 
 exports.updatePage = async (req, res) => {
   try {
-
-    console.log(req.body)
+  
     const page = await PageInformation.findByIdAndUpdate(
       req.params.id,
       req.body,
