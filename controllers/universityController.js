@@ -488,7 +488,7 @@ const deleteUniversity = async (req, res) => {
 
 const getFlatUniversities = async (req, res) => {
   try {
-    const { name, limit = 100, slug } = req.query;
+    const { name, limit = 100, slug,country } = req.query;
 
     const query = {};
 
@@ -499,8 +499,9 @@ const getFlatUniversities = async (req, res) => {
     if (slug) {
       query.location_alias = slug
     }
-
-
+    if(country){
+      query.country = country
+    }
     const universities = await University.find(query)
       .select('_id name slug cover_photo uni_logo address short_description acceptanceRate')   // only required fields
       .sort({ name: 1 })    // optional sorting

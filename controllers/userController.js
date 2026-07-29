@@ -83,6 +83,8 @@ exports.getUsers = async (req, res) => {
       nationality
     } = req.query;
 
+    console.log("...................djfhjdhfdj")
+
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
     const skip = (pageNumber - 1) * limitNumber;
@@ -156,7 +158,11 @@ const users = await User.aggregate([
         {
           $project: {
             _id: 0,
-            profileCompletion: 1,
+            documents: 0,
+            notes: 0,
+            otherDetails: 0,
+            currentAddress: 0,
+            permanentAddress: 0
           },
         },
       ],
