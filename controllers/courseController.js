@@ -871,10 +871,10 @@ exports.getAllCourses = async (req, res) => {
 
     // 4. Other Exam Requirements
     const otherExamType = parsedOtherExam.exam?.toLowerCase();
-    console.log('otherExamType',otherExamType, parsedOtherExam);
+    console.log('otherExamType', otherExamType, parsedOtherExam);
     if (otherExamType && parsedOtherExam.overall) {
       const overallScore = Number(parsedOtherExam.overall);
-    
+
       switch (otherExamType) {
         case "sat":
           matchStage["requirements.SatScore"] = { $lte: overallScore };
@@ -941,22 +941,38 @@ exports.getAllCourses = async (req, res) => {
 
     // 6. Expression Conditions (Scores, Work Exp, Duration)
     if (ugScore) {
-      exprConditions.push({
-        $lte: [{ $toDouble: "$requirements.EntryRequirementUG" }, Number(ugScore)],
-      });
+      matchStage["requirements.EntryRequirementUG"] = {
+        $exists: true,
+        $lte: Number(ugScore).toFixed(2).toString(),
+      };
+    
+      // exprConditions.push({
+      //   $lte: [{ $toDouble: "$requirements.EntryRequirementUG" }, Number(ugScore).toFixed(2).toString()],
+      // });
     }
+
+    // if (twelfthScore) {
+    //   exprConditions.push({
+    //     $lte: [{ $toDouble: "$requirements.EntryRequirementTwelfth" }, Number(twelfthScore)],
+    //   });
+    // }
 
     if (twelfthScore) {
-      exprConditions.push({
-        $lte: [{ $toDouble: "$requirements.EntryRequirementTwelfth" }, Number(twelfthScore)],
-      });
+      matchStage["requirements.EntryRequirementTwelfth"] = {
+        $exists: true,
+        $lte: Number(twelfthScore).toFixed(2).toString(),
+      };
     }
-
-    if (workExperience) {
-      exprConditions.push({
-        $lte: [{ $toDouble: "$requirements.WorkExp" }, Number(workExperience)],
-      });
+    if (workExperience){
+      matchStage["requirements.WorkExp"] = {
+        $lte: Number(workExperience).toFixed(2).toString()
+      }
     }
+    // if (workExperience) {
+    //   exprConditions.push({
+    //     $lte: [{ $toDouble: "$requirements.WorkExp" }, Number(workExperience)],
+    //   });
+    // }
 
     if (duration) {
       const parts = duration.replace("Years", "").split("-").map(Number);
@@ -993,7 +1009,7 @@ exports.getAllCourses = async (req, res) => {
     if (university) matchStage.university = new mongoose.Types.ObjectId(university);
     if (category) matchStage.category = new mongoose.Types.ObjectId(category);
     if (subject) matchStage.subject = new mongoose.Types.ObjectId(subject);
-    
+
 
     if (backlogs) {
       matchStage["metaInfo.backlog"] = {
@@ -1002,15 +1018,15 @@ exports.getAllCourses = async (req, res) => {
         $gte: Number(backlogs),
       };
     }
-    
+
     // console.log(backlogs,"backlogs",Number(backlogs))
 
     if (level) {
       const levels = level.split(",").map((l) => l.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
       matchStage.level = { $regex: levels.join("|"), $options: "i" };
     }
-    
-    
+
+
     if (studyMode) matchStage.studyMode = studyMode;
     if (currency) matchStage.currency = currency;
     matchStage.status = status || "Active";
@@ -1086,7 +1102,7 @@ exports.getAllCourses = async (req, res) => {
         }
       );
     }
-    
+
     if (iswithCountry === "true") {
       pipeline.push(
         {
