@@ -388,6 +388,396 @@ exports.createCourse = async (req, res) => {
 //   }
 // }
 
+//// -------------- 7/28/2026 ---------------
+// exports.getAllCourses = async (req, res) => {
+//   try {
+//     let {
+//       search,
+//       intake,
+//       country,
+//       state,
+//       university,
+//       subject,
+//       backlogs,
+//       requirement,
+//       level,
+//       iswithCountry,
+//       ugScore,
+//       twelfthScore,
+//       englishScores,
+//       otherExam,
+//       otherExamScore,
+//       englishExam,
+//       workExperience,
+//       category,
+//       studyMode,
+//       currency,
+//       status,
+//       minFee,
+//       maxFee,
+//       duration,
+//       page = 1,
+//       limit = 10,
+//       isExtra = "true",
+//       sort = "-createdAt",
+//     } = req.query;
+
+//     page = Number(page);
+//     limit = Number(limit);
+
+//     const exprConditions = [];
+
+//     const matchStage = {};
+
+//     // Search
+//     if (search?.trim()) {
+//       matchStage.$or = [
+//         { name: { $regex: search, $options: "i" } },
+//         { shortName: { $regex: search, $options: "i" } },
+//         { tags: { $regex: search, $options: "i" } },
+//       ];
+//     }
+
+//     const filters = requirement
+//       ? requirement.split(",").map(f => f.trim())
+//       : [];
+
+
+//     switch (englishExam) {
+//       case "ielts":
+//         matchStage["requirements.Ielts"] = {
+//           $gte: englishScores.overall
+//         };
+//         break;
+
+//       case "toefl":
+//         matchStage["requirements.ToeflScore"] = {
+//           $gte: englishScores.overall
+//         };
+//         break;
+
+//       case "pte":
+//         matchStage["requirements.PteScore"] = {
+//           $gte: englishScores.overall
+//         };
+//         break;
+
+//       case "det":
+//         matchStage["requirements.DETScore"] = {
+//           $gte: englishScores.overall
+//         };
+//         break;
+//     }
+
+//     switch (otherExam) {
+//       case "sat":
+//         matchStage["requirements.SatScore"] = {
+//           $gte: otherExamScore
+//         };
+//         break;
+
+//       case "act":
+//         matchStage["requirements.ActScore"] = {
+//           $gte: otherExamScore
+//         };
+//         break;
+
+//       case "gre":
+//         matchStage["requirements.GreScore"] = {
+//           $gte: otherExamScore
+//         };
+//         break;
+
+//       case "gmat":
+//         matchStage["requirements.GmatScore"] = {
+//           $gte: Number(otherExamScore)
+//         };
+//         break;
+//     }
+
+//     if (filters.length) {
+//       filters.forEach(filter => {
+//         switch (filter) {
+//           case "pte":
+//             matchStage["requirements.PteScore"] = { $exists: true, $ne: null };
+//             break;
+
+//           case "toefl":
+//             matchStage["requirements.ToeflScore"] = { $exists: true, $ne: null };
+//             break;
+
+//           case "ielts":
+//             matchStage["requirements.Ielts"] = { $exists: true, $ne: null };
+//             break;
+
+//           case "det":
+//             matchStage["requirements.DETScore"] = { $exists: true, $ne: null };
+//             break;
+
+//           case "sat":
+//             matchStage["requirements.SatScore"] = { $exists: true, $ne: null };
+//             break;
+
+//           case "act":
+//             matchStage["requirements.ActScore"] = { $exists: true, $ne: null };
+//             break;
+
+//           case "gre":
+//             matchStage["requirements.GreScore"] = { $exists: true, $ne: null };
+//             break;
+
+//           case "gmat":
+//             matchStage["requirements.GmatScore"] = { $exists: true, $ne: null };
+//             break;
+
+//           case "without-english":
+//             matchStage["metaInfo.WithoutEnglishProficiency"] = true;
+//             break;
+
+//           case "without-gre":
+//             matchStage["requirements.GreScore"] = {
+//               $in: [null, "", undefined]
+//             };
+//             break;
+
+//           case "without-gmat":
+//             matchStage["requirements.GmatScore"] = {
+//               $in: [null, "", undefined]
+//             };
+//             break;
+
+//           case "without-maths":
+//             matchStage["metaInfo.WithoutMaths"] = true;
+//             break;
+
+//           case "stem-programs":
+//             matchStage["metaInfo.IsStemCourse"] = true;
+//             break;
+//         }
+//       });
+//     }
+
+//     if (ugScore) {
+//       exprConditions.push({
+//         $gte: [
+//           { $toDouble: "$requirements.EntryRequirementUG" },
+//           Number(ugScore),
+//         ],
+//       });
+//     }
+
+//     if (twelfthScore) {
+//       exprConditions.push({
+//         $gte: [
+//           { $toDouble: "$requirements.EntryRequirementTwelfth" },
+//           Number(twelfthScore),
+//         ],
+//       });
+//     }
+
+//     if (workExperience) {
+//       matchStage.$expr = {
+//         $gte: [
+//           { $toDouble: "$requirements.WorkExp" },
+//           Number(workExperience),
+//         ],
+//       };
+//     }
+
+//     if (backlogs) {
+//       matchStage["metaInfo.backlog"] = Number(backlogs);
+//     }
+
+//     // // Filters
+//     if (country) matchStage.country = country;
+//     // if (state) matchStage.state = state;
+//     if (university)
+//       matchStage.university = new mongoose.Types.ObjectId(university);
+//     if (category)
+//       matchStage.category = new mongoose.Types.ObjectId(category);
+//     if (subject)
+//       matchStage.subject = new mongoose.Types.ObjectId(subject);
+//     if (level) {
+//       const levels = level
+//         .split(",")
+//         .map((l) => l.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+
+//       matchStage.level = {
+//         $regex: levels.join("|"),
+//         $options: "i",
+//       };
+//     }
+//     if (studyMode) matchStage.studyMode = studyMode;
+//     if (currency) matchStage.currency = currency;
+//     matchStage.status = status || "Active";
+
+//     if (duration) {
+//       const [minYear, maxYear] = duration
+//         .replace("Years", "")
+//         .split("-")
+//         .map(Number);
+
+//       const minMonths = minYear * 12;
+//       const maxMonths = maxYear * 12;
+
+//       matchStage.$expr = {
+//         $and: [
+//           {
+//             $gte: [
+//               {
+//                 $toInt: {
+//                   $arrayElemAt: [{ $split: ["$duration", " "] }, 0],
+//                 },
+//               },
+//               minMonths,
+//             ],
+//           },
+//           {
+//             $lte: [
+//               {
+//                 $toInt: {
+//                   $arrayElemAt: [{ $split: ["$duration", " "] }, 0],
+//                 },
+//               },
+//               maxMonths,
+//             ],
+//           },
+//         ],
+//       };
+//     }
+
+//     if (exprConditions.length) {
+//       matchStage.$expr = {
+//         $and: exprConditions,
+//       };
+//     }
+
+//     if (intake) {
+//       const intakes = intake
+//         .split(",")
+//         .map((i) => i.trim().slice(0, 3).toLowerCase());
+
+//       matchStage["metaInfo.Intakes"] = {
+//         $regex: intakes.join("|"),
+//         $options: "i",
+//       };
+//     }
+
+//     // if (minFee || maxFee) {
+//     //   matchStage.tuitionFee = {};
+//     //   if (minFee) matchStage.tuitionFee.$gte = Number(minFee);
+//     //   if (maxFee) matchStage.tuitionFee.$lte = Number(maxFee);
+//     // }
+
+//     const sortStage = {};
+
+//     if (sort.startsWith("-")) {
+//       sortStage[sort.substring(1)] = -1;
+//     } else {
+//       sortStage[sort] = 1;
+//     }
+
+//     // Count
+
+//     const pipeline = [
+//       { $match: matchStage },
+//       { $sort: sortStage },
+//       { $skip: (page - 1) * limit },
+//       { $limit: limit },
+
+//       // University lookup AFTER pagination
+//       {
+//         $lookup: {
+//           from: "universities",
+//           localField: "university",
+//           foreignField: "_id",
+//           pipeline: [
+//             {
+//               $project: {
+//                 name: 1,
+//                 slug: 1,
+//                 uni_type: 1,
+//                 intakes: 1,
+//                 address: 1,
+//                 country: 1,
+//                 city: 1,
+//                 uni_logo: 1,
+//                 acceptanceRate: 1,
+//               },
+//             },
+//           ],
+//           as: "university",
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$university",
+//           preserveNullAndEmptyArrays: true,
+//         },
+//       },
+//     ];
+
+//     if (isExtra === "true") {
+//       pipeline.push(
+//         {
+//           $lookup: {
+//             from: "extracontents",
+//             localField: "extra_content",
+//             foreignField: "_id",
+//             as: "extra_content",
+//           },
+//         },
+//         {
+//           $unwind: {
+//             path: "$extra_content",
+//             preserveNullAndEmptyArrays: true,
+//           },
+//         }
+//       );
+//     }
+//     if (iswithCountry === "true") {
+//       pipeline.push(
+//         {
+//           $lookup: {
+//             from: "countries",
+//             localField: "country",
+//             foreignField: "code",
+//             as: "country",
+//             pipeline: [{ $project: { name: 1, code: 1 ,flg: 1} }],
+//           },
+//         },
+//         {
+//           $unwind: {
+//             path: "$country",
+//             preserveNullAndEmptyArrays: true,
+//           },
+//         }
+//       );
+//     }
+
+//     const [total, data] = await Promise.all([
+//       Course.countDocuments(matchStage),
+//       Course.aggregate(pipeline),
+//     ]);
+
+//     res.status(200).json({
+//       success: true,
+//       total,
+//       page,
+//       pages: Math.ceil(total / limit),
+//       data,
+//     });
+//   } catch (error) {
+//     console.error(error);
+
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
+
 exports.getAllCourses = async (req, res) => {
   try {
     let {
@@ -403,10 +793,8 @@ exports.getAllCourses = async (req, res) => {
       iswithCountry,
       ugScore,
       twelfthScore,
-      englishScores,
+      englishScore,
       otherExam,
-      otherExamScore,
-      englishExam,
       workExperience,
       category,
       studyMode,
@@ -418,17 +806,17 @@ exports.getAllCourses = async (req, res) => {
       page = 1,
       limit = 10,
       isExtra = "true",
-      sort = "-createdAt",
+      sort_by = "createdAt",
+      sort_order = "desc",
     } = req.query;
 
     page = Number(page);
     limit = Number(limit);
 
     const exprConditions = [];
-
     const matchStage = {};
 
-    // Search
+    // 1. Search
     if (search?.trim()) {
       matchStage.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -437,118 +825,113 @@ exports.getAllCourses = async (req, res) => {
       ];
     }
 
-    const filters = requirement
-      ? requirement.split(",").map(f => f.trim())
-      : [];
-
-
-    switch (englishExam) {
-      case "ielts":
-        matchStage["requirements.Ielts"] = {
-          $gte: englishScores.overall
-        };
-        break;
-
-      case "toefl":
-        matchStage["requirements.ToeflScore"] = {
-          $gte: englishScores.overall
-        };
-        break;
-
-      case "pte":
-        matchStage["requirements.PteScore"] = {
-          $gte: englishScores.overall
-        };
-        break;
-
-      case "det":
-        matchStage["requirements.DETScore"] = {
-          $gte: englishScores.overall
-        };
-        break;
+    // 2. Safely parse JSON strings from query
+    let parsedEnglishScore = {};
+    if (englishScore) {
+      try {
+        parsedEnglishScore = typeof englishScore === "string" ? JSON.parse(englishScore) : englishScore;
+      } catch (e) {
+        console.error("Failed to parse englishScore", e);
+      }
     }
 
-    switch (otherExam) {
-      case "sat":
-        matchStage["requirements.SatScore"] = {
-          $gte: otherExamScore
-        };
-        break;
-
-      case "act":
-        matchStage["requirements.ActScore"] = {
-          $gte: otherExamScore
-        };
-        break;
-
-      case "gre":
-        matchStage["requirements.GreScore"] = {
-          $gte: otherExamScore
-        };
-        break;
-
-      case "gmat":
-        matchStage["requirements.GmatScore"] = {
-          $gte: otherExamScore
-        };
-        break;
+    let parsedOtherExam = {};
+    if (otherExam) {
+      try {
+        parsedOtherExam = typeof otherExam === "string" ? JSON.parse(otherExam) : otherExam;
+      } catch (e) {
+        console.error("Failed to parse otherExam", e);
+      }
     }
 
+    // // backlogs $lte
+    // if (backlogs) {
+    //   matchStage["metaInfo.backlog"] = {$lte : Number(backlogs)};
+    // }
+
+    // 3. English Exam Requirements
+    const englishExam = parsedEnglishScore.exam?.toLowerCase();
+    if (englishExam && parsedEnglishScore.overall) {
+      const overallScore = Number(parsedEnglishScore.overall);
+      switch (englishExam) {
+        case "ielts":
+          matchStage["requirements.Ielts"] = { $lte: overallScore };
+          break;
+        case "toefl":
+          matchStage["requirements.ToeflScore"] = { $lte: overallScore };
+          break;
+        case "pte":
+          matchStage["requirements.PteScore"] = { $lte: overallScore };
+          break;
+        case "det":
+          matchStage["requirements.DETScore"] = { $lte: overallScore };
+          break;
+      }
+    }
+
+    // 4. Other Exam Requirements
+    const otherExamType = parsedOtherExam.exam?.toLowerCase();
+    console.log('otherExamType',otherExamType, parsedOtherExam);
+    if (otherExamType && parsedOtherExam.overall) {
+      const overallScore = Number(parsedOtherExam.overall);
+    
+      switch (otherExamType) {
+        case "sat":
+          matchStage["requirements.SatScore"] = { $lte: overallScore };
+          break;
+        case "act":
+          matchStage["requirements.ActScore"] = { $lte: overallScore };
+          break;
+        case "gre":
+          matchStage["requirements.GreScore"] = { $lte: overallScore };
+          break;
+        case "gmat":
+          matchStage["requirements.GmatScore"] = { $lte: overallScore };
+          break;
+      }
+    }
+
+    // 5. Requirement Filters
+    const filters = requirement ? requirement.split(",").map((f) => f.trim()) : [];
     if (filters.length) {
-      filters.forEach(filter => {
+      filters.forEach((filter) => {
         switch (filter) {
           case "pte":
             matchStage["requirements.PteScore"] = { $exists: true, $ne: null };
             break;
-
           case "toefl":
             matchStage["requirements.ToeflScore"] = { $exists: true, $ne: null };
             break;
-
           case "ielts":
             matchStage["requirements.Ielts"] = { $exists: true, $ne: null };
             break;
-
           case "det":
             matchStage["requirements.DETScore"] = { $exists: true, $ne: null };
             break;
-
           case "sat":
             matchStage["requirements.SatScore"] = { $exists: true, $ne: null };
             break;
-
           case "act":
             matchStage["requirements.ActScore"] = { $exists: true, $ne: null };
             break;
-
           case "gre":
             matchStage["requirements.GreScore"] = { $exists: true, $ne: null };
             break;
-
           case "gmat":
             matchStage["requirements.GmatScore"] = { $exists: true, $ne: null };
             break;
-
           case "without-english":
             matchStage["metaInfo.WithoutEnglishProficiency"] = true;
             break;
-
           case "without-gre":
-            matchStage["requirements.GreScore"] = {
-              $in: [null, "", undefined]
-            };
+            matchStage["requirements.GreScore"] = { $in: [null, ""] };
             break;
-
           case "without-gmat":
-            matchStage["requirements.GmatScore"] = {
-              $in: [null, "", undefined]
-            };
+            matchStage["requirements.GmatScore"] = { $in: [null, ""] };
             break;
-
           case "without-maths":
             matchStage["metaInfo.WithoutMaths"] = true;
             break;
-
           case "stem-programs":
             matchStage["metaInfo.IsStemCourse"] = true;
             break;
@@ -556,135 +939,104 @@ exports.getAllCourses = async (req, res) => {
       });
     }
 
+    // 6. Expression Conditions (Scores, Work Exp, Duration)
     if (ugScore) {
       exprConditions.push({
-        $gte: [
-          { $toDouble: "$requirements.EntryRequirementUG" },
-          Number(ugScore),
-        ],
+        $lte: [{ $toDouble: "$requirements.EntryRequirementUG" }, Number(ugScore)],
       });
     }
 
     if (twelfthScore) {
       exprConditions.push({
-        $gte: [
-          { $toDouble: "$requirements.EntryRequirementTwelfth" },
-          Number(twelfthScore),
-        ],
+        $lte: [{ $toDouble: "$requirements.EntryRequirementTwelfth" }, Number(twelfthScore)],
       });
     }
 
     if (workExperience) {
-      matchStage.$expr = {
-        $gte: [
-          { $toDouble: "$requirements.WorkExp" },
-          Number(workExperience),
-        ],
-      };
+      exprConditions.push({
+        $lte: [{ $toDouble: "$requirements.WorkExp" }, Number(workExperience)],
+      });
     }
-
-    if (backlogs) {
-      matchStage["metaInfo.backlog"] = Number(backlogs);
-    }
-
-    // Filters
-    if (country) matchStage.country = country;
-    // if (state) matchStage.state = state;
-    if (university)
-      matchStage.university = new mongoose.Types.ObjectId(university);
-    if (category)
-      matchStage.category = new mongoose.Types.ObjectId(category);
-    if (subject)
-      matchStage.subject = new mongoose.Types.ObjectId(subject);
-    if (level) {
-      const levels = level
-        .split(",")
-        .map((l) => l.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-
-      matchStage.level = {
-        $regex: levels.join("|"),
-        $options: "i",
-      };
-    }
-    if (studyMode) matchStage.studyMode = studyMode;
-    if (currency) matchStage.currency = currency;
-    matchStage.status = status || "Active";
 
     if (duration) {
-      const [minYear, maxYear] = duration
-        .replace("Years", "")
-        .split("-")
-        .map(Number);
-
+      const parts = duration.replace("Years", "").split("-").map(Number);
+      const minYear = parts[0];
+      const maxYear = parts[1] || minYear; // Fallback to minYear if max is missing
       const minMonths = minYear * 12;
       const maxMonths = maxYear * 12;
 
-      matchStage.$expr = {
+      exprConditions.push({
         $and: [
           {
-            $gte: [
-              {
-                $toInt: {
-                  $arrayElemAt: [{ $split: ["$duration", " "] }, 0],
-                },
-              },
+            $gte: [ // FIXED: Changed from $lte to $gte
+              { $toInt: { $arrayElemAt: [{ $split: ["$duration", " "] }, 0] } },
               minMonths,
             ],
           },
           {
             $lte: [
-              {
-                $toInt: {
-                  $arrayElemAt: [{ $split: ["$duration", " "] }, 0],
-                },
-              },
+              { $toInt: { $arrayElemAt: [{ $split: ["$duration", " "] }, 0] } },
               maxMonths,
             ],
           },
         ],
-      };
+      });
     }
 
-    if (exprConditions.length) {
-      matchStage.$expr = {
-        $and: exprConditions,
+    // Combine ALL expression conditions into a single $expr to prevent overwriting
+    if (exprConditions.length > 0) {
+      matchStage.$expr = { $and: exprConditions };
+    }
+
+    // 7. Standard Filters
+    if (country) matchStage.country = country;
+    if (university) matchStage.university = new mongoose.Types.ObjectId(university);
+    if (category) matchStage.category = new mongoose.Types.ObjectId(category);
+    if (subject) matchStage.subject = new mongoose.Types.ObjectId(subject);
+    
+
+    if (backlogs) {
+      matchStage["metaInfo.backlog"] = {
+        $exists: true,
+        $ne: null,
+        $gte: Number(backlogs),
       };
     }
+    
+    // console.log(backlogs,"backlogs",Number(backlogs))
+
+    if (level) {
+      const levels = level.split(",").map((l) => l.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+      matchStage.level = { $regex: levels.join("|"), $options: "i" };
+    }
+    
+    
+    if (studyMode) matchStage.studyMode = studyMode;
+    if (currency) matchStage.currency = currency;
+    matchStage.status = status || "Active";
 
     if (intake) {
-      const intakes = intake
-        .split(",")
-        .map((i) => i.trim().slice(0, 3).toLowerCase());
-
-      matchStage["metaInfo.Intakes"] = {
-        $regex: intakes.join("|"),
-        $options: "i",
-      };
+      const intakes = intake.split(",").map((i) => i.trim().slice(0, 3).toLowerCase());
+      matchStage["metaInfo.Intakes"] = { $regex: intakes.join("|"), $options: "i" };
     }
 
-    // if (minFee || maxFee) {
-    //   matchStage.tuitionFee = {};
-    //   if (minFee) matchStage.tuitionFee.$gte = Number(minFee);
-    //   if (maxFee) matchStage.tuitionFee.$lte = Number(maxFee);
-    // }
+    // 8. Fee Filtering (Uncommented and enabled)
+    if (minFee || maxFee) {
+      matchStage.tuitionFee = {};
+      if (minFee) matchStage.tuitionFee.$gte = Number(minFee);
+      if (maxFee) matchStage.tuitionFee.$lte = Number(maxFee);
+    }
 
+    // 9. Sorting (Fixed to use sort_by and sort_order from query)
     const sortStage = {};
+    sortStage[sort_by] = sort_order === "asc" ? 1 : -1;
 
-    if (sort.startsWith("-")) {
-      sortStage[sort.substring(1)] = -1;
-    } else {
-      sortStage[sort] = 1;
-    }
-
-    // Count
-
+    // 10. Aggregation Pipeline
     const pipeline = [
       { $match: matchStage },
       { $sort: sortStage },
       { $skip: (page - 1) * limit },
       { $limit: limit },
-
-      // University lookup AFTER pagination
       {
         $lookup: {
           from: "universities",
@@ -734,6 +1086,7 @@ exports.getAllCourses = async (req, res) => {
         }
       );
     }
+    
     if (iswithCountry === "true") {
       pipeline.push(
         {
@@ -742,7 +1095,7 @@ exports.getAllCourses = async (req, res) => {
             localField: "country",
             foreignField: "code",
             as: "country",
-            pipeline: [{ $project: { name: 1, code: 1 ,flg: 1} }],
+            pipeline: [{ $project: { name: 1, code: 1, flg: 1 } }],
           },
         },
         {
@@ -768,13 +1121,14 @@ exports.getAllCourses = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
+
 
 exports.getCourseById = async (req, res) => {
   const { id } = req.params
