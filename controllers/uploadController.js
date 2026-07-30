@@ -16,12 +16,12 @@ exports.uploadImage = async (req, res) => {
     const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`
 
     const uploadResult = await cloudinary.uploader.upload(base64Image, {
-      folder: 'cway-admin', // Optional: organize images in a folder
+      folder: 'cway-admin',
       resource_type: 'auto',
       transformation: [
-        { width: 800, height: 600, crop: 'limit' }, // Resize if needed
-        { quality: 'auto' }, // Auto optimize quality
-      ],
+        { width: 800, height: 600, crop: "limit" },
+        { quality: "auto:best" },
+      ]
     })
 
     res.json({
