@@ -20,8 +20,8 @@ exports.uploadImage = async (req, res) => {
       resource_type: 'auto',
       transformation: [
         {
-          width: 1024,
-          height: 1024,
+          width: 1920,
+          height: 1920,
           crop: "limit",
           quality: "auto:best",
           fetch_format: "auto",
