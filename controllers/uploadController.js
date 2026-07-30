@@ -19,9 +19,14 @@ exports.uploadImage = async (req, res) => {
       folder: 'cway-admin',
       resource_type: 'auto',
       transformation: [
-        { width: 800, height: 600, crop: "limit" },
-        { quality: "auto:best" },
-      ]
+        {
+          width: 1024,
+          height: 1024,
+          crop: "limit",
+          quality: "auto:best",
+          fetch_format: "auto",
+        },
+      ],
     })
 
     res.json({
