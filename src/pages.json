@@ -3287,7 +3287,7 @@
           {
             "name": "subTitle",
             "label": "Section subTitle",
-            "type": "textarea",
+            "type": "richtext2",
             "default": ""
           },
           {
