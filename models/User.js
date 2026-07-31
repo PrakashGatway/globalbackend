@@ -15,19 +15,13 @@ function generateReferralCode(length = 6) {
 
 const userSchema = new mongoose.Schema(
   {
-    Firstname: {
+    name: {
       type: String,
-      required: [true, 'Please provide a first name'],
+      required: [true, 'Please provide a full name'],
       trim: true,
     },
-     Middlename: {
-      type: String,
-     
-    },
-     Lastname: {
-      type: String,
-      required: [true, 'Please provide a last name'],
-      trim: true,
+    midName: {
+      type: String
     },
     email: {
       type: String,
@@ -45,7 +39,7 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    intake : String,
+    intake: String,
     nationality: String,
     gender: {
       type: String,
@@ -94,10 +88,10 @@ const userSchema = new mongoose.Schema(
       default: '',
     },
     passportNumber: String,
-    passportDetail :{
-      issueDate : Date,
-      expiryDate : Date,
-      issueCountry : String
+    passportDetail: {
+      issueDate: Date,
+      expiryDate: Date,
+      issueCountry: String
     },
     wallet: {
       type: Number,
@@ -107,7 +101,7 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-     familyDetails: {
+    familyDetails: {
       motherName: String,
       motherPhone: String,
       motherOccupation: String,
