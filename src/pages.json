@@ -4207,7 +4207,7 @@
               {
                 "name": "question",
                 "label": "FAQ Question",
-                "type": "text"
+                "type": "richtext2"
               },
               {
                 "name": "answer",
