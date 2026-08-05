@@ -3650,7 +3650,7 @@
           {
             "name": "subtitle",
             "label": "Hero Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Discover 900+ top universities worldwide. World-class education, low tuition fees, and exciting career opportunities await you.",
             "default": "Discover 900+ top universities worldwide. World-class education, low tuition fees, and exciting career opportunities await you."
@@ -3893,7 +3893,7 @@
           {
             "name": "subtitle",
             "label": "Sub title",
-            "type": "richtext"
+            "type": "richtext2"
           },
           {
             "name": "eligibilityItem",
@@ -3986,7 +3986,7 @@
               {
                 "name": "description",
                 "label": "Feature Description",
-                "type": "richtext"
+                "type": "richtext2"
               }
             ]
           }
@@ -4091,7 +4091,7 @@
           {
             "name": "description",
             "label": "Description",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Overview description"
           },
@@ -4184,8 +4184,37 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
+          }
+        ]
+      },
+      {
+        "name": "faq",
+        "label": "FAQ Section",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Section Title",
+            "type": "text",
+            "default": ""
+          },
+          {
+            "name": "faq",
+            "label": "FAQ Items",
+            "type": "repeater",
+            "fields": [
+              {
+                "name": "question",
+                "label": "FAQ Question",
+                "type": "text"
+              },
+              {
+                "name": "answer",
+                "label": "FAQ Answer",
+                "type": "richtext2"
+              }
+            ]
           }
         ]
       }
