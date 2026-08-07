@@ -24,7 +24,6 @@ const pageInformationSchema = new mongoose.Schema(
     slug: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       lowercase: true,
     },
@@ -68,5 +67,7 @@ const pageInformationSchema = new mongoose.Schema(
     timestamps: true,
   }
 )
+
+pageInformationSchema.index({ slug: 1 , pageType: 1}, { unique: true})
 
 module.exports = mongoose.model('PageInformation', pageInformationSchema)
