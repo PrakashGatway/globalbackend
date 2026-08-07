@@ -18,6 +18,7 @@ const {
   updateGallery,
   deleteGallery,
   getPublicGallery,
+  getFaqTypes,
 } = require('../controllers/testimonialsController');
 const { authorize, protect } = require('../middleware/auth');
 
@@ -30,12 +31,10 @@ router.get('/galleries/public/list', getPublicGallery);
 
 router.post('/faqs', createFaq);
 router.get('/faqs', getFaqs);
+router.get('/faqs/types', getFaqTypes);
 router.put('/faqs/:id', updateFaq);
 router.delete('/faqs/:id', deleteFaq);
 router.get('/faqs/public/list', getPublicFaqs);
-
-
-
 
 // Public (Website)
 router.get('/testimonials', getAllTestimonials)

@@ -7,13 +7,11 @@ const faqSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
     answer: {
       type: String, // HTML allowed (CKEditor)
       required: true,
       trim: true,
     },
-
     type: {
       type: String,
       required: true

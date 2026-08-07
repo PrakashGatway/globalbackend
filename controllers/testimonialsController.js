@@ -244,6 +244,65 @@ exports.createFaq = async (req, res) => {
   }
 };
 
+
+exports.getFaqTypes = async (req, res) => {
+  try {
+    // Get all unique types with counts
+    const typeStats = await Faqs.aggregate([
+      {
+        $group: {
+          _id: '$type',
+          count: { $sum: 1 },
+          published: {
+            $sum: { $cond: [{ $eq: ['$isPublished', true] }, 1, 0] }
+          },
+          active: {
+            $sum: { $cond: [{ $eq: ['$status', 'Active'] }, 1, 0] }
+          },
+          inactive: {
+            $sum: { $cond: [{ $eq: ['$status', 'Inactive'] }, 1, 0] }
+          }
+        }
+      },
+      {
+        $project: {
+          type: '$_id',
+          count: 1,
+          published: 1,
+          active: 1,
+          inactive: 1,
+          _id: 0
+        }
+      },
+      {
+        $sort: { type: 1 }
+      }
+    ]);
+    // Format response
+    const types = typeStats.map(stat => ({
+      type: stat.type,
+      count: stat.count,
+      published: stat.published,
+      active: stat.active,
+      inactive: stat.inactive,
+      publishedPercentage: Math.round((stat.published / stat.count) * 100),
+      activePercentage: Math.round((stat.active / stat.count) * 100),
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: types
+    });
+  } catch (error) {
+    console.error('Error getting FAQ types:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get FAQ types',
+      error: error.message
+    });
+  }
+};
+
 /**
  * GET ALL FAQS (Admin)
  */
