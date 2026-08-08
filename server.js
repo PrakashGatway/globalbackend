@@ -13,7 +13,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 app.use(
   '/api/accommodation',
   createProxyMiddleware({
-    target: 'http://localhost:4000',
+    target: 'https://globalmicro.vercel.app',
     changeOrigin: true,
     pathRewrite: {
       '^/api/accommodation': '/api'
@@ -60,7 +60,6 @@ app.use('/api/visa', require('./routes/visaProsessing'))
 app.use("/api/dashboard/user", require("./controllers/userDashboard"))
 
 app.use("/api/dashboard", require("./routes/dashboardRoutes"))
-
 
 app.use("/api", require("./routes/enquiry"))
 
