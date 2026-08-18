@@ -3593,6 +3593,32 @@
             "default": ""
           }
         ]
+      },
+      {
+        "name": "minorcta",
+        "label": "Minor Cta Section",
+        "fields" : [
+          {
+          "name" : "title",
+          "label" : "Title",
+          "type" : "text"
+        },
+         {
+          "name" : "subtitle",
+          "label" : "Sub Title",
+          "type" : "richtext2"
+        },
+         {
+          "name" : "ctabutton1",
+          "label" : "Cta Button 1",
+          "type" : "text"
+        },
+         {
+          "name" : "ctabutton2",
+          "label" : "Cta Button 2",
+          "type" : "text"
+        }
+      ]
       }
     ]
   },
