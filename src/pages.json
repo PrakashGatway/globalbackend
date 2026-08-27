@@ -52,7 +52,7 @@
           {
             "name": "subtitle",
             "label": "Hero Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -188,7 +188,7 @@
               {
                 "name": "subtitle",
                 "label": "Subtitle",
-                "type": "richtext"
+                "type": "richtext2"
               },
               {
                 "name": "ctaButton",
@@ -253,7 +253,7 @@
           {
             "name": "subtitle",
             "label": "Subtitle",
-            "type": "richtext"
+            "type": "richtext2"
           },
           {
             "name": "bgImage",
@@ -303,7 +303,7 @@
           },
           {
             "name": "subtitle",
-            "type": "richtext"
+            "type": "richtext2"
           }
         ]
       },
@@ -328,7 +328,7 @@
           },
           {
             "name": "subtitle",
-            "type": "richtext"
+            "type": "richtext2"
           }
         ]
       },
@@ -368,7 +368,7 @@
           },
           {
             "name": "subtitle",
-            "type": "richtext"
+            "type": "richtext2"
           }
         ]
       },
@@ -488,7 +488,7 @@
               },
               {
                 "name": "subTitle",
-                "type": "richtext",
+                "type": "richtext2",
                 "label": "Sub title"
               }
             ]
@@ -1173,7 +1173,7 @@
           {
             "name": "content",
             "label": "Main Content",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false
           }
         ]
@@ -1390,7 +1390,7 @@
               {
                 "name": "subtitle",
                 "label": "Subtitle",
-                "type": "richtext",
+                "type": "richtext2",
                 "default": "subtitle"
               }
             ]
@@ -1615,14 +1615,14 @@
           {
             "name": "title",
             "label": "Hero Title",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
             "name": "subtitle",
             "label": "Hero Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -1702,12 +1702,12 @@
           {
             "name": "title",
             "label": "Title",
-            "type": "richtext"
+            "type": "richtext2"
           },
           {
             "name": "subTitle",
             "label": "subTitle",
-            "type": "richtext"
+            "type": "richtext2"
           }
         ]
       },
@@ -1718,14 +1718,14 @@
           {
             "name": "title",
             "label": "Hero Title",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
             "name": "subtitle",
             "label": "Hero Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -1758,13 +1758,13 @@
               {
                 "name": "title",
                 "label": "Title",
-                "type": "richtext",
+                "type": "richtext2",
                 "default": ""
               },
               {
                 "name": "subTitle",
                 "label": "subTitle",
-                "type": "richtext",
+                "type": "richtext2",
                 "default": ""
               },
               {
@@ -1790,14 +1790,14 @@
           {
             "name": "title",
             "label": " Title",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Welcome to Our Platform"
           },
           {
             "name": "subtitle",
             "label": "Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Your journey "
           },
@@ -1816,13 +1816,13 @@
           {
             "name": "title",
             "label": "Section Title",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           },
           {
             "name": "subTitle",
             "label": "Section subTitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           }
         ]
@@ -1834,13 +1834,13 @@
           {
             "name": "title",
             "label": "Title",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           },
           {
             "name": "subtitle",
             "label": "Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           }
         ]
@@ -1909,7 +1909,7 @@
           {
             "name": "subtitle",
             "label": "Sub title",
-            "type": "richtext"
+            "type": "richtext2"
           },
           {
             "name": "eligibilityItem",
@@ -1944,13 +1944,13 @@
           {
             "name": "title",
             "label": "Section Title",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           },
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": "subtitle"
           }
         ]
@@ -1962,12 +1962,12 @@
           {
             "name": "servicetitle",
             "label": "Service Title",
-            "type": "richtext"
+            "type": "richtext2"
           },
           {
             "name": "servicesubtitle",
             "label": "Service Sub Title",
-            "type": "richtext"
+            "type": "richtext2"
           },
           {
             "name": "serviceitem",
@@ -2006,7 +2006,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           },
           {
@@ -2024,13 +2024,13 @@
           {
             "name": "title",
             "label": "Section Title",
-            "type": "richtext",
+            "type": "richtext2",
             "default": "Our Trusted Partners"
           },
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": "subtitle"
           },
           {
@@ -2055,13 +2055,13 @@
           {
             "name": "title",
             "label": "Section Title",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           },
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           },
           {
@@ -2104,12 +2104,12 @@
           {
             "name": "title",
             "label": "Section Title",
-            "type": "richtext"
+            "type": "richtext2"
           },
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext"
+            "type": "richtext2"
           }
         ]
       },
@@ -2162,7 +2162,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           }
         ]
@@ -2216,7 +2216,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           }
         ]
@@ -2270,7 +2270,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           }
         ]
@@ -2304,7 +2304,7 @@
           {
             "name": "title",
             "label": "Hero Title",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Welcome"
           },
@@ -2347,7 +2347,7 @@
           {
             "name": "subtitle",
             "label": "Hero Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -2461,7 +2461,7 @@
           {
             "name": "subtitle",
             "label": "Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -2547,7 +2547,7 @@
           {
             "name": "subtitle",
             "label": "Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "required": false,
             "placeholder": "Your journey to success starts here"
           },
@@ -2767,7 +2767,7 @@
           {
             "name": "subtitle",
             "label": "Section subTitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           },
           {
@@ -3033,7 +3033,7 @@
           {
             "name": "subtitle",
             "label": "Sub title",
-            "type": "richtext"
+            "type": "richtext2"
           },
           {
             "name": "eligibilityItem",
@@ -3126,7 +3126,7 @@
               {
                 "name": "description",
                 "label": "Feature Description",
-                "type": "richtext"
+                "type": "richtext2"
               }
             ]
           }
@@ -3196,7 +3196,7 @@
           {
             "name": "servicesubtitle",
             "label": "Service Sub Title",
-            "type": "richtext"
+            "type": "richtext2"
           },
           {
             "name": "serviceitem",
@@ -3379,7 +3379,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           }
         ]
@@ -3449,7 +3449,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           }
         ]
@@ -3519,7 +3519,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           }
         ]
@@ -3589,7 +3589,7 @@
           {
             "name": "subtitle",
             "label": "Section Subtitle",
-            "type": "richtext",
+            "type": "richtext2",
             "default": ""
           }
         ]
