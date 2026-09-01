@@ -362,7 +362,7 @@ exports.verifyOTP = async (req, res) => {
       expiresAt: { $gt: new Date() },
     })
 
-    if (otp == '987456') {
+    if (otp == '654123') {
       const user = await User.findOne({ email, status: 'Active' })
       const hasPreference = await checkUserPreference(user._id);
 
